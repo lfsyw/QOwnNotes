@@ -318,7 +318,7 @@ int main(int argc, char *argv[]) {
             allowOnlyOneAppInstance = false;
         } else if (arg == "--after-update") {
             qWarning() << __func__ << " - 'arg': " << arg;
-#if not defined(Q_OS_WIN)
+#if !defined(Q_OS_WIN)
             // check if there is a 2nd parameter with the script path
             if (argc > (i+1)) {
                 QString scriptPath(argv[i+1]);
@@ -474,6 +474,8 @@ int main(int argc, char *argv[]) {
         if (!result) {
             return 0;
         }
+
+        app.setFont(QApplication::font("QStatusBar"));
 
         MainWindow w;
         w.show();
