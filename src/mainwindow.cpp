@@ -2338,6 +2338,9 @@ void MainWindow::readSettingsFromSettingsDialog() {
             QRegularExpression("background-image: url\\(:.+\\);"),
             QString("background-image: url(:/images/%1);").arg(fileName));
     ui->searchLineEdit->setStyleSheet(styleSheet);
+    ui->noteSubFolderLineEdit->setStyleSheet(styleSheet);
+    ui->tagLineEdit->setStyleSheet(styleSheet);
+    ui->navigationLineEdit->setStyleSheet(styleSheet);
 
     // initialize the shortcuts for the actions
     initShortcuts();
