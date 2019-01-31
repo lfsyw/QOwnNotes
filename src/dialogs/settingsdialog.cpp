@@ -1848,8 +1848,7 @@ void SettingsDialog::on_noteTextEditCodeButton_clicked()
 {
     bool ok;
     QFont font = Utils::Gui::fontDialogGetFont(
-            &ok, noteTextEditCodeFont, this,
-            "", QFontDialog::MonospacedFonts);
+            &ok, noteTextEditCodeFont, this);
     if (ok) {
         noteTextEditCodeFont = font;
         setFontLabel(ui->noteTextEditCodeFontLabel, noteTextEditCodeFont);
@@ -1875,8 +1874,7 @@ void SettingsDialog::on_noteTextViewCodeButton_clicked()
 {
     bool ok;
     QFont font = Utils::Gui::fontDialogGetFont(
-            &ok, noteTextViewCodeFont, this,
-            "", QFontDialog::MonospacedFonts);
+            &ok, noteTextViewCodeFont, this);
     if (ok) {
         noteTextViewCodeFont = font;
         setFontLabel(ui->noteTextViewCodeFontLabel, noteTextViewCodeFont);
