@@ -290,7 +290,7 @@ int main(int argc, char *argv[]) {
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     QString release = RELEASE;
-    bool portable = false;
+    bool portable = true;
     bool clearSettings = false;
     bool snap = false;
     bool allowOnlyOneAppInstance = true;
