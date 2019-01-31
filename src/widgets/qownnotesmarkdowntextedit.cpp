@@ -308,8 +308,12 @@ void QOwnNotesMarkdownTextEdit::setMainWindow(MainWindow *mainWindow) {
 void QOwnNotesMarkdownTextEdit::insertFromMimeData(const QMimeData * source) {
     // if there is text in the clipboard do the normal pasting process
     if (source->hasText()) {
-        QMarkdownTextEdit::insertFromMimeData(source);
-    } else if (mainWindow != Q_NULLPTR) {
+        if (!source->hasUrls()) {
+            QMarkdownTextEdit::insertFromMimeData(source);
+            return;
+        }
+    }
+    if (mainWindow != Q_NULLPTR) {
         // to more complex pasting if there was no text (and a main window
         // was set)
         mainWindow->handleInsertingFromMimeData(source);
