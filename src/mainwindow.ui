@@ -106,7 +106,6 @@
              <widget class="LineEdit" name="noteSubFolderLineEdit">
               <property name="styleSheet">
                <string notr="true">QLineEdit {
-	border: none;
 	padding: 2px 5px 2px 27px;
 	background-image: url(:/images/search-notes.svg);
 	background-repeat: no-repeat;
@@ -183,7 +182,6 @@
              <widget class="LineEdit" name="tagLineEdit">
               <property name="styleSheet">
                <string notr="true">QLineEdit {
-	border: none;
 	padding: 2px 5px 2px 27px;
 	background-image: url(:/images/search-notes.svg);
 	background-repeat: no-repeat;
@@ -293,7 +291,6 @@
               </property>
               <property name="styleSheet">
                <string notr="true">QLineEdit {
-	border: none;
 	padding: 2px 5px 2px 27px;
 	background-image: url(:/images/search-notes.svg);
 	background-repeat: no-repeat;
@@ -378,7 +375,6 @@
              <widget class="LineEdit" name="navigationLineEdit">
               <property name="styleSheet">
                <string notr="true">QLineEdit {
-	border: none;
 	padding: 2px 5px 2px 27px;
 	background-image: url(:/images/search-notes.svg);
 	background-repeat: no-repeat;
