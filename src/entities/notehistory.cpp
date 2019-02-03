@@ -8,7 +8,7 @@
  * NoteHistoryItem implementation
  */
 
-NoteHistoryItem::NoteHistoryItem(Note *note, QPlainTextEdit *textEdit) {
+NoteHistoryItem::NoteHistoryItem(const Note *note, QPlainTextEdit *textEdit) {
     _noteName = "";
     _noteSubFolderPathData = "";
     _cursorPosition = 0;
@@ -26,8 +26,8 @@ NoteHistoryItem::NoteHistoryItem(Note *note, QPlainTextEdit *textEdit) {
     }
 }
 
-NoteHistoryItem::NoteHistoryItem(QString noteName,
-                                 QString noteSubFolderPathData,
+NoteHistoryItem::NoteHistoryItem(const QString &noteName,
+                                 const QString &noteSubFolderPathData,
                                  int cursorPosition,
                                  float relativeScrollBarPosition) {
     _noteName = noteName;
@@ -150,7 +150,7 @@ NoteHistory::NoteHistory() {
     currentIndex = 0;
 }
 
-void NoteHistory::add(Note note, QPlainTextEdit *textEdit) {
+void NoteHistory::add(const Note &note, QPlainTextEdit *textEdit) {
     if (!note.exists()) {
         return;
     }
@@ -180,7 +180,7 @@ void NoteHistory::add(Note note, QPlainTextEdit *textEdit) {
     qDebug() << " added to history: " << item;
 }
 
-void NoteHistory::updateCursorPositionOfNote(Note note, QPlainTextEdit *textEdit) {
+void NoteHistory::updateCursorPositionOfNote(const Note &note, QPlainTextEdit *textEdit) {
     if (isEmpty()) {
         return;
     }
@@ -206,7 +206,7 @@ void NoteHistory::updateCursorPositionOfNote(Note note, QPlainTextEdit *textEdit
  * @param note
  * @return
  */
-NoteHistoryItem NoteHistory::getLastItemOfNote(Note note) {
+NoteHistoryItem NoteHistory::getLastItemOfNote(const Note &note) {
     if (!isEmpty()) {
         for (int i = 0; i < noteHistory->count(); i++) {
             NoteHistoryItem item = noteHistory->at(i);

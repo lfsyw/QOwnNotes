@@ -172,10 +172,10 @@ void Utils::Misc::openFolderSelect(const QString& absolutePath)
 /**
  * Removes a string from the start if it starts with it
  */
-QString Utils::Misc::removeIfStartsWith(QString text, QString removeString) {
+QString Utils::Misc::removeIfStartsWith(const QString &text, const QString &removeString) {
     if (text.startsWith(removeString)) {
-        text.remove(QRegularExpression(
-                "^" + QRegularExpression::escape(removeString)));
+        return QString(text).remove(QRegularExpression(
+            "^" + QRegularExpression::escape(removeString)));
     }
 
     return text;
@@ -184,10 +184,10 @@ QString Utils::Misc::removeIfStartsWith(QString text, QString removeString) {
 /**
  * Removes a string from the end if it ends with it
  */
-QString Utils::Misc::removeIfEndsWith(QString text, QString removeString) {
+QString Utils::Misc::removeIfEndsWith(const QString &text, const QString &removeString) {
     if (text.endsWith(removeString)) {
-        text.remove(QRegularExpression(
-                QRegularExpression::escape(removeString) + "$"));
+        return QString(text).remove(QRegularExpression(
+            QRegularExpression::escape(removeString) + "$"));
     }
 
     return text;
@@ -197,7 +197,8 @@ QString Utils::Misc::removeIfEndsWith(QString text, QString removeString) {
  * Adds a string to the beginning of a string if it doesn't start with it
  */
 QString Utils::Misc::prependIfDoesNotStartWith(
-        QString text, QString startString) {
+        const QString &text_, const QString &startString) {
+    auto text = text_;
     if (!text.startsWith(startString)) {
         text.prepend(startString);
     }
@@ -209,7 +210,8 @@ QString Utils::Misc::prependIfDoesNotStartWith(
  * Adds a string to the end of a string if it doesn't end with it
  */
 QString Utils::Misc::appendIfDoesNotEndWith(
-        QString text, QString endString) {
+        const QString &text_, const QString &endString) {
+    auto text = text_;
     if (!text.endsWith(endString)) {
         text.append(endString);
     }
@@ -221,7 +223,7 @@ QString Utils::Misc::appendIfDoesNotEndWith(
  * Shortens text and adds a sequence string if text is too long
  */
 QString Utils::Misc::shorten(
-        QString text, int length, QString sequence) {
+        const QString &text, int length, const QString &sequence) {
     if (text.length() > length) {
         int newLength = length - sequence.length();
 
@@ -238,7 +240,7 @@ QString Utils::Misc::shorten(
 /**
  * Cycles text through lowercase, uppercase, start case, and sentence case
  */
-QString Utils::Misc::cycleTextCase(QString text) {
+QString Utils::Misc::cycleTextCase(const QString &text) {
     QString asLower = text.toLower();
     QString asUpper = text.toUpper();
 
@@ -285,7 +287,7 @@ QString Utils::Misc::cycleTextCase(QString text) {
  * Converts text to sentence case
  */
 QString Utils::Misc::toSentenceCase(
-        QString text) {
+        const QString &text) {
     // A sentence is a string of characters immediately preceded by:
     // (beginning of string followed by any amount of horizontal or vertical
     //     whitespace) or
@@ -309,7 +311,7 @@ QString Utils::Misc::toSentenceCase(
  * Converts text to start case
  */
 QString Utils::Misc::toStartCase(
-        QString text) {
+        const QString &text) {
     // A word is a string of characters immediately preceded by horizontal or
     // vertical whitespace
     QRegularExpression wordSplitter("(?<=[\\s\\v])");
@@ -333,11 +335,12 @@ QString Utils::Misc::toStartCase(
  * @param workingDirectory the directory to run the executable from
  * @return true on success, false otherwise
  */
-bool Utils::Misc::startDetachedProcess(QString executablePath,
-                                       QStringList parameters,
-                                       QString workingDirectory) {
+bool Utils::Misc::startDetachedProcess(const QString &executablePath,
+                                       const QStringList &parameters,
+                                       const QString &workingDirectory_) {
     QProcess process;
 
+    auto workingDirectory = workingDirectory_;
     if (workingDirectory.isEmpty()) {
         // set the directory to run the executable from
         // process.setWorkingDirectory() doesn't seem
@@ -365,7 +368,7 @@ bool Utils::Misc::startDetachedProcess(QString executablePath,
  * @return the text that was returned by the process
  */
 QByteArray Utils::Misc::startSynchronousProcess(
-        QString executablePath, QStringList parameters, QByteArray data) {
+        const QString &executablePath, const QStringList &parameters, QByteArray data) {
     QProcess process;
 
     // start executablePath synchronous with parameters
@@ -487,7 +490,7 @@ bool Utils::Misc::isInPortableMode() {
  * @param path
  * @return
  */
-QString Utils::Misc::prependPortableDataPathIfNeeded(QString path,
+QString Utils::Misc::prependPortableDataPathIfNeeded(const QString &path,
                                                      bool ifNotEmptyOnly) {
     if (ifNotEmptyOnly && path.isEmpty()) {
         return "";
@@ -498,7 +501,7 @@ QString Utils::Misc::prependPortableDataPathIfNeeded(QString path,
 
         // check if the path already starts with the portable data path
         if (!path.startsWith(portableDataPath)) {
-            path = portableDataPath + "/" + path;
+            return portableDataPath + "/" + path;
         }
     }
 
@@ -511,7 +514,7 @@ QString Utils::Misc::prependPortableDataPathIfNeeded(QString path,
  * @param path
  * @return
  */
-QString Utils::Misc::makePathRelativeToPortableDataPathIfNeeded(QString path) {
+QString Utils::Misc::makePathRelativeToPortableDataPathIfNeeded(const QString &path) {
     if (isInPortableMode()) {
 //        path.remove(QRegularExpression(
 //                "^" + QRegularExpression::escape(portableDataPath()) +
@@ -519,7 +522,7 @@ QString Utils::Misc::makePathRelativeToPortableDataPathIfNeeded(QString path) {
 
         // make the path relative to the portable data path
         QDir dir(portableDataPath());
-        path = dir.relativeFilePath(path);
+        return dir.relativeFilePath(path);
     }
 
     return path;
@@ -531,7 +534,8 @@ QString Utils::Misc::makePathRelativeToPortableDataPathIfNeeded(QString path) {
  * @param text
  * @return markdown text
  */
-QString Utils::Misc::htmlToMarkdown(QString text) {
+QString Utils::Misc::htmlToMarkdown(const QString &text_) {
+    auto text = text_;
     // replace Windows line breaks
     text.replace(QRegularExpression("\r\n"), "\n");
 
@@ -688,8 +692,8 @@ QString Utils::Misc::logFilePath() {
  * @param text
  * @return
  */
-QString Utils::Misc::transformLineFeeds(QString text) {
-    return text.replace(QRegExp("(\\r\\n)|(\\n\\r)|\\r|\\n"), "\n");
+QString Utils::Misc::transformLineFeeds(const QString &text) {
+    return QString(text).replace(QRegExp("(\\r\\n)|(\\n\\r)|\\r|\\n"), "\n");
 }
 
 /**
@@ -699,13 +703,13 @@ QString Utils::Misc::transformLineFeeds(QString text) {
  * @param useShortText
  * @return
  */
-QString Utils::Misc::replaceOwnCloudText(QString text, bool useShortText) {
+QString Utils::Misc::replaceOwnCloudText(const QString &text, bool useShortText) {
     if (text.contains("Nextcloud")) {
         return text;
     }
 
     QString replaceText = useShortText ? "oC / NC" : "ownCloud / Nextcloud";
-    return text.replace("ownCloud", replaceText, Qt::CaseInsensitive);
+    return QString(text).replace("ownCloud", replaceText, Qt::CaseInsensitive);
 }
 
 /**
@@ -897,12 +901,12 @@ void Utils::Misc::presetDisableAutomaticUpdateDialog() {
 // Write all available Attributes from QPrinter into stream
 ///////////////////////////////////////////////////////////////////////////////
 
-template <typename t> void  writeStreamElement(QDataStream &os, t param) {
+template <typename t> void  writeStreamElement(QDataStream &os, const t &param) {
     int i = static_cast<int>(param);
     os << i;
 }
 
-template <> void writeStreamElement<QString>(QDataStream &os, QString s) {
+template <> void writeStreamElement<QString>(QDataStream &os, const QString &s) {
     os << s;
 }
 
@@ -999,7 +1003,7 @@ QDataStream& Utils::Misc::dataStreamRead(QDataStream &is, QPrinter &printer) {
  * @param printer
  * @param settingsKey
  */
-void Utils::Misc::storePrinterSettings(QPrinter *printer, QString settingsKey) {
+void Utils::Misc::storePrinterSettings(QPrinter *printer, const QString &settingsKey) {
     QByteArray byteArr;
     QDataStream os(&byteArr, QIODevice::WriteOnly);
     dataStreamWrite(os, *printer);
@@ -1013,7 +1017,7 @@ void Utils::Misc::storePrinterSettings(QPrinter *printer, QString settingsKey) {
  * @param printer
  * @param settingsKey
  */
-void Utils::Misc::loadPrinterSettings(QPrinter *printer, QString settingsKey) {
+void Utils::Misc::loadPrinterSettings(QPrinter *printer, const QString &settingsKey) {
     QSettings settings;
 
     if (!settings.value(settingsKey).isValid()) {
@@ -1072,7 +1076,8 @@ bool Utils::Misc::isNoteListPreview() {
  * @param html
  * @return
  */
-QString Utils::Misc::unescapeHtml(QString html) {
+QString Utils::Misc::unescapeHtml(const QString &html_) {
+    auto html = html_;
     html.replace("&lt;","<");
     html.replace("&gt;",">");
     html.replace("&amp;","&");
@@ -1090,7 +1095,8 @@ QString Utils::Misc::unescapeHtml(QString html) {
  * @param text
  * @return
  */
-QString Utils::Misc::htmlspecialchars(QString text) {
+QString Utils::Misc::htmlspecialchars(const QString &text_) {
+    auto text = text_;
     text.replace("&", "&amp;");
     text.replace("\"", "&quot;");
     text.replace("'", "&apos;");
@@ -1104,7 +1110,7 @@ QString Utils::Misc::htmlspecialchars(QString text) {
  *
  * @param text
  */
-void Utils::Misc::printInfo(QString text) {
+void Utils::Misc::printInfo(const QString &text) {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
     qInfo() << text;
 #else
@@ -1141,11 +1147,12 @@ QString Utils::Misc::toHumanReadableByteSize(qint64 size)
  * @param data
  */
 QString Utils::Misc::prepareDebugInformationLine(
-        const QString &headline, QString data, bool withGitHubLineBreaks,
-        QString typeText) {
+        const QString &headline, const QString &data_, bool withGitHubLineBreaks,
+        const QString &typeText) {
     // add two spaces if we don't want GitHub line breaks
     QString spaces = withGitHubLineBreaks ? "" : "  ";
 
+    auto data = data_;
     if (data.contains("\n")) {
         data = "\n```\n" + data.trimmed() + "\n```";
     } else {
@@ -1417,7 +1424,7 @@ QString Utils::Misc::generateDebugInformation(bool withGitHubLineBreaks) {
  * @param regExpList
  * @return
  */
-bool Utils::Misc::regExpInListMatches(QString text, QStringList regExpList) {
+bool Utils::Misc::regExpInListMatches(const QString &text, const QStringList &regExpList) {
     Q_FOREACH(QString regExp, regExpList) {
             regExp = regExp.trimmed();
 
@@ -1440,7 +1447,8 @@ bool Utils::Misc::regExpInListMatches(QString text, QStringList regExpList) {
  * @param imageSuffix
  * @return
  */
-QString Utils::Misc::importMediaFromBase64(QString &data, QString imageSuffix) {
+QString Utils::Misc::importMediaFromBase64(const QString &data_, const QString &imageSuffix) {
+    auto data = data_;
     // if data still starts with base64 prefix remove it
     if (data.startsWith("base64,", Qt::CaseInsensitive)) {
         data = data.mid(6);

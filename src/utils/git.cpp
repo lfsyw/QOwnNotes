@@ -56,7 +56,7 @@ void Utils::Git::commitCurrentNoteFolder() {
  * @param process
  * @return
  */
-bool Utils::Git::executeCommand(QString command, QProcess *process) {
+bool Utils::Git::executeCommand(const QString &command, QProcess *process) {
     if (process == Q_NULLPTR) {
         process = new QProcess();
     }
@@ -90,7 +90,7 @@ bool Utils::Git::executeCommand(QString command, QProcess *process) {
  * @param process
  * @return
  */
-bool Utils::Git::executeGitCommand(QString arguments, QProcess *process) {
+bool Utils::Git::executeGitCommand(const QString &arguments, QProcess *process) {
     return executeCommand("\""+ gitCommand() + "\" " + arguments, process);
 }
 
@@ -129,7 +129,7 @@ bool Utils::Git::hasLogCommand() {
  *
  * @param filePath
  */
-void Utils::Git::showLog(QString filePath) {
+void Utils::Git::showLog(const QString &filePath) {
     QSettings settings;
     QString gitLogCommand = settings.value("gitLogCommand").toString();
 

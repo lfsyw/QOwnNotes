@@ -4,7 +4,7 @@
 
 PasswordDialog::PasswordDialog(
         QWidget *parent,
-        QString labelText,
+        const QString &labelText,
         bool doubleEnterPassword) :
         MasterDialog(parent),
         ui(new Ui::PasswordDialog) {

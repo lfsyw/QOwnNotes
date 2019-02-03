@@ -33,59 +33,59 @@ Note::Note() {
     this->fileSize = 0;
 }
 
-int Note::getId() {
+int Note::getId() const {
     return this->id;
 }
 
-QString Note::getName() {
+QString Note::getName() const {
     return this->name;
 }
 
-QDateTime Note::getFileLastModified() {
+QDateTime Note::getFileLastModified() const {
     return this->fileLastModified;
 }
 
-QDateTime Note::getFileCreated() {
+QDateTime Note::getFileCreated() const {
     return this->fileCreated;
 }
 
-QDateTime Note::getModified() {
+QDateTime Note::getModified() const {
     return this->modified;
 }
 
-qint64 Note::getCryptoKey() {
+qint64 Note::getCryptoKey() const {
     return this->cryptoKey;
 }
 
-QString Note::getCryptoPassword() {
+QString Note::getCryptoPassword() const {
     return this->cryptoPassword;
 }
 
-QString Note::getShareUrl() {
+QString Note::getShareUrl() const {
     return this->shareUrl;
 }
 
-int Note::getShareId() {
+int Note::getShareId() const {
     return this->shareId;
 }
 
-qint64 Note::getFileSize() {
+qint64 Note::getFileSize() const {
     return this->fileSize;
 }
 
-bool Note::isShared() {
+bool Note::isShared() const {
     return this->shareId > 0;
 }
 
-QString Note::getFileName() {
+QString Note::getFileName() const {
     return this->fileName;
 }
 
-NoteSubFolder Note::getNoteSubFolder() {
+NoteSubFolder Note::getNoteSubFolder() const {
     return NoteSubFolder::fetch(this->noteSubFolderId);
 }
 
-int Note::getNoteSubFolderId() {
+int Note::getNoteSubFolderId() const {
     return this->noteSubFolderId;
 }
 
@@ -107,7 +107,7 @@ void Note::setNoteSubFolderId(int id) {
     this->noteSubFolderId = id;
 }
 
-QString Note::getNoteText() {
+QString Note::getNoteText() const {
     return this->noteText;
 }
 
@@ -115,15 +115,15 @@ void Note::setHasDirtyData(bool hasDirtyData) {
     this->hasDirtyData = hasDirtyData;
 }
 
-bool Note::getHasDirtyData() {
+bool Note::getHasDirtyData() const {
     return this->hasDirtyData;
 }
 
-void Note::setName(QString text) {
+void Note::setName(const QString &text) {
     this->name = text;
 }
 
-void Note::setShareUrl(QString url) {
+void Note::setShareUrl(const QString &url) {
     this->shareUrl = url;
 }
 
@@ -135,15 +135,15 @@ void Note::setCryptoKey(qint64 cryptoKey) {
     this->cryptoKey = cryptoKey;
 }
 
-void Note::setNoteText(QString text) {
+void Note::setNoteText(const QString &text) {
     this->noteText = text;
 }
 
-void Note::setDecryptedNoteText(QString text) {
+void Note::setDecryptedNoteText(const QString &text) {
     this->decryptedNoteText = text;
 }
 
-bool Note::addNote(QString name, QString fileName, QString text) {
+bool Note::addNote(const QString &name, const QString &fileName, const QString &text) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 
@@ -190,7 +190,7 @@ Note Note::fetchByName(QRegularExpression regExp, int noteSubFolderId) {
 
     // since there is no regular expression search in Qt's sqlite
     // implementation we have to iterate
-    Q_FOREACH(Note note, noteList) {
+    Q_FOREACH(const Note &note, noteList) {
             QRegularExpressionMatch match = regExp.match(note.getName());
             if (match.hasMatch()) {
                 return note;
@@ -200,7 +200,7 @@ Note Note::fetchByName(QRegularExpression regExp, int noteSubFolderId) {
     return Note();
 }
 
-Note Note::fetchByFileName(QString fileName, int noteSubFolderId) {
+Note Note::fetchByFileName(const QString &fileName, int noteSubFolderId) {
     Note note;
 
     // get the active note subfolder id if none was set
@@ -212,7 +212,7 @@ Note Note::fetchByFileName(QString fileName, int noteSubFolderId) {
     return note;
 }
 
-bool Note::fillByFileName(QString fileName, int noteSubFolderId) {
+bool Note::fillByFileName(const QString &fileName, int noteSubFolderId) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 
@@ -266,7 +266,7 @@ bool Note::remove(bool withFile) {
  * @param destinationPath
  * @return bool
  */
-bool Note::copyToPath(QString destinationPath) {
+bool Note::copyToPath(const QString &destinationPath) {
     QDir d;
     if (this->fileExists() && (d.exists(destinationPath))) {
         QFile file(fullNoteFilePath());
@@ -302,7 +302,7 @@ bool Note::copyToPath(QString destinationPath) {
 
                 if (mediaDir.exists()) {
                     // copy all images to the media folder inside destinationPath
-                    Q_FOREACH(QString fileName, mediaFileList) {
+                    Q_FOREACH(const QString &fileName, mediaFileList) {
                             QFile mediaFile(NoteFolder::currentMediaPath() +
                                             QDir::separator() + fileName);
 
@@ -327,7 +327,7 @@ bool Note::copyToPath(QString destinationPath) {
  * @param destinationPath
  * @return bool
  */
-bool Note::moveToPath(QString destinationPath) {
+bool Note::moveToPath(const QString &destinationPath) {
     bool result = copyToPath(destinationPath);
 
     if (result) {
@@ -341,7 +341,7 @@ bool Note::moveToPath(QString destinationPath) {
  * Returns a list of all linked media file of the current note
  * @return
  */
-QStringList Note::getMediaFileList() {
+QStringList Note::getMediaFileList() const {
     QString text = getNoteText();
     QStringList fileList;
 
@@ -364,7 +364,7 @@ QStringList Note::getMediaFileList() {
  * Returns a list of all linked attachments of the current note
  * @return
  */
-QStringList Note::getAttachmentsFileList() {
+QStringList Note::getAttachmentsFileList() const {
     QString text = getNoteText();
     QStringList fileList;
 
@@ -408,7 +408,7 @@ Note Note::fetchByShareId(int shareId) {
     return note;
 }
 
-Note Note::fetchByName(QString name, int noteSubFolderId) {
+Note Note::fetchByName(const QString &name, int noteSubFolderId) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
     Note note;
@@ -618,7 +618,7 @@ int Note::countAllNotTagged(int activeNoteSubFolderId) {
     return noteList.count();
 }
 
-QList<Note> Note::search(QString text) {
+QList<Note> Note::search(const QString &text) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 
@@ -641,7 +641,7 @@ QList<Note> Note::search(QString text) {
 }
 
 QList<QString> Note::searchAsNameListInCurrentNoteSubFolder(
-        QString text, bool searchInNameOnly) {
+        const QString &text, bool searchInNameOnly) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 
@@ -666,7 +666,7 @@ QList<QString> Note::searchAsNameListInCurrentNoteSubFolder(
     return nameList;
 }
 
-QList<QString> Note::searchAsNameList(QString text, bool searchInNameOnly) {
+QList<QString> Note::searchAsNameList(const QString &text, bool searchInNameOnly) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 
@@ -697,7 +697,7 @@ QList<QString> Note::searchAsNameList(QString text, bool searchInNameOnly) {
  * You can search for longer texts by using quotes, `"this word1" word2`
  * will find all notes that are containing `this word1` and `word2`
  */
-QList<int> Note::searchInNotes(QString search, bool ignoreNoteSubFolder,
+QList<int> Note::searchInNotes(const QString &search, bool ignoreNoteSubFolder,
                                int noteSubFolderId) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
@@ -754,9 +754,10 @@ QList<int> Note::searchInNotes(QString search, bool ignoreNoteSubFolder,
 /**
  * Builds a string list of a search string
  */
-QStringList Note::buildQueryStringList(QString searchString,
+QStringList Note::buildQueryStringList(const QString &searchString_,
                                        bool escapeForRegularExpression) {
     QStringList queryStrings;
+    auto searchString = searchString_;
 
     // check for strings in ""
     QRegularExpression re("\"([^\"]+)\"");
@@ -866,7 +867,7 @@ QStringList Note::fetchNoteFileNames() {
     return list;
 }
 
-QList<int> Note::fetchAllIdsByNoteTextPart(QString textPart) {
+QList<int> Note::fetchAllIdsByNoteTextPart(const QString &textPart) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 
@@ -887,7 +888,7 @@ QList<int> Note::fetchAllIdsByNoteTextPart(QString textPart) {
     return list;
 }
 
-bool Note::storeNewText(QString text) {
+bool Note::storeNewText(const QString &text) {
     if (!this->fileWriteable()) {
         return false;
     }
@@ -898,7 +899,7 @@ bool Note::storeNewText(QString text) {
     return this->store();
 }
 
-bool Note::storeNewDecryptedText(QString text) {
+bool Note::storeNewDecryptedText(const QString &text) {
     this->decryptedNoteText = text;
     this->hasDirtyData = true;
 
@@ -918,7 +919,7 @@ QString Note::defaultNoteFileExtension() {
 /**
  * Returns the a list of the custom note file extensions
  */
-QStringList Note::customNoteFileExtensionList(QString prefix) {
+QStringList Note::customNoteFileExtensionList(const QString &prefix) {
     QSettings settings;
     QStringList list = settings.value(
             "customNoteFileExtensionList").toStringList();
@@ -1140,7 +1141,8 @@ bool Note::storeNoteTextFileToDisk() {
 /**
  * Does a file name cleanup
  */
-QString Note::cleanupFileName(QString name) {
+QString Note::cleanupFileName(const QString &name_) {
+    auto name = name_;
     // remove characters from the name that are problematic
     name.remove(QRegularExpression("[\\/\\\\:]"));
 
@@ -1157,7 +1159,8 @@ QString Note::cleanupFileName(QString name) {
  * @param name
  * @return
  */
-QString Note::extendedCleanupFileName(QString name) {
+QString Note::extendedCleanupFileName(const QString &name_) {
+    auto name = name_;
     // replace characters that cause problems on certain filesystems when
     // present in filenames with underscores
     name.replace(QRegularExpression("[\\/\\\\:<>\\\"\\|\\?\\*]"), " ");
@@ -1267,7 +1270,7 @@ bool Note::handleNoteTextFileName() {
  * @param name
  * @return
  */
-QString Note::generateNoteFileNameFromName(QString name) {
+QString Note::generateNoteFileNameFromName(const QString &name) {
     return name + "." + defaultNoteFileExtension();
 }
 
@@ -1283,7 +1286,7 @@ void Note::generateFileNameFromName() {
  *
  * @return
  */
-bool Note::canWriteToNoteFile() {
+bool Note::canWriteToNoteFile() const {
     QFile file(fullNoteFilePath());
     bool canWrite = file.open(QIODevice::WriteOnly);
 
@@ -1318,7 +1321,7 @@ bool Note::updateNoteTextFromDisk() {
     return true;
 }
 
-QString Note::getFullNoteFilePathForFile(QString fileName) {
+QString Note::getFullNoteFilePathForFile(const QString &fileName) {
     QSettings settings;
 
     // prepend the portable data path if we are in portable mode
@@ -1332,24 +1335,20 @@ QString Note::getFullNoteFilePathForFile(QString fileName) {
 /**
  * Returns the full path of the note file
  */
-QString Note::fullNoteFilePath() {
+QString Note::fullNoteFilePath() const {
     return getFullNoteFilePathForFile(relativeNoteFilePath());
 }
 
 /**
  * Returns the relative path of the note file
  */
-QString Note::relativeNoteFilePath(QString separator) {
+QString Note::relativeNoteFilePath(const QString &separator) const {
     QString fullFileName = fileName;
-
-    if (separator.isEmpty()) {
-        separator = Utils::Misc::dirSeparator();
-    }
 
     if (noteSubFolderId > 0) {
         NoteSubFolder noteSubFolder = getNoteSubFolder();
         if (noteSubFolder.isFetched()) {
-            fullFileName.prepend(noteSubFolder.relativePath() + separator);
+            fullFileName.prepend(noteSubFolder.relativePath() + (!separator.isEmpty() ? separator : Utils::Misc::dirSeparator()));
         }
     }
 
@@ -1359,7 +1358,7 @@ QString Note::relativeNoteFilePath(QString separator) {
 /**
  * Returns the relative path of the note subfolder file
  */
-QString Note::relativeNoteSubFolderPath() {
+QString Note::relativeNoteSubFolderPath() const {
     QString path = "";
 
     if (noteSubFolderId > 0) {
@@ -1375,7 +1374,7 @@ QString Note::relativeNoteSubFolderPath() {
 /**
  * Returns the path-data of the note subfolder file
  */
-QString Note::noteSubFolderPathData() {
+QString Note::noteSubFolderPathData() const {
     QString path = "";
 
     if (noteSubFolderId > 0) {
@@ -1391,7 +1390,7 @@ QString Note::noteSubFolderPathData() {
 /**
  * Returns the full url of the note file
  */
-QUrl Note::fullNoteFileUrl() {
+QUrl Note::fullNoteFileUrl() const {
     QString windowsSlash = "";
 
 #ifdef Q_OS_WIN32
@@ -1560,7 +1559,7 @@ bool Note::deleteAll() {
  *
  * @return bool
  */
-bool Note::fileExists() {
+bool Note::fileExists() const {
     QFile file(fullNoteFilePath());
     QFileInfo fileInfo(file);
     return file.exists() && fileInfo.isFile() && fileInfo.isReadable();
@@ -1571,7 +1570,7 @@ bool Note::fileExists() {
  *
  * @return bool
  */
-bool Note::fileWriteable() {
+bool Note::fileWriteable() const {
     QFile file(fullNoteFilePath());
     QFileInfo fileInfo(file);
     return file.exists() && fileInfo.isFile() && fileInfo.isWritable();
@@ -1580,7 +1579,7 @@ bool Note::fileWriteable() {
 //
 // checks if the current note still exists in the database
 //
-bool Note::exists() {
+bool Note::exists() const {
     Note note = Note::fetch(this->id);
     return note.id > 0;
 }
@@ -1619,9 +1618,9 @@ QString Note::fileBaseName(bool withFullName) {
 /**
  * Renames a note
  */
-bool Note::renameNoteFile(QString newName) {
+bool Note::renameNoteFile(const QString &newName_) {
     // cleanup not allowed characters characters
-    newName = cleanupFileName(newName);
+    auto newName = cleanupFileName(newName_);
 
     // add the old file suffix to the name
     QString newFileName = newName + "." + fileNameSuffix();
@@ -1684,7 +1683,7 @@ bool Note::removeNoteFile() {
  * @param forExport defines whether the export or preview stylesheet
  * @return
  */
-QString Note::toMarkdownHtml(QString notesPath, int maxImageWidth,
+QString Note::toMarkdownHtml(const QString &notesPath, int maxImageWidth,
                              bool forExport, bool decrypt, bool base64Images) {
     // get the decrypted note text (or the normal note text if there isn't any)
     QString str = decrypt ? getDecryptedNoteText() : noteText;
@@ -1721,7 +1720,7 @@ QString Note::toMarkdownHtml(QString notesPath, int maxImageWidth,
  * @param base64Images
  * @return
  */
-QString Note::textToMarkdownHtml(QString str, QString notesPath,
+QString Note::textToMarkdownHtml(const QString &str_, const QString &notesPath,
                                  int maxImageWidth,
                                  bool forExport, bool base64Images) {
     hoedown_renderer *renderer =
@@ -1742,6 +1741,7 @@ QString Note::textToMarkdownHtml(QString str, QString notesPath,
     windowsSlash = "/";
 #endif
 
+    auto str = str_;
     // parse for relative file urls and make them absolute
     // (for example to show images under the note path)
     str.replace(
@@ -1984,7 +1984,7 @@ QString Note::encodeCssFont(const QFont& refFont) {
 // Not supported: Writing System (e.g. Latin).
 //
 // See the corresponding decode function, below.
-// QFont decodeCssFontString (const QString cssFontStr)
+// QFont decodeCssFontString (const QString &cssFontStr)
 //-----------------------------------------------------------------------
 
     QStringList fields; // CSS font attribute fields
@@ -2081,13 +2081,15 @@ bool Note::isFetched() {
  * @param text
  * @return
  */
-QString Note::generateTextForLink(QString text) {
+QString Note::generateTextForLink(const QString &text_) {
     // replace everything but characters and numbers with "_"
     // we want to treat unicode characters as normal characters
     // to support links to notes with unicode characters in their names
     QRegularExpression re(
             "[^\\d\\w]", QRegularExpression::CaseInsensitiveOption |
                     QRegularExpression::UseUnicodePropertiesOption);
+
+    auto text = text_;
     text.replace(re, "_");
 
     // if there are only numbers we also want the "@" added, because
@@ -2183,7 +2185,7 @@ QString Note::encryptNoteText() {
 /**
  * Returns the regular expression to match encrypted text
  */
-QRegularExpression Note::getEncryptedNoteTextRegularExpression() {
+QRegularExpression Note::getEncryptedNoteTextRegularExpression() const {
     // match the encrypted string
     QRegularExpression re(
             QRegularExpression::escape(NOTE_TEXT_ENCRYPTION_PRE_STRING) +
@@ -2200,7 +2202,7 @@ QRegularExpression Note::getEncryptedNoteTextRegularExpression() {
 /**
  * Returns encrypted note text if it is encrypted
  */
-QString Note::getEncryptedNoteText() {
+QString Note::getEncryptedNoteText() const {
     QString noteText = this->noteText;
 
     // get regular expression for the encrypted string
@@ -2214,14 +2216,14 @@ QString Note::getEncryptedNoteText() {
 /**
  * Returns encrypted note text if it is encrypted
  */
-bool Note::hasEncryptedNoteText() {
+bool Note::hasEncryptedNoteText() const {
     return !getEncryptedNoteText().isEmpty();
 }
 
 /**
  * Checks if note text can be decrypted
  */
-bool Note::canDecryptNoteText() {
+bool Note::canDecryptNoteText() const {
     QString encryptedNoteText = getEncryptedNoteText();
 
     if (encryptedNoteText == "") {
@@ -2260,7 +2262,7 @@ bool Note::canDecryptNoteText() {
 /**
  * Sets the password to generate the cryptoKey
  */
-void Note::setCryptoPassword(QString password) {
+void Note::setCryptoPassword(const QString &password) {
     cryptoKey = qint64Hash(password);
     cryptoPassword = password;
 }
@@ -2269,7 +2271,7 @@ void Note::setCryptoPassword(QString password) {
  * Returns decrypted note text if it is encrypted
  * The crypto key has to be set in the object
  */
-QString Note::getDecryptedNoteText() {
+QString Note::getDecryptedNoteText() const {
     QString noteText = this->noteText;
     QString encryptedNoteText = getEncryptedNoteText();
 
@@ -2384,7 +2386,7 @@ int Note::countByNoteSubFolderId(int noteSubFolderId) {
  * @param note
  * @return
  */
-bool Note::isSameFile(Note note) {
+bool Note::isSameFile(const Note &note) const {
     return (id == note.getId()) &&
             (noteSubFolderId == note.getNoteSubFolderId());
 }
@@ -2395,7 +2397,7 @@ bool Note::isSameFile(Note note) {
  * @param fileName
  * @return list of note ids
  */
-QList<int> Note::findLinkedNotes(QString fileName) {
+QList<int> Note::findLinkedNotes(const QString &fileName) {
     QString linkText = getNoteURL(fileName);
     QList<int> noteIdList;
     noteIdList.append(searchInNotes("<" + linkText + ">", true));
@@ -2449,7 +2451,7 @@ const QString Note::getNoteURLFromFileName(const QString &fileName) {
  * @param oldFileName
  * @param newFileName
  */
-void Note::handleNoteRenaming(QString oldFileName, QString newFileName) {
+void Note::handleNoteRenaming(const QString &oldFileName, const QString &newFileName) {
     QList<int> noteIdList = Note::findLinkedNotes(oldFileName);
     int noteCount = noteIdList.count();
 
@@ -2497,7 +2499,7 @@ void Note::handleNoteRenaming(QString oldFileName, QString newFileName) {
  * @param name
  * @return
  */
-QString Note::createNoteHeader(QString name) {
+QString Note::createNoteHeader(const QString &name) {
     QString header = name.trimmed() + "\n";
 
     for (int i = 0; i < min(name.length(), 40); i++) {
@@ -2566,8 +2568,9 @@ QString Note::getInsertMediaMarkdown(QFile *file, bool addNewLine,
 /**
  * Returns the markdown of the inserted attachment file into a note
  */
-QString Note::getInsertAttachmentMarkdown(QFile *file, QString fileName,
+QString Note::getInsertAttachmentMarkdown(QFile *file, const QString &fileName_,
                                           bool returnUrlOnly) {
+    auto fileName = fileName_;
     if (file->exists() && (file->size() > 0)) {
         QDir dir(NoteFolder::currentAttachmentsPath());
 
@@ -2685,7 +2688,7 @@ bool Note::scaleDownImageFileIfNeeded(QFile &file) {
  * @param urlString
  * @return
  */
-Note Note::fetchByUrlString(QString urlString) {
+Note Note::fetchByUrlString(const QString &urlString) {
     QUrl url = QUrl(urlString);
 
     // if the name of the linked note only consists of numbers we cannot use
@@ -2765,7 +2768,7 @@ Note Note::fetchByUrlString(QString urlString) {
  *
  * @return
  */
-QString Note::getNotePreviewText(bool asHtml, int lines) {
+QString Note::getNotePreviewText(bool asHtml, int lines) const {
     QString noteText = getNoteText();
 
     // remove Windows line breaks
@@ -2869,7 +2872,7 @@ QString Note::generateMultipleNotesPreviewText(QList<Note> notes) {
  *
  * @return
  */
-QString Note::getParsedBookmarksWebServiceJsonText() {
+QString Note::getParsedBookmarksWebServiceJsonText() const {
     return Bookmark::bookmarksWebServiceJsonText(getParsedBookmarks());
 }
 
@@ -2878,7 +2881,7 @@ QString Note::getParsedBookmarksWebServiceJsonText() {
  *
  * @return
  */
-QList<Bookmark> Note::getParsedBookmarks() {
+QList<Bookmark> Note::getParsedBookmarks() const {
     QString text = decryptedNoteText.isEmpty() ? noteText : decryptedNoteText;
     return Bookmark::parseBookmarks(text);
 }

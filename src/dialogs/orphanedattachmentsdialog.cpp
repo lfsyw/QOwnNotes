@@ -37,11 +37,11 @@ OrphanedAttachmentsDialog::OrphanedAttachmentsDialog(QWidget *parent) :
     ui->progressBar->setMaximum(noteListCount);
     ui->progressBar->show();
 
-    Q_FOREACH(Note note, noteList) {
+    Q_FOREACH(const Note &note, noteList) {
             QStringList attachmentsFileList = note.getAttachmentsFileList();
 
             // remove all found attachments from the orphaned files list
-            Q_FOREACH(QString fileName, attachmentsFileList) {
+            Q_FOREACH(const QString &fileName, attachmentsFileList) {
                 orphanedFiles.removeAll(fileName);
             }
 
@@ -50,7 +50,7 @@ OrphanedAttachmentsDialog::OrphanedAttachmentsDialog(QWidget *parent) :
 
     ui->progressBar->hide();
 
-    Q_FOREACH(QString fileName, orphanedFiles) {
+    Q_FOREACH(const QString &fileName, orphanedFiles) {
             QTreeWidgetItem *item = new QTreeWidgetItem();
             item->setText(0, fileName);
             item->setData(0, Qt::UserRole, fileName);

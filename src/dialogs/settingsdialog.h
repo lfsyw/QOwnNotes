@@ -62,17 +62,17 @@ public:
 
     ~SettingsDialog();
 
-    void connectTestCallback(bool appIsValid, QString appVersion,
-                             QString serverVersion,
-                             QString notesPathExistsText,
-                             QString connectionErrorMessage);
+    void connectTestCallback(bool appIsValid, const QString &appVersion,
+                             const QString &serverVersion,
+                             const QString &notesPathExistsText,
+                             const QString &connectionErrorMessage);
 
-    void setOKLabelData(int number, QString text, OKLabelStatus status);
+    void setOKLabelData(int number, const QString &text, OKLabelStatus status);
 
     void refreshTodoCalendarList(QList<CalDAVCalendarData> items,
                                  bool forceReadCheckedState = false);
 
-    void setNoteFolderRemotePathList(QStringList pathList);
+    void setNoteFolderRemotePathList(const QStringList &pathList);
 
     void setCurrentPage(int page);
 
@@ -238,7 +238,7 @@ private slots:
 
     void on_localTrashClearCheckBox_toggled(bool checked);
 
-    void keySequenceEvent(QString objectName);
+    void keySequenceEvent(const QString &objectName);
 
     void on_exportSettingsButton_clicked();
 
@@ -286,9 +286,9 @@ private:
 
     void outputSettings();
 
-    static void selectListWidgetValue(QListWidget *listWidget, QString value);
+    static void selectListWidgetValue(QListWidget *listWidget, const QString &value);
 
-    static bool listWidgetValueExists(QListWidget* listWidget, QString value);
+    static bool listWidgetValueExists(QListWidget* listWidget, const QString &value);
 
     static QString getSelectedListWidgetValue(QListWidget *listWidget);
 
@@ -299,10 +299,10 @@ private:
     void setupNoteFolderPage();
 
     QTreeWidgetItem *findNoteFolderRemotePathTreeWidgetItem(
-            QTreeWidgetItem *parent, QString text);
+            QTreeWidgetItem *parent, const QString &text);
 
     void addPathToNoteFolderRemotePathTreeWidget(QTreeWidgetItem *parent,
-                                                 QString path);
+                                                 const QString &path);
 
     QString generatePathFromCurrentNoteFolderRemotePathItem(
             QTreeWidgetItem *item);
@@ -356,7 +356,7 @@ private:
 
     void initSearchEngineComboBox() const;
 
-    QKeySequenceWidget *findKeySequenceWidget(QString objectName);
+    QKeySequenceWidget *findKeySequenceWidget(const QString &objectName);
 
     void storeOwncloudDebugData() const;
 };

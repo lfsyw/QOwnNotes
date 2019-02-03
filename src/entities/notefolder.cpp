@@ -64,7 +64,7 @@ NoteSubFolder NoteFolder::getActiveNoteSubFolder() {
     return NoteSubFolder::fetchByPathData(this->activeNoteSubFolderData);
 }
 
-void NoteFolder::setName(QString text) {
+void NoteFolder::setName(const QString &text) {
     this->name = text;
 }
 
@@ -72,11 +72,11 @@ void NoteFolder::setOwnCloudServerId(int id) {
     this->ownCloudServerId = id;
 }
 
-void NoteFolder::setLocalPath(QString text) {
+void NoteFolder::setLocalPath(const QString &text) {
     this->localPath = text;
 }
 
-void NoteFolder::setRemotePath(QString text) {
+void NoteFolder::setRemotePath(const QString &text) {
     this->remotePath = text;
 }
 
@@ -104,8 +104,8 @@ void NoteFolder::resetActiveNoteSubFolder() {
     this->activeNoteSubFolderData.clear();
 }
 
-bool NoteFolder::create(QString name, QString localPath,
-                        int ownCloudServerId, QString remotePath) {
+bool NoteFolder::create(const QString &name, const QString &localPath,
+                        int ownCloudServerId, const QString &remotePath) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -480,7 +480,7 @@ bool NoteFolder::migrateToNoteFolders() {
 
     // create recent note folders as NoteFolder
     if (!recentNoteFolders.empty()) {
-        Q_FOREACH(QString recentNoteFolderPath, recentNoteFolders) {
+        Q_FOREACH(const QString &recentNoteFolderPath, recentNoteFolders) {
                 if (notesPath != recentNoteFolderPath) {
                     NoteFolder noteFolder;
                     noteFolder.setName(recentNoteFolderPath);

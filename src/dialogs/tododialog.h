@@ -20,7 +20,7 @@ class TodoDialog : public MasterDialog
     Q_OBJECT
 
 public:
-    explicit TodoDialog(MainWindow *mainWindow, QString taskUid = "",
+    explicit TodoDialog(MainWindow *mainWindow, const QString &taskUid = "",
                             QWidget *parent = 0);
     ~TodoDialog();
 
@@ -30,7 +30,7 @@ public:
     void todoItemLoadingProgressBarSetMaximum(int value);
     void todoItemLoadingProgressBarHide();
     void todoItemLoadingProgressBarHideIfOnMaximum();
-    void jumpToTask(QString taskUid);
+    void jumpToTask(const QString &taskUid);
     void refreshUi();
 
 public slots:
@@ -66,7 +66,7 @@ private:
     void setupMainSplitter();
     void storeSettings();
     void loadTodoListData();
-    int findTodoItemRowByUID(QString uid);
+    int findTodoItemRowByUID(const QString &uid);
     void resetEditFrameControls();
     void setupUi();
     void updateCurrentCalendarItemWithFormData();

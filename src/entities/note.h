@@ -17,38 +17,38 @@ class Note {
 public:
     explicit Note();
 
-    int getId();
+    int getId() const;
 
-    QString getName();
+    QString getName() const;
 
-    QString getFileName();
+    QString getFileName() const;
 
-    QString getNoteText();
+    QString getNoteText() const;
 
-    bool getHasDirtyData();
+    bool getHasDirtyData() const;
 
     void setHasDirtyData(bool hasDirtyData);
 
-    void setName(QString text);
+    void setName(const QString &text);
 
-    void setNoteText(QString text);
+    void setNoteText(const QString &text);
 
-    qint64 getCryptoKey();
+    qint64 getCryptoKey() const;
 
-    QString getCryptoPassword();
+    QString getCryptoPassword() const;
 
     void setCryptoKey(qint64 cryptoKey);
 
-    static bool addNote(QString name, QString fileName, QString text);
+    static bool addNote(const QString &name, const QString &fileName, const QString &text);
 
     static Note fetch(int id);
 
     static Note fetchByName(QRegularExpression regExp,
                             int noteSubFolderId = -1);
 
-    static Note fetchByFileName(QString fileName, int noteSubFolderId = -1);
+    static Note fetchByFileName(const QString &fileName, int noteSubFolderId = -1);
 
-    static Note fetchByName(QString name, int noteSubFolderId = -1);
+    static Note fetchByName(const QString &name, int noteSubFolderId = -1);
 
     static QList<Note> fetchAll(int limit = -1);
 
@@ -58,13 +58,13 @@ public:
 
     static int countAllNotTagged(int activeNoteSubFolderId=-1);
 
-    static QList<Note> search(QString text);
+    static QList<Note> search(const QString &text);
 
     static QList<QString> searchAsNameListInCurrentNoteSubFolder(
-            QString text, bool searchInNameOnly = false);
+            const QString &text, bool searchInNameOnly = false);
 
     static QList<QString> searchAsNameList(
-            QString text, bool searchInNameOnly = false);
+            const QString &text, bool searchInNameOnly = false);
 
     static QStringList fetchNoteNamesInCurrentNoteSubFolder();
 
@@ -76,15 +76,15 @@ public:
 
     bool store();
 
-    bool storeNewText(QString text);
+    bool storeNewText(const QString &text);
 
     bool storeNoteTextFileToDisk();
 
     static QString defaultNoteFileExtension();
 
-    static QStringList customNoteFileExtensionList(QString prefix = "");
+    static QStringList customNoteFileExtensionList(const QString &prefix = "");
 
-    static QString getFullNoteFilePathForFile(QString fileName);
+    static QString getFullNoteFilePathForFile(const QString &fileName);
 
     static int storeDirtyNotesToDisk(Note &currentNote,
                                      bool *currentNoteChanged = Q_NULLPTR,
@@ -99,84 +99,84 @@ public:
 
     static bool deleteAll();
 
-    bool fileExists();
+    bool fileExists() const;
 
-    bool fileWriteable();
+    bool fileWriteable() const;
 
-    bool exists();
+    bool exists() const;
 
     bool refetch();
 
     bool fillFromQuery(QSqlQuery query);
 
-    bool fillByFileName(QString fileName, int noteSubFolderId = -1);
+    bool fillByFileName(const QString &fileName, int noteSubFolderId = -1);
 
     bool removeNoteFile();
 
     bool remove(bool withFile = false);
 
-    QString toMarkdownHtml(QString notesPath, int maxImageWidth = 980,
+    QString toMarkdownHtml(const QString &notesPath, int maxImageWidth = 980,
                            bool forExport = false, bool decrypt = true,
                            bool base64Images = false);
 
     bool isFetched();
 
-    bool copyToPath(QString destinationPath);
+    bool copyToPath(const QString &destinationPath);
 
-    bool moveToPath(QString destinationPath);
+    bool moveToPath(const QString &destinationPath);
 
-    static QString generateTextForLink(QString text);
+    static QString generateTextForLink(const QString &text);
 
     static qint64 qint64Hash(const QString &str);
 
     QString encryptNoteText();
 
-    QString getDecryptedNoteText();
+    QString getDecryptedNoteText() const;
 
-    bool hasEncryptedNoteText();
+    bool hasEncryptedNoteText() const;
 
-    void setCryptoPassword(QString password);
+    void setCryptoPassword(const QString &password);
 
-    bool canDecryptNoteText();
+    bool canDecryptNoteText() const;
 
     static bool expireCryptoKeys();
 
-    QUrl fullNoteFileUrl();
+    QUrl fullNoteFileUrl() const;
 
-    QString fullNoteFilePath();
+    QString fullNoteFilePath() const;
 
     static QString encodeCssFont(const QFont& refFont);
 
-    void setDecryptedNoteText(QString text);
+    void setDecryptedNoteText(const QString &text);
 
-    bool storeNewDecryptedText(QString text);
+    bool storeNewDecryptedText(const QString &text);
 
-    QDateTime getFileLastModified();
+    QDateTime getFileLastModified() const;
 
-    QDateTime getFileCreated();
+    QDateTime getFileCreated() const;
 
-    QDateTime getModified();
+    QDateTime getModified() const;
 
     static int countAll();
 
     static bool allowDifferentFileName();
 
-    bool renameNoteFile(QString newName);
+    bool renameNoteFile(const QString &newName);
 
     QString fileNameSuffix();
 
     bool modifyNoteTextFileNameFromQMLHook();
 
-    static QList<int> searchInNotes(QString query,
+    static QList<int> searchInNotes(const QString &query,
                                     bool ignoreNoteSubFolder = false,
                                     int noteSubFolderId = -1);
 
     static QStringList buildQueryStringList(
-            QString searchString, bool escapeForRegularExpression = false);
+            const QString &searchString, bool escapeForRegularExpression = false);
 
     QString fileBaseName(bool withFullName = false);
 
-    NoteSubFolder getNoteSubFolder();
+    NoteSubFolder getNoteSubFolder() const;
 
     void setNoteSubFolder(NoteSubFolder noteSubFolder);
 
@@ -188,73 +188,73 @@ public:
 
     static int countByNoteSubFolderId(int noteSubFolderId = 0);
 
-    int getNoteSubFolderId();
+    int getNoteSubFolderId() const;
 
     bool isInCurrentNoteSubFolder();
 
-    QString relativeNoteFilePath(QString separator = "");
+    QString relativeNoteFilePath(const QString &separator = "") const;
 
-    QString relativeNoteSubFolderPath();
+    QString relativeNoteSubFolderPath() const;
 
-    QString noteSubFolderPathData();
+    QString noteSubFolderPathData() const;
 
-    bool isSameFile(Note note);
+    bool isSameFile(const Note &note) const;
 
-    QString getShareUrl();
+    QString getShareUrl() const;
 
-    void setShareUrl(QString url);
+    void setShareUrl(const QString &url);
 
-    int getShareId();
+    int getShareId() const;
 
     void setShareId(int id);
 
-    bool isShared();
+    bool isShared() const;
 
     static Note fetchByShareId(int shareId);
 
-    qint64 getFileSize();
+    qint64 getFileSize() const;
 
     static Note updateOrCreateFromFile(QFile &file, NoteSubFolder noteSubFolder,
                                            bool withNoteNameHook = false);
 
     static QList<int> fetchAllIds(int limit = -1, int offset = -1);
 
-    static QList<int> findLinkedNotes(QString fileName);
+    static QList<int> findLinkedNotes(const QString &fileName);
 
-    static void handleNoteRenaming(QString oldFileName, QString newFileName);
+    static void handleNoteRenaming(const QString &oldFileName, const QString &newFileName);
 
-    static QString createNoteHeader(QString name);
+    static QString createNoteHeader(const QString &name);
 
     static QString getInsertMediaMarkdown(QFile *file, bool addNewLine = true,
                                           bool returnUrlOnly = false);
 
     static QString getInsertAttachmentMarkdown(QFile *file,
-                                               QString fileName = "",
+                                               const QString &fileName = "",
                                                bool returnUrlOnly= false);
 
     static bool scaleDownImageFileIfNeeded(QFile &file);
 
     static QString downloadUrlToMedia(QUrl url, bool returnUrlOnly = false);
 
-    bool canWriteToNoteFile();
+    bool canWriteToNoteFile() const;
 
-    static QString generateNoteFileNameFromName(QString name);
+    static QString generateNoteFileNameFromName(const QString &name);
 
     void generateFileNameFromName();
 
-    QString textToMarkdownHtml(QString str, QString notesPath,
+    QString textToMarkdownHtml(const QString &str, const QString &notesPath,
                                int maxImageWidth = 980, bool forExport = false,
                                bool base64Images = false);
 
-    QStringList getMediaFileList();
+    QStringList getMediaFileList() const;
 
-    static Note fetchByUrlString(QString urlString);
+    static Note fetchByUrlString(const QString &urlString);
 
-    static QList<int> fetchAllIdsByNoteTextPart(QString textPart);
+    static QList<int> fetchAllIdsByNoteTextPart(const QString &textPart);
 
-    QStringList getAttachmentsFileList();
+    QStringList getAttachmentsFileList() const;
 
-    QString getNotePreviewText(bool asHtml = false, int lines = 3);
+    QString getNotePreviewText(bool asHtml = false, int lines = 3) const;
 
     static QString generateMultipleNotesPreviewText(QList<Note> notes);
 
@@ -262,13 +262,13 @@ public:
 
     QString getNoteIdURL();
 
-    static QString cleanupFileName(QString name);
+    static QString cleanupFileName(const QString &name);
 
-    static QString extendedCleanupFileName(QString name);
+    static QString extendedCleanupFileName(const QString &name);
 
-    QList<Bookmark> getParsedBookmarks();
+    QList<Bookmark> getParsedBookmarks() const;
 
-    QString getParsedBookmarksWebServiceJsonText();
+    QString getParsedBookmarksWebServiceJsonText() const;
 
     void resetNoteTextHtmlConversionHash();
 
@@ -289,8 +289,8 @@ protected:
     QString cryptoPassword;
     QString shareUrl;
     int shareId;
-    QRegularExpression getEncryptedNoteTextRegularExpression();
-    QString getEncryptedNoteText();
+    QRegularExpression getEncryptedNoteTextRegularExpression() const;
+    QString getEncryptedNoteText() const;
     QString _noteTextHtml;
     QString _noteTextHtmlConversionHash;
 

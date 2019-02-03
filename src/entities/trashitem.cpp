@@ -15,23 +15,23 @@ TrashItem::TrashItem() {
     this->fileSize = 0;
 }
 
-int TrashItem::getId() {
+int TrashItem::getId() const {
     return this->id;
 }
 
-QDateTime TrashItem::getCreated() {
+QDateTime TrashItem::getCreated() const {
     return this->created;
 }
 
-qint64 TrashItem::getFileSize() {
+qint64 TrashItem::getFileSize() const {
     return this->fileSize;
 }
 
-QString TrashItem::getFileName() {
+QString TrashItem::getFileName() const {
     return this->fileName;
 }
 
-NoteSubFolder TrashItem::getNoteSubFolder() {
+NoteSubFolder TrashItem::getNoteSubFolder() const {
     return NoteSubFolder::fetch(this->noteSubFolderId);
 }
 
@@ -85,7 +85,7 @@ bool TrashItem::remove(bool withFile) {
 /**
  * Returns the full path of the trashed file
  */
-QString TrashItem::fullFilePath() {
+QString TrashItem::fullFilePath() const {
     return NoteFolder::currentTrashPath() + QDir::separator() +
             QString::number(getId());
 }
@@ -118,7 +118,7 @@ QString TrashItem::loadFileFromDisk() {
  * @param note
  * @return
  */
-bool TrashItem::add(Note note) {
+bool TrashItem::add(const Note &note) {
     return add(&note);
 }
 
@@ -128,7 +128,7 @@ bool TrashItem::add(Note note) {
  * @param note
  * @return
  */
-bool TrashItem::add(Note *note) {
+bool TrashItem::add(const Note *note) {
     TrashItem item;
     item.setNote(note);
     return item.doTrashing();
@@ -140,7 +140,7 @@ bool TrashItem::add(Note *note) {
  * @param note
  * @return
  */
-TrashItem TrashItem::prepare(Note *note) {
+TrashItem TrashItem::prepare(const Note *note) {
     TrashItem item;
     item.setNote(note);
     return item;
@@ -204,7 +204,7 @@ bool TrashItem::restoreFile() {
  *
  * @return
  */
-QString TrashItem::restorationFilePath() {
+QString TrashItem::restorationFilePath() const {
     auto noteSubFolder = NoteSubFolder::fetchByPathData(noteSubFolderPathData);
     QString folderPath = noteSubFolder.fullPath();
     QString filePath = folderPath + QDir::separator() + fileName;
@@ -235,11 +235,11 @@ QString TrashItem::restorationFilePath() {
     return filePath;
 }
 
-void TrashItem::setNote(Note note) {
+void TrashItem::setNote(const Note &note) {
     setNote(&note);
 }
 
-void TrashItem::setNote(Note *note) {
+void TrashItem::setNote(const Note *note) {
     noteSubFolderPathData = note->noteSubFolderPathData();
     fileName = note->getFileName();
     fileSize = note->getFileSize();
@@ -378,8 +378,9 @@ bool TrashItem::store() {
 /**
  * Returns the relative path of the trashItem file
  */
-QString TrashItem::relativeNoteFilePath(QString separator) {
+QString TrashItem::relativeNoteFilePath(const QString &separator_) {
     QString fullFileName = fileName;
+    auto separator = separator_;
 
     if (separator.isEmpty()) {
         separator = Utils::Misc::dirSeparator();
@@ -398,7 +399,7 @@ QString TrashItem::relativeNoteFilePath(QString separator) {
 /**
  * Returns the path-data of the trashItem subfolder file
  */
-QString TrashItem::getNoteSubFolderPathData() {
+QString TrashItem::getNoteSubFolderPathData() const {
     return noteSubFolderPathData;
 }
 
@@ -426,7 +427,7 @@ bool TrashItem::deleteAll() {
  *
  * @return bool
  */
-bool TrashItem::fileExists() {
+bool TrashItem::fileExists() const {
     QFile file(fullFilePath());
     QFileInfo fileInfo(file);
     return file.exists() && fileInfo.isFile() && fileInfo.isReadable();
@@ -435,7 +436,7 @@ bool TrashItem::fileExists() {
 //
 // checks if the current trashItem still exists in the database
 //
-bool TrashItem::exists() {
+bool TrashItem::exists() const {
     TrashItem trashItem = TrashItem::fetch(this->id);
     return trashItem.id > 0;
 }
@@ -469,7 +470,7 @@ bool TrashItem::refetch() {
 /**
  * Returns the base name of the trashItem file name
  */
-QString TrashItem::fileBaseName(bool withFullName) {
+QString TrashItem::fileBaseName(bool withFullName) const {
     if (withFullName) {
         QStringList parts = fileName.split(".");
         parts.removeLast();
@@ -495,7 +496,7 @@ bool TrashItem::removeFile() {
     return false;
 }
 
-bool TrashItem::isFetched() {
+bool TrashItem::isFetched() const {
     return (this->id > 0);
 }
 

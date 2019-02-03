@@ -854,7 +854,7 @@ QList<QMenu *> MainWindow::menuList() {
 /**
  * Finds an action in all menus of the menu bar
  */
-QAction *MainWindow::findAction(QString objectName) {
+QAction *MainWindow::findAction(const QString &objectName) {
     QList<QMenu*> menus = menuList();
 
     // loop through all menus because we were not able to find the action with
@@ -968,7 +968,7 @@ void MainWindow::initScriptingEngine() {
  *
  * @param identifier
  */
-void MainWindow::onCustomActionInvoked(QString identifier) {
+void MainWindow::onCustomActionInvoked(const QString &identifier) {
     ScriptingService *scriptingService = ScriptingService::instance();
     if (scriptingService != Q_NULLPTR) {
         scriptingService->onCustomActionInvoked(identifier);
@@ -1233,7 +1233,7 @@ void MainWindow::updateToolbarMenu() {
  *
  * @param objectName
  */
-void MainWindow::togglePanelVisibility(QString objectName) {
+void MainWindow::togglePanelVisibility(const QString &objectName) {
     QDockWidget *dockWidget = findChild<QDockWidget *>(objectName);
 
     if (dockWidget == Q_NULLPTR) {
@@ -1269,7 +1269,7 @@ void MainWindow::togglePanelVisibility(QString objectName) {
  *
  * @param objectName
  */
-void MainWindow::toggleToolbarVisibility(QString objectName) {
+void MainWindow::toggleToolbarVisibility(const QString &objectName) {
     QToolBar *toolbar = findChild<QToolBar *>(objectName);
 
     if (toolbar == Q_NULLPTR) {
@@ -1798,8 +1798,8 @@ void MainWindow::changeNoteFolder(int noteFolderId, bool forceChange) {
  * Adds and removes a folder from the recent note folders
  */
 void MainWindow::storeRecentNoteFolder(
-        QString addFolderName,
-        QString removeFolderName) {
+        const QString &addFolderName,
+        const QString &removeFolderName) {
     QSettings settings;
     QStringList recentNoteFolders =
             settings.value("recentNoteFolders").toStringList();
@@ -1907,7 +1907,7 @@ void MainWindow::loadNoteDirectoryList() {
 
     // load all notes and add them to the note list widget
     QList<Note> noteList = Note::fetchAll();
-    Q_FOREACH(Note note, noteList) {
+    Q_FOREACH(const Note &note, noteList) {
             addNoteToNoteTreeWidget(note);
         }
 
@@ -2127,7 +2127,7 @@ void MainWindow::makeCurrentNoteFirstInNoteList() {
  * @param note
  * @return
  */
-QTreeWidgetItem *MainWindow::findNoteInNoteTreeWidget(Note note) {
+QTreeWidgetItem *MainWindow::findNoteInNoteTreeWidget(const Note &note) {
     int noteId = note.getId();
 
     for (int i = 0; i < ui->noteTreeWidget->topLevelItemCount(); i++) {
@@ -2783,7 +2783,7 @@ void MainWindow::setupStatusBarWidgets() {
     ui->statusBar->addPermanentWidget(_updateAvailableButton);
 }
 
-void MainWindow::showUpdateAvailableButton(QString version) {
+void MainWindow::showUpdateAvailableButton(const QString &version) {
     _updateAvailableButton->setText(
             tr("new version %1 available").arg(version));
     _updateAvailableButton->show();
@@ -2974,7 +2974,7 @@ bool MainWindow::buildNotesIndex(int noteSubFolderId, bool forceRebuild) {
                 "ignoreNoteSubFolders", IGNORED_NOTE_SUBFOLDERS_DEFAULT)
                         .toString().split(";");
 
-        Q_FOREACH(QString folder, folders) {
+        Q_FOREACH(const QString &folder, folders) {
                 if (ignoreFolderList.contains(folder)) {
                     continue;
                 }
@@ -3115,7 +3115,7 @@ void MainWindow::updateNoteDirectoryWatcher() {
 
     int count = 0;
     QList<Note> noteList = Note::fetchAll();
-    Q_FOREACH(Note note, noteList) {
+    Q_FOREACH(const Note &note, noteList) {
 #ifdef Q_OS_LINUX
             // only add the last first 200 notes to the file watcher to
             // prevent that nothing is watched at all because of too many
@@ -3152,7 +3152,7 @@ void MainWindow::jumpToWelcomeNote() {
 /**
  * Jumps to a note in the note selector
  */
-bool MainWindow::jumpToNoteName(QString name) {
+bool MainWindow::jumpToNoteName(const QString &name) {
     // search for the note
     QList<QTreeWidgetItem *> items = ui->noteTreeWidget->findItems(
             name, Qt::MatchExactly, 0);
@@ -3701,11 +3701,12 @@ QTreeWidgetItem * MainWindow::firstVisibleNoteTreeWidgetItem() {
 /**
  * highlights all occurrences of str in the note text edit
  */
-void MainWindow::searchInNoteTextEdit(QString str) {
+void MainWindow::searchInNoteTextEdit(const QString &str_) {
     QList<QTextEdit::ExtraSelection> extraSelections;
     QList<QTextEdit::ExtraSelection> extraSelections2;
     QList<QTextEdit::ExtraSelection> extraSelections3;
 
+    auto str = str_;
     if (str.count() >= 2) {
         ui->noteTextEdit->moveCursor(QTextCursor::Start);
         ui->noteTextView->moveCursor(QTextCursor::Start);
@@ -3762,7 +3763,7 @@ void MainWindow::searchForSearchLineTextInNoteTextEdit() {
 /**
  * Asks for the password if the note is encrypted and can't be decrypted
  */
-void MainWindow::askForEncryptedNotePasswordIfNeeded(QString additionalText) {
+void MainWindow::askForEncryptedNotePasswordIfNeeded(const QString &additionalText) {
     currentNote.refetch();
 
     // check if the note is encrypted and can't be decrypted
@@ -3866,7 +3867,7 @@ void MainWindow::startNavigationParser() {
  * @brief MainWindow::setCurrentNoteText
  * @param text
  */
-void MainWindow::setCurrentNoteText(QString text) {
+void MainWindow::setCurrentNoteText(const QString &text) {
     currentNote.setNoteText(text);
     setNoteTextFromNote(&currentNote, false);
 }
@@ -3880,8 +3881,10 @@ void MainWindow::setCurrentNoteText(QString text) {
  * @param text
  * @param cursorAtEnd
  */
-void MainWindow::createNewNote(QString name, QString text,
+void MainWindow::createNewNote(const QString &name_, const QString &text_,
                                CreateNewNoteOptions options) {
+    auto name = name_;
+    auto text = text_;
     QString extension = Note::defaultNoteFileExtension();
     QFile *f = new QFile(this->notesPath + QDir::separator() + name + "."
                          + extension);
@@ -3929,7 +3932,7 @@ void MainWindow::createNewNote(QString name, QString text,
  *
  * This is a public callback function for the trash dialog.
  */
-void MainWindow::restoreTrashedNoteOnServer(QString fileName, int timestamp) {
+void MainWindow::restoreTrashedNoteOnServer(const QString &fileName, int timestamp) {
     OwnCloudService *ownCloud = OwnCloudService::instance();
     ownCloud->restoreTrashedNoteOnServer(fileName, timestamp, this);
 }
@@ -4108,7 +4111,7 @@ void MainWindow::selectAllNotes() {
  * @brief Moves selected notes after a confirmation
  * @param destinationFolder
  */
-void MainWindow::moveSelectedNotesToFolder(QString destinationFolder) {
+void MainWindow::moveSelectedNotesToFolder(const QString &destinationFolder) {
     // store updated notes to disk
     storeUpdatedNotesToDisk();
 
@@ -4204,7 +4207,7 @@ void MainWindow::unsetCurrentNote() {
  * @brief Copies selected notes after a confirmation
  * @param destinationFolder
  */
-void MainWindow::copySelectedNotesToFolder(QString destinationFolder) {
+void MainWindow::copySelectedNotesToFolder(const QString &destinationFolder) {
     int selectedItemsCount = ui->noteTreeWidget->selectedItems().size();
 
     if (Utils::Gui::question(
@@ -4815,7 +4818,7 @@ void MainWindow::showAppMetricsNotificationIfNeeded() {
 /**
  * Opens the task list dialog
  */
-void MainWindow::openTodoDialog(QString taskUid) {
+void MainWindow::openTodoDialog(const QString &taskUid) {
     // show main window to prevent crashes on Windows
     show();
 
@@ -5282,7 +5285,7 @@ void MainWindow::on_action_New_note_triggered() {
  *
  * @param noteName
  */
-void MainWindow::createNewNote(QString noteName, bool withNameAppend) {
+void MainWindow::createNewNote(const QString &noteName_, bool withNameAppend) {
     // turn on note editing if it was disabled
     if (!Utils::Misc::isNoteEditingAllowed()) {
         ui->actionAllow_note_editing->trigger();
@@ -5291,6 +5294,7 @@ void MainWindow::createNewNote(QString noteName, bool withNameAppend) {
     // show the window in case we are using the system tray
     show();
 
+    auto noteName = noteName_;
     if (noteName.isEmpty()) {
         noteName = "Note";
     }
@@ -5336,10 +5340,12 @@ void MainWindow::on_noteTextView_anchorClicked(const QUrl &url) {
  * - <note://MyNote> opens the note "MyNote"
  * - <note://my-note-with-spaces-in-the-name> opens the note "My Note with spaces in the name"
  */
-void MainWindow::openLocalUrl(QString urlString) {
-    if (urlString.isEmpty()) {
+void MainWindow::openLocalUrl(const QString &urlString_) {
+    if (urlString_.isEmpty()) {
         return;
     }
+
+    auto urlString = urlString_;
 
     // if urlString is no valid url we will try to convert it into a note url
     if (!QOwnNotesMarkdownTextEdit::isValidUrl(urlString)) {
@@ -5557,7 +5563,7 @@ void MainWindow::generateSystemTrayContextMenu() {
         QSignalMapper *noteSignalMapper = new QSignalMapper(this);
         QList<Note> noteList = Note::fetchAll(maxNotes);
 
-        Q_FOREACH(Note note, noteList) {
+        Q_FOREACH(const Note &note, noteList) {
                 QAction *action = noteMenu->addAction(note.getName());
                 action->setIcon(QIcon::fromTheme(
                         "text-x-generic",
@@ -6598,9 +6604,9 @@ void MainWindow::handleInsertingFromMimeData(const QMimeData *mimeData) {
  * Inserts html as markdown in the current note
  * Images are also downloaded
  */
-void MainWindow::insertHtml(QString html) {
+void MainWindow::insertHtml(const QString &html_) {
     // convert html tags to markdown
-    html = Utils::Misc::htmlToMarkdown(html);
+    auto html = Utils::Misc::htmlToMarkdown(html_);
 
     // match image tags
     QRegularExpression re("<img.+?src=[\"'](.+?)[\"'].*?>",
@@ -6703,7 +6709,7 @@ void MainWindow::on_actionShow_note_in_file_manager_triggered() {
  * @param formatter
  * @return
  */
-bool MainWindow::undoFormatting(QString formatter) {
+bool MainWindow::undoFormatting(const QString &formatter) {
     QOwnNotesMarkdownTextEdit* textEdit = activeNoteTextEdit();
     QTextCursor c = textEdit->textCursor();
     QString selectedText = c.selectedText();
@@ -6730,7 +6736,7 @@ bool MainWindow::undoFormatting(QString formatter) {
  *
  * @param formatter
  */
-void MainWindow::applyFormatter(QString formatter) {
+void MainWindow::applyFormatter(const QString &formatter) {
     QOwnNotesMarkdownTextEdit* textEdit = activeNoteTextEdit();
     QTextCursor c = textEdit->textCursor();
     QString selectedText = c.selectedText();
@@ -7332,7 +7338,7 @@ void MainWindow::on_newNoteTagLineEdit_returnPressed() {
  *
  * @param tagName
  */
-void MainWindow::linkTagNameToCurrentNote(QString tagName,
+void MainWindow::linkTagNameToCurrentNote(const QString &tagName,
                                           bool linkToSelectedNotes) {
     if (tagName.isEmpty()) {
         return;
@@ -7356,7 +7362,7 @@ void MainWindow::linkTagNameToCurrentNote(QString tagName,
         int selectedNotesCount = getSelectedNotesCount();
 
         if (linkToSelectedNotes && selectedNotesCount > 1) {
-            Q_FOREACH (Note note, selectedNotes()) {
+            Q_FOREACH (const Note &note, selectedNotes()) {
                     if (tag.isLinkedToNote(note)) {
                         continue;
                     }
@@ -7391,7 +7397,7 @@ void MainWindow::linkTagNameToCurrentNote(QString tagName,
  * @param doRemove
  * @param triggerPostMethods
  */
-void MainWindow::handleScriptingNoteTagging(Note note, QString tagName,
+void MainWindow::handleScriptingNoteTagging(Note note, const QString &tagName,
                                             bool doRemove,
                                             bool triggerPostMethods) {
     QString oldNoteText = note.getNoteText();
@@ -7439,7 +7445,7 @@ void MainWindow::handleScriptingNotesTagUpdating() {
     directoryWatcherWorkaround(true, true);
 
     QList<Note> notes = Note::fetchAll();
-    Q_FOREACH(Note note, notes) {
+    Q_FOREACH(const Note &note, notes) {
             QStringList tagNameList = ScriptingService::instance()
                     ->callNoteTaggingHook(note, "list").toStringList();
             QStringList tagNameList2 = Tag::fetchAllNamesOfNote(note);
@@ -7484,8 +7490,8 @@ void MainWindow::handleScriptingNotesTagUpdating() {
  * @param oldTagName
  * @param newTagName
  */
-void MainWindow::handleScriptingNotesTagRenaming(QString oldTagName,
-                                                 QString newTagName) {
+void MainWindow::handleScriptingNotesTagRenaming(const QString &oldTagName,
+                                                 const QString &newTagName) {
     if (!ScriptingService::instance()->noteTaggingHookExists()) {
         return;
     }
@@ -7529,7 +7535,7 @@ void MainWindow::handleScriptingNotesTagRenaming(QString oldTagName,
  *
  * @param tagName
  */
-void MainWindow::handleScriptingNotesTagRemoving(QString tagName,
+void MainWindow::handleScriptingNotesTagRemoving(const QString &tagName,
                                                  bool forBulkOperation) {
     if (!ScriptingService::instance()->noteTaggingHookExists()) {
         return;
@@ -7543,7 +7549,7 @@ void MainWindow::handleScriptingNotesTagRemoving(QString tagName,
     }
 
     QList<Note> notes = Note::fetchAll();
-    Q_FOREACH(Note note, notes) {
+    Q_FOREACH(const Note &note, notes) {
             handleScriptingNoteTagging(note, tagName, true, false);
         }
 
@@ -7675,7 +7681,7 @@ void MainWindow::removeNoteTagClicked() {
             // remove the tag from the note text if defined via scripting engine
             handleScriptingNoteTagging(currentNote, tag.getName(), true);
         } else {
-            Q_FOREACH (Note note, selectedNotes()) {
+            Q_FOREACH (const Note &note, selectedNotes()) {
                     if (!tag.isLinkedToNote(note)) {
                         continue;
                     }
@@ -8481,7 +8487,7 @@ void MainWindow::on_actionAutocomplete_triggered() {
 
     QStringList resultList;
     if (noteTextEditAutoComplete(resultList)) {
-        Q_FOREACH(QString text, resultList) {
+        Q_FOREACH(const QString &text, resultList) {
                 QAction *action = menu.addAction(text);
                 action->setData(text);
                 action->setWhatsThis("autocomplete");
@@ -8495,7 +8501,7 @@ void MainWindow::on_actionAutocomplete_triggered() {
         QAction *action = menu.addAction("");
         action->setSeparator(true);
 
-        Q_FOREACH(QString text, autocompletionList) {
+        Q_FOREACH(const QString &text, autocompletionList) {
                 QAction *action = menu.addAction(text);
                 action->setData(text);
                 action->setWhatsThis("autocomplete");
@@ -9294,9 +9300,10 @@ void MainWindow::on_noteSubFolderTreeWidget_customContextMenuRequested(
 /**
  * Creates a new note subfolder in the current subfolder
  */
-bool MainWindow::createNewNoteSubFolder(QString folderName) {
+bool MainWindow::createNewNoteSubFolder(const QString &folderName_) {
     bool ok = true;
 
+    auto folderName = folderName_;
     if (folderName.isEmpty()) {
         folderName = QInputDialog::getText(
                 this, tr("Create a new folder"), tr("Folder name:"),
@@ -9576,8 +9583,8 @@ void MainWindow::on_actionSplit_note_at_cursor_position_triggered() {
 /**
  * Adds a custom action as menu item and button
  */
-void MainWindow::addCustomAction(QString identifier, QString menuText,
-                                 QString buttonText, QString icon,
+void MainWindow::addCustomAction(const QString &identifier, const QString &menuText,
+                                 const QString &buttonText, const QString &icon,
                                  bool useInNoteEditContextMenu,
                                  bool hideButtonInToolbar,
                                  bool useInNoteListContextMenu) {
@@ -9632,7 +9639,7 @@ void MainWindow::addCustomAction(QString identifier, QString menuText,
 /**
  * Adds a label to the scripting dock widget
  */
-void MainWindow::addScriptingLabel(QString identifier, QString text) {
+void MainWindow::addScriptingLabel(const QString &identifier, const QString &text) {
     _scriptingDockWidget->show();
     QLabel *label = new QLabel(text);
     label->setOpenExternalLinks(true);
@@ -9646,7 +9653,7 @@ void MainWindow::addScriptingLabel(QString identifier, QString text) {
 /**
  * Sets the text of a label in the scripting dock widget
  */
-void MainWindow::setScriptingLabelText(QString identifier, QString text) {
+void MainWindow::setScriptingLabelText(const QString &identifier, const QString &text) {
     QLabel* label = ui->scriptingScrollArea->findChild<QLabel*>(
             "scriptingLabel-" + identifier);
     if (label != Q_NULLPTR) {
@@ -9721,7 +9728,7 @@ void MainWindow::on_actionDelete_orphaned_images_triggered() {
  *
  * @param text
  */
-void MainWindow::writeToNoteTextEdit(QString text) {
+void MainWindow::writeToNoteTextEdit(const QString &text) {
     QOwnNotesMarkdownTextEdit *textEdit = activeNoteTextEdit();
     textEdit->insertPlainText(text);
 }
@@ -9825,8 +9832,8 @@ void MainWindow::on_actionStore_as_new_workspace_triggered() {
  * @param name
  * @return
  */
-bool MainWindow::createNewWorkspace(QString name) {
-    name = name.trimmed();
+bool MainWindow::createNewWorkspace(const QString &name_) {
+    auto name = name_.trimmed();
 
     if (name.isEmpty()) {
         return false;
@@ -9880,7 +9887,7 @@ void MainWindow::onWorkspaceComboBoxCurrentIndexChanged(int index) {
 /**
  * Sets a new current workspace
  */
-void MainWindow::setCurrentWorkspace(QString uuid) {
+void MainWindow::setCurrentWorkspace(const QString &uuid) {
     QWidget *focusWidget = qApp->focusWidget();
 
     // store the current workspace

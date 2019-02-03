@@ -71,7 +71,7 @@ class MainWindow : public QMainWindow {
 
 Q_SIGNALS:
     void currentNoteChanged(Note &note);
-    void log(LogWidget::LogType logType, QString text);
+    void log(LogWidget::LogType logType, const QString &text);
 
 public:
     enum CreateNewNoteOption {
@@ -93,19 +93,19 @@ public:
 
     ~MainWindow();
 
-    void setCurrentNoteText(QString text);
+    void setCurrentNoteText(const QString &text);
 
     Note getCurrentNote();
 
     void createNewNote(
-            QString name, QString text,
+            const QString &name, const QString &text,
             CreateNewNoteOptions options = CreateNewNoteOption::None);
 
     void openSettingsDialog(int page = 0, bool openScriptRepository = false);
 
-    void restoreTrashedNoteOnServer(QString fileName, int timestamp);
+    void restoreTrashedNoteOnServer(const QString &fileName, int timestamp);
 
-    void showUpdateAvailableButton(QString version);
+    void showUpdateAvailableButton(const QString &version);
 
     void hideUpdateAvailableButton();
 
@@ -123,25 +123,25 @@ public:
 
     QList<QMenu *> menuList();
 
-    QAction *findAction(QString objectName);
+    QAction *findAction(const QString &objectName);
 
-    void addCustomAction(QString identifier, QString menuText,
-                         QString buttonText, QString icon,
+    void addCustomAction(const QString &identifier, const QString &menuText,
+                         const QString &buttonText, const QString &icon,
                          bool useInNoteEditContextMenu = false,
                          bool hideButtonInToolbar = false,
                          bool useInNoteListContextMenu = false);
 
-    void addScriptingLabel(QString identifier, QString text = "");
+    void addScriptingLabel(const QString &identifier, const QString &text = "");
 
-    void setScriptingLabelText(QString identifier, QString text);
+    void setScriptingLabelText(const QString &identifier, const QString &text);
 
     void preReloadScriptingEngine();
 
-    void writeToNoteTextEdit(QString text);
+    void writeToNoteTextEdit(const QString &text);
 
     QString selectedNoteTextEditText();
 
-    void linkTagNameToCurrentNote(QString tagName,
+    void linkTagNameToCurrentNote(const QString &tagName,
                                   bool linkToSelectedNotes = false);
 
     Q_INVOKABLE void reloadTagTree();
@@ -165,7 +165,7 @@ public:
 
     void openIssueAssistantDialog();
 
-    void insertHtml(QString html);
+    void insertHtml(const QString &html);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -265,7 +265,7 @@ private slots:
 
     void on_actionShow_changelog_triggered();
 
-    void openLocalUrl(QString urlString);
+    void openLocalUrl(const QString &urlString);
 
     void on_action_Find_text_in_note_triggered();
 
@@ -387,7 +387,7 @@ private slots:
 
     void reloadTodoLists();
 
-    void openTodoDialog(QString taskUid = "");
+    void openTodoDialog(const QString &taskUid = "");
 
     void showWindow();
 
@@ -437,7 +437,7 @@ private slots:
 
     void on_actionSplit_note_at_cursor_position_triggered();
 
-    void onCustomActionInvoked(QString identifier);
+    void onCustomActionInvoked(const QString &identifier);
 
     void on_actionDonate_triggered();
 
@@ -459,7 +459,7 @@ private slots:
 
     void on_actionRename_current_workspace_triggered();
 
-    void setCurrentWorkspace(QString uuid);
+    void setCurrentWorkspace(const QString &uuid);
 
     void on_actionSwitch_to_previous_workspace_triggered();
 
@@ -467,11 +467,11 @@ private slots:
 
     void restoreCurrentWorkspace();
 
-    void togglePanelVisibility(QString objectName);
+    void togglePanelVisibility(const QString &objectName);
 
     void updatePanelMenu();
 
-    void toggleToolbarVisibility(QString objectName);
+    void toggleToolbarVisibility(const QString &objectName);
 
     void updateToolbarMenu();
 
@@ -666,7 +666,7 @@ private:
 
     void removeCurrentNote();
 
-    void searchInNoteTextEdit(QString str);
+    void searchInNoteTextEdit(const QString &str);
 
     void searchForSearchLineTextInNoteTextEdit();
 
@@ -677,15 +677,15 @@ private:
 
     void loadNoteFolderListMenu();
 
-    void storeRecentNoteFolder(QString addFolderName, QString removeFolderName);
+    void storeRecentNoteFolder(const QString &addFolderName, const QString &removeFolderName);
 
     void storeSettings();
 
     void removeSelectedNotes();
 
-    void moveSelectedNotesToFolder(QString destinationFolder);
+    void moveSelectedNotesToFolder(const QString &destinationFolder);
 
-    void copySelectedNotesToFolder(QString destinationFolder);
+    void copySelectedNotesToFolder(const QString &destinationFolder);
 
     void selectAllNotes();
 
@@ -715,7 +715,7 @@ private:
 
     void updateEncryptNoteButtons();
 
-    void askForEncryptedNotePasswordIfNeeded(QString additionalText = "");
+    void askForEncryptedNotePasswordIfNeeded(const QString &additionalText = "");
 
     void showAppMetricsNotificationIfNeeded();
 
@@ -776,7 +776,7 @@ private:
 
     QTreeWidgetItem *addTagToTagTreeWidget(QTreeWidgetItem *parent, Tag tag);
 
-    bool jumpToNoteName(QString name);
+    bool jumpToNoteName(const QString &name);
 
     void initScriptingEngine();
 
@@ -812,9 +812,9 @@ private:
 
     void removeSelectedNoteSubFolders();
 
-    bool createNewNoteSubFolder(QString folderName = "");
+    bool createNewNoteSubFolder(const QString &folderName = "");
 
-    QTreeWidgetItem *findNoteInNoteTreeWidget(Note note);
+    QTreeWidgetItem *findNoteInNoteTreeWidget(const Note &note);
 
     void jumpToNoteOrCreateNew(bool disableLoadNoteDirectoryList = false);
 
@@ -829,7 +829,7 @@ private:
 
     void copySelectedNotesToNoteSubFolder(NoteSubFolder noteSubFolder);
 
-    void createNewNote(QString noteName = "", bool withNameAppend = true);
+    void createNewNote(const QString &noteName = "", bool withNameAppend = true);
 
     bool selectedNotesHaveTags();
 
@@ -851,7 +851,7 @@ private:
 
     void updateWorkspaceLists(bool rebuild = true);
 
-    bool createNewWorkspace(QString name);
+    bool createNewWorkspace(const QString &name);
 
     QString currentWorkspaceUuid();
 
@@ -907,15 +907,15 @@ private:
 
     void selectAllNotesInTagTreeWidget() const;
 
-    void handleScriptingNoteTagging(Note note, QString tagName,
+    void handleScriptingNoteTagging(Note note, const QString &tagName,
                                     bool doRemove = false,
                                     bool triggerPostMethods = true);
 
     void handleScriptingNotesTagUpdating();
 
-    void handleScriptingNotesTagRenaming(QString oldTagName, QString newTagName);
+    void handleScriptingNotesTagRenaming(const QString &oldTagName, const QString &newTagName);
 
-    void handleScriptingNotesTagRemoving(QString tagName,
+    void handleScriptingNotesTagRemoving(const QString &tagName,
                                          bool forBulkOperation = false);
 
     void directoryWatcherWorkaround(bool isNotesDirectoryWasModifiedDisabled,
@@ -923,9 +923,9 @@ private:
 
     void setMenuEnabled(QMenu* menu, bool enabled);
 
-    bool undoFormatting(QString formatter);
+    bool undoFormatting(const QString &formatter);
 
-    void applyFormatter(QString formatter);
+    void applyFormatter(const QString &formatter);
 
     bool isNoteTextSelected();
 

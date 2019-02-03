@@ -28,13 +28,13 @@ private:
 
 public:
     NoteApi *fetch(int id);
-    static NoteApi *fromNote(Note note);
-//    static NoteApi fromNote(Note note);
+    static NoteApi *fromNote(const Note &note);
+//    static NoteApi fromNote(const Note &note);
 
     Q_INVOKABLE QQmlListProperty<TagApi> tags();
     Q_INVOKABLE QStringList tagNames() const;
-    Q_INVOKABLE bool addTag(QString tagName);
-    Q_INVOKABLE bool removeTag(QString tagName);
+    Q_INVOKABLE bool addTag(const QString &tagName);
+    Q_INVOKABLE bool removeTag(const QString &tagName);
     Q_INVOKABLE QQmlListProperty<NoteApi> fetchAll(int limit = -1,
                                                    int offset = -1);
     Q_INVOKABLE QString toMarkdownHtml(bool forExport = true);

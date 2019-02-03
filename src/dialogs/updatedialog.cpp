@@ -15,8 +15,8 @@
 #include <services/metricsservice.h>
 #include <utils/gui.h>
 
-UpdateDialog::UpdateDialog(QWidget *parent, QString changesHtml,
-                           QString releaseUrl, QString releaseVersionString,
+UpdateDialog::UpdateDialog(QWidget *parent, const QString &changesHtml,
+                           const QString &releaseUrl, const QString &releaseVersionString,
                            int releaseBuildNumber) :
         MasterDialog(parent),
         ui(new Ui::UpdateDialog) {
@@ -316,7 +316,7 @@ void UpdateDialog::slotReplyFinished(QNetworkReply *reply) {
 /**
  * Initializes the update process
  */
-bool UpdateDialog::initializeUpdateProcess(QString filePath) {
+bool UpdateDialog::initializeUpdateProcess(const QString &filePath) {
 #if defined(Q_OS_MAC)
     // the OS X updater initializeMacOSUpdateProcess will be started
     // from dialogButtonClicked
@@ -333,7 +333,7 @@ bool UpdateDialog::initializeUpdateProcess(QString filePath) {
 /**
  * Initializes the macOS update process
  */
-bool UpdateDialog::initializeMacOSUpdateProcess(QString releaseUrl) {
+bool UpdateDialog::initializeMacOSUpdateProcess(const QString &releaseUrl) {
     // find out the /Applications folder
     QString applicationDirPath = QCoreApplication::applicationDirPath();
     QString appPathPart = "/QOwnNotes.app/Contents/MacOS";
@@ -434,7 +434,7 @@ bool UpdateDialog::initializeMacOSUpdateProcess(QString releaseUrl) {
 /**
  * Initializes the Windows update process
  */
-bool UpdateDialog::initializeWindowsUpdateProcess(QString filePath) {
+bool UpdateDialog::initializeWindowsUpdateProcess(const QString &filePath) {
     // get the folder path from the file path
     int lastPoint = filePath.lastIndexOf(".");
     QString pathPrefix = filePath.left(lastPoint);

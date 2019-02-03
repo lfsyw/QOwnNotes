@@ -64,10 +64,10 @@ void MetricsService::sendVisitIfEnabled(
 }
 
 void MetricsService::sendEventIfEnabled(
-        QString path,
-        QString eventCategory,
-        QString eventAction,
-        QString eventName,
+        const QString &path,
+        const QString &eventCategory,
+        const QString &eventAction,
+        const QString &eventName,
         int eventValue) {
     QSettings settings;
     if (!settings.value("appMetrics/disableTracking").toBool()) {

@@ -70,15 +70,15 @@ QDateTime CalendarItem::getAlarmDate() {
     return this->alarmDate;
 }
 
-void CalendarItem::setLastModifiedString(QString text) {
+void CalendarItem::setLastModifiedString(const QString &text) {
     this->lastModifiedString = text;
 }
 
-void CalendarItem::setETag(QString text) {
+void CalendarItem::setETag(const QString &text) {
     this->etag = text;
 }
 
-void CalendarItem::setSummary(QString text) {
+void CalendarItem::setSummary(const QString &text) {
     this->summary = text;
 }
 
@@ -86,19 +86,19 @@ void CalendarItem::setUrl(QUrl url) {
     this->url = url.toString();
 }
 
-void CalendarItem::setCalendar(QString text) {
+void CalendarItem::setCalendar(const QString &text) {
     this->calendar = text;
 }
 
-void CalendarItem::setDescription(QString text) {
+void CalendarItem::setDescription(const QString &text) {
     this->description = text;
 }
 
-void CalendarItem::setICSData(QString text) {
+void CalendarItem::setICSData(const QString &text) {
     this->icsData = text;
 }
 
-void CalendarItem::setUid(QString text) {
+void CalendarItem::setUid(const QString &text) {
     this->uid = text;
 }
 
@@ -135,9 +135,9 @@ void CalendarItem::updateCompleted(bool value) {
  * @param url we are using QUrl because be want special characters in the urls translated
  * @return
  */
-bool CalendarItem::addCalendarItemForRequest(QString calendar, QUrl url,
-                                             QString etag,
-                                             QString lastModifiedString) {
+bool CalendarItem::addCalendarItemForRequest(const QString &calendar, QUrl url,
+                                             const QString &etag,
+                                             const QString &lastModifiedString) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -152,7 +152,7 @@ bool CalendarItem::addCalendarItemForRequest(QString calendar, QUrl url,
     return query.exec();
 }
 
-bool CalendarItem::addCalendarItem(QString summary, QString url, QString text) {
+bool CalendarItem::addCalendarItem(const QString &summary, const QString &url, const QString &text) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -182,7 +182,7 @@ CalendarItem CalendarItem::fetch(int id) {
     return calendarItem;
 }
 
-CalendarItem CalendarItem::fetchByUrlAndCalendar(QString url, QString calendar) {
+CalendarItem CalendarItem::fetchByUrlAndCalendar(const QString &url, const QString &calendar) {
     CalendarItem calendarItem;
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
@@ -201,7 +201,7 @@ CalendarItem CalendarItem::fetchByUrlAndCalendar(QString url, QString calendar) 
     return calendarItem;
 }
 
-CalendarItem CalendarItem::fetchByUid(QString uid) {
+CalendarItem CalendarItem::fetchByUid(const QString &uid) {
     CalendarItem calendarItem;
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
@@ -295,7 +295,7 @@ bool CalendarItem::fillFromQuery(QSqlQuery query) {
     return true;
 }
 
-QList<CalendarItem> CalendarItem::fetchAllByCalendar(QString calendar) {
+QList<CalendarItem> CalendarItem::fetchAllByCalendar(const QString &calendar) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -401,7 +401,7 @@ QList<CalendarItem> CalendarItem::fetchAllForReminderAlert() {
     return calendarItemList;
 }
 
-QList<QUrl> CalendarItem::fetchAllUrlsByCalendar(QString calendar) {
+QList<QUrl> CalendarItem::fetchAllUrlsByCalendar(const QString &calendar) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
     QList<QUrl> urlList;
@@ -420,7 +420,7 @@ QList<QUrl> CalendarItem::fetchAllUrlsByCalendar(QString calendar) {
     return urlList;
 }
 
-QList<CalendarItem> CalendarItem::search(QString text) {
+QList<CalendarItem> CalendarItem::search(const QString &text) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -448,7 +448,7 @@ QList<CalendarItem> CalendarItem::search(QString text) {
 /**
  * Returns a list of UIDs for the search in the TodoDialog
  */
-QList<QString> CalendarItem::searchAsUidList(QString text, QString calendar) {
+QList<QString> CalendarItem::searchAsUidList(const QString &text, const QString &calendar) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
     QList<QString> resultList;
@@ -690,7 +690,7 @@ void CalendarItem::updateICSDataKeyListFromHash() {
 //
 // deletes all calendarItems of a calendar in the database
 //
-bool CalendarItem::deleteAllByCalendar(QString calendar) {
+bool CalendarItem::deleteAllByCalendar(const QString &calendar) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -720,7 +720,7 @@ bool CalendarItem::isCompleted() {
     return this->completed;
 }
 
-bool CalendarItem::updateWithICSData(QString icsData) {
+bool CalendarItem::updateWithICSData(const QString &icsData) {
     this->icsData = icsData;
 
     // parse and transform the ics data to a hash with the data
@@ -795,7 +795,7 @@ bool CalendarItem::updateWithICSData(QString icsData) {
  * @param attributeName
  * @return
  */
-QString CalendarItem::getICSDataAttributeInBlock(QString block, QString attributeName) {
+QString CalendarItem::getICSDataAttributeInBlock(const QString &block, const QString &attributeName) {
     bool blockFound = false;
     for (int i = 0; i < icsDataKeyList.size(); ++i) {
         QString key = icsDataKeyList.at(i);
@@ -819,7 +819,7 @@ QString CalendarItem::getICSDataAttributeInBlock(QString block, QString attribut
  * Removes a block in the ics data
  * @param block
  */
-bool CalendarItem::removeICSDataBlock(QString block) {
+bool CalendarItem::removeICSDataBlock(const QString &block) {
     bool blockFound = false;
     bool doReturn = false;
 
@@ -993,7 +993,7 @@ void CalendarItem::generateICSDataHash() {
  * @param number
  * @return
  */
-QString CalendarItem::findFreeHashKey(QHash<QString, QString> *hash, QString key, int number) {
+QString CalendarItem::findFreeHashKey(QHash<QString, QString> *hash, const QString &key, int number) {
     // give up after 1000 tries
     if (number >= 1000) {
         return key;
@@ -1020,9 +1020,10 @@ QString CalendarItem::findFreeHashKey(QHash<QString, QString> *hash, QString key
  * @param line
  * @return
  */
-QString CalendarItem::decodeICSDataLine(QString line) {
+QString CalendarItem::decodeICSDataLine(const QString &line_) {
 //    qDebug() << __func__ << " - 'before line': " << line;
 
+    QString line = line_;
     // replace \n with newlines
     // we have to replace this twice, because of the first character that
     // gets replaces in multiple \n
@@ -1040,7 +1041,7 @@ QString CalendarItem::decodeICSDataLine(QString line) {
 }
 
 CalendarItem CalendarItem::createNewTodoItem(
-        QString summary, QString calendar) {
+        const QString &summary, const QString &calendar) {
     QUuid uuid = QUuid::createUuid();
     QString uuidString = uuid.toString();
     uuidString.replace("{", "").replace("}", "");

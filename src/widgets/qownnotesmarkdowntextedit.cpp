@@ -199,12 +199,13 @@ int QOwnNotesMarkdownTextEdit::modifyFontSize(FontModificationMode mode) {
  * "/path/to/my/file/QOwnNotes.pdf" if the operating system
  * supports that handler
  */
-void QOwnNotesMarkdownTextEdit::openUrl(QString urlString) {
+void QOwnNotesMarkdownTextEdit::openUrl(const QString &urlString_) {
     qDebug() << "QOwnNotesMarkdownTextEdit " << __func__ << " - 'urlString': "
-        << urlString;
+        << urlString_;
 
     QString notesPath = NoteFolder::currentLocalPath();
     QString windowsSlash = "";
+    auto urlString = urlString_;
 
 #ifdef Q_OS_WIN32
     // we need an other slash for Windows

@@ -9,7 +9,7 @@ class FileDialog : public QFileDialog
 Q_OBJECT
 
 public:
-    explicit FileDialog(QString name = "");
+    explicit FileDialog(const QString &name = "");
     QString selectedFile();
 
 private:
@@ -17,8 +17,8 @@ private:
     QString _generalSettingsKey;
 
 protected slots:
-    void storeDirectory(QString path);
-    void storeDirectory(QStringList files);
+    void storeDirectory(const QString &path);
+    void storeDirectory(const QStringList &files);
 };
 
 #endif // FILEDIALOG_H

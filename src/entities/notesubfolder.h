@@ -13,11 +13,11 @@ class NoteSubFolder {
 public:
     explicit NoteSubFolder();
 
-    int getId();
+    int getId() const;
 
-    QString getName();
+    QString getName() const;
 
-    void setName(QString text);
+    void setName(const QString &text);
 
     static NoteSubFolder fetch(int id);
 
@@ -49,18 +49,18 @@ public:
 
     void setParentId(int parentId);
 
-    QString relativePath(QString separator = "");
+    QString relativePath(const QString &separator = "") const;
 
-    QString fullPath();
+    QString fullPath() const;
 
-    NoteSubFolder getParent();
+    NoteSubFolder getParent() const;
 
     static QList<NoteSubFolder> fetchAllByParentId(int parentId,
-            QString sortBy = "file_last_modified DESC");
+            const QString &sortBy = "file_last_modified DESC");
 
     static QList<int> fetchIdsRecursivelyByParentId(int parentId);
 
-    bool isActive();
+    bool isActive() const;
 
     static int activeNoteSubFolderId();
 
@@ -72,10 +72,10 @@ public:
 
     QString pathData();
 
-    static NoteSubFolder fetchByPathData(QString pathData,
-                                         QString separator = "\n");
+    static NoteSubFolder fetchByPathData(const QString &pathData,
+                                         const QString &separator = "\n");
 
-    static NoteSubFolder fetchByNameAndParentId(QString name, int parentId);
+    static NoteSubFolder fetchByNameAndParentId(const QString &name, int parentId);
 
     void saveTreeWidgetExpandState(bool expanded);
 
@@ -85,9 +85,9 @@ public:
 
     bool removeFromFileSystem();
 
-    QDir dir();
+    QDir dir() const;
 
-    bool rename(QString newName);
+    bool rename(const QString &newName);
 
     static int countAllParentId(int parentId);
 

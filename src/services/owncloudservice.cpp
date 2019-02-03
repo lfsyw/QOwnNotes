@@ -637,7 +637,7 @@ void OwnCloudService::settingsGetCalendarList(SettingsDialog *dialog) {
 /**
  * @brief Gets the task list from the ownCloud server for the task list dialog
  */
-void OwnCloudService::todoGetTodoList(QString calendarName,
+void OwnCloudService::todoGetTodoList(const QString &calendarName,
                                       TodoDialog *dialog) {
     this->todoDialog = dialog;
     this->calendarName = calendarName;
@@ -698,7 +698,7 @@ void OwnCloudService::todoGetTodoList(QString calendarName,
 /**
  * Shares a note on ownCloud
  */
-void OwnCloudService::shareNote(Note note, ShareDialog *shareDialog) {
+void OwnCloudService::shareNote(const Note &note, ShareDialog *shareDialog) {
     this->shareDialog = shareDialog;
     qDebug() << __func__ << " - 'note': " << note;
 
@@ -736,7 +736,7 @@ void OwnCloudService::shareNote(Note note, ShareDialog *shareDialog) {
 /**
  * Removes a note shares on ownCloud
  */
-void OwnCloudService::removeNoteShare(Note note, ShareDialog *shareDialog) {
+void OwnCloudService::removeNoteShare(const Note &note, ShareDialog *shareDialog) {
     this->shareDialog = shareDialog;
     qDebug() << __func__ << " - 'note': " << note;
 
@@ -767,7 +767,7 @@ void OwnCloudService::removeNoteShare(Note note, ShareDialog *shareDialog) {
  * To fetch the shares of all notes we have to fetch all shares from the
  * account and search for our note folder
  */
-void OwnCloudService::fetchShares(QString path) {
+void OwnCloudService::fetchShares(const QString &path) {
     // return if no settings are set
     if (!hasOwnCloudSettings()) {
         return;
@@ -812,7 +812,7 @@ void OwnCloudService::removeCalendarItem(CalendarItem calItem,
 /**
  * @brief Restores a note on the server
  */
-void OwnCloudService::restoreTrashedNoteOnServer(QString fileName,
+void OwnCloudService::restoreTrashedNoteOnServer(const QString &fileName,
                                                  int timestamp,
                                                  MainWindow *mainWindow) {
     this->mainWindow = mainWindow;
@@ -846,7 +846,7 @@ void OwnCloudService::restoreTrashedNoteOnServer(QString fileName,
 /**
  * @brief OwnCloudService::loadVersions
  */
-void OwnCloudService::loadVersions(QString fileName, MainWindow *mainWindow) {
+void OwnCloudService::loadVersions(const QString &fileName, MainWindow *mainWindow) {
     this->mainWindow = mainWindow;
 
     QUrl url(serverUrl + versionListPath);
@@ -967,7 +967,7 @@ bool OwnCloudService::hasOwnCloudSettings(bool withEnabledCheck) {
  * Shows a message dialog with a ownCloud server error
  */
 void OwnCloudService::showOwnCloudServerErrorMessage(
-        QString message, bool withSettingsButton) {
+        const QString &message, bool withSettingsButton) {
     QString headline = Utils::Misc::replaceOwnCloudText(
             tr("ownCloud server connection error"));
     QString text = message.isEmpty() ?
@@ -985,11 +985,13 @@ void OwnCloudService::showOwnCloudServerErrorMessage(
  * Shows a ownCloud message dialog
  */
 void OwnCloudService::showOwnCloudMessage(
-        QString headline, QString message, bool withSettingsButton) {
+        const QString &headline_, const QString &message_, bool withSettingsButton) {
+    auto headline = headline_;
     if (headline.isEmpty()) {
         headline = "ownCloud";
     }
 
+    auto message = message_;
     if (message.isEmpty()) {
         message = tr("You need to setup your ownCloud server!");
     }
@@ -1045,13 +1047,14 @@ OwnCloudService *OwnCloudService::instance() {
  * @brief OwnCloudService::handleVersionsLoading
  * @param data
  */
-void OwnCloudService::handleVersionsLoading(QString data) {
+void OwnCloudService::handleVersionsLoading(const QString &data_) {
 #ifndef INTEGRATION_TESTS
     mainWindow->enableShowVersionsButton();
     mainWindow->showStatusBarMessage(
             tr("Done with loading note versions"), 2000);
 #endif
 
+    auto data = data_;
     // check if we get any data at all
     if (data.isEmpty()) {
         showOwnCloudServerErrorMessage();
@@ -1106,13 +1109,14 @@ void OwnCloudService::handleVersionsLoading(QString data) {
  * @brief OwnCloudService::handleTrashedLoading
  * @param data
  */
-void OwnCloudService::handleTrashedLoading(QString data) {
+void OwnCloudService::handleTrashedLoading(const QString &data_) {
 #ifndef INTEGRATION_TESTS
     mainWindow->enableShowTrashButton();
     mainWindow->showStatusBarMessage(
             tr("Done with loading trashed notes"), 2000);
 #endif
 
+    auto data = data_;
     // check if we get any data at all
     if (data == "") {
         showOwnCloudServerErrorMessage();
@@ -1461,7 +1465,7 @@ void OwnCloudService::handleNoteShareReply(QString &data) {
 /**
  * Updates the share status of the notes
  */
-void OwnCloudService::handleDeleteNoteShareReply(QString urlPart,
+void OwnCloudService::handleDeleteNoteShareReply(const QString &urlPart,
                                                  QString &data) {
     // return if we didn't get any data
     if (data.isEmpty()) {
@@ -1806,7 +1810,7 @@ bool OwnCloudService::updateICSDataOfCalendarItem(CalendarItem *calItem) {
  * for the settings dialog
  */
 void OwnCloudService::settingsGetFileList(
-        SettingsDialog *dialog, QString path) {
+        SettingsDialog *dialog, const QString &path) {
     settingsDialog = dialog;
 
     QUrl url(serverUrl + webdavPath + "/" + path);

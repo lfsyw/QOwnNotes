@@ -13,7 +13,7 @@ TagApi* TagApi::fetch(int id) {
     return this;
 }
 
-TagApi* TagApi::fetchByName(QString name, int parentId) {
+TagApi* TagApi::fetchByName(const QString &name, int parentId) {
     Tag tag = Tag::fetchByName(name, parentId);
 
     if (tag.isFetched()) {

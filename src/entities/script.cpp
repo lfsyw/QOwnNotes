@@ -84,19 +84,19 @@ bool Script::isEnabled() {
     return getEnabled();
 }
 
-void Script::setName(QString text) {
+void Script::setName(const QString &text) {
     this->name = text;
 }
 
-void Script::setIdentifier(QString identifier) {
+void Script::setIdentifier(const QString &identifier) {
     this->identifier = identifier;
 }
 
-void Script::setInfoJson(QString infoJson) {
+void Script::setInfoJson(const QString &infoJson) {
     this->infoJson = infoJson;
 }
 
-void Script::setSettingsVariablesJson(QString json) {
+void Script::setSettingsVariablesJson(const QString &json) {
     this->settingsVariablesJson = json;
 }
 
@@ -105,7 +105,7 @@ void Script::setSettingsVariablesJson(QJsonObject jsonObject) {
     this->settingsVariablesJson = document.toJson();
 }
 
-void Script::setScriptPath(QString text) {
+void Script::setScriptPath(const QString &text) {
     this->scriptPath = text;
 }
 
@@ -117,7 +117,7 @@ void Script::setEnabled(bool value) {
     this->enabled = value;
 }
 
-bool Script::create(QString name, QString scriptPath) {
+bool Script::create(const QString &name, const QString &scriptPath) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -195,7 +195,7 @@ int Script::countEnabled() {
  * @param identifier
  * @return
  */
-bool Script::scriptFromRepositoryExists(QString identifier) {
+bool Script::scriptFromRepositoryExists(const QString &identifier) {
     Script script = fetchByIdentifier(identifier);
     return script.isFetched();
 }
@@ -206,7 +206,7 @@ bool Script::scriptFromRepositoryExists(QString identifier) {
  * @param identifier
  * @return
  */
-Script Script::fetchByIdentifier(QString identifier) {
+Script Script::fetchByIdentifier(const QString &identifier) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -488,7 +488,7 @@ QUrl Script::remoteScriptUrl() {
  *
  * @return
  */
-QUrl Script::remoteFileUrl(QString fileName) {
+QUrl Script::remoteFileUrl(const QString &fileName) {
     if (fileName.isEmpty()) {
         return QUrl();
     }
@@ -512,7 +512,7 @@ QList<QUrl> Script::remoteFileUrls() {
         urlList << remoteFileUrl(scriptName);
     }
 
-    foreach( QString fileName, infoJson.resources ) {
+    foreach( const QString &fileName, infoJson.resources ) {
             if (!fileName.isEmpty()) {
                 urlList << remoteFileUrl(fileName);
             }
@@ -581,7 +581,7 @@ ScriptInfoJson::ScriptInfoJson(QJsonObject jsonObject) {
     platformHash["linux"] = "Linux";
     platformHash["macos"] = "macOS";
     platformHash["windows"] = "Windows";
-    foreach(QString platform, platformList) {
+    foreach(const QString &platform, platformList) {
             if (platformHash.contains(platform)) {
                 richPlatformList << platformHash[platform];
             }

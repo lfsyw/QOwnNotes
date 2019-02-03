@@ -19,8 +19,8 @@ Bookmark::Bookmark() {
     description = "";
 }
 
-Bookmark::Bookmark(QString url, QString name, QStringList tagList,
-        QString description) {
+Bookmark::Bookmark(const QString &url, const QString &name, const QStringList &tagList,
+        const QString &description) {
     this->url = std::move(url);
     this->name = std::move(name);
     this->tags = std::move(tagList);
@@ -54,7 +54,7 @@ bool Bookmark::operator==(const Bookmark &bookmark) const {
  * @param text
  * @return
  */
-QList<Bookmark> Bookmark::parseBookmarks(QString text, bool withBasicUrls) {
+QList<Bookmark> Bookmark::parseBookmarks(const QString &text, bool withBasicUrls) {
     QRegularExpressionMatchIterator i;
     QList<Bookmark> bookmarks;
 
@@ -156,7 +156,7 @@ QString Bookmark::bookmarksWebServiceJsonText(QList<Bookmark> bookmarks) {
  * @return
  */
 QString Bookmark::parsedBookmarksWebServiceJsonText(
-        QString text, bool withBasicUrls) {
+        const QString &text, bool withBasicUrls) {
     return bookmarksWebServiceJsonText(parseBookmarks(
             std::move(text), withBasicUrls));
 }

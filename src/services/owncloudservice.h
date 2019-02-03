@@ -43,16 +43,16 @@ public:
 
     void settingsConnectionTest(SettingsDialog *dialog);
 
-    void loadVersions(QString fileName, MainWindow *mainWindow);
+    void loadVersions(const QString &fileName, MainWindow *mainWindow);
 
     void loadTrash(MainWindow *mainWindow);
 
-    void restoreTrashedNoteOnServer(QString fileName,
+    void restoreTrashedNoteOnServer(const QString &fileName,
                                     int timestamp, MainWindow *mainWindow);
 
     void settingsGetCalendarList(SettingsDialog *dialog);
 
-    void todoGetTodoList(QString calendarName, TodoDialog *dialog);
+    void todoGetTodoList(const QString &calendarName, TodoDialog *dialog);
 
     void postCalendarItemToServer(CalendarItem calendarItem,
                                   TodoDialog *dialog);
@@ -61,15 +61,15 @@ public:
 
     void removeCalendarItem(CalendarItem calItem, TodoDialog *dialog);
 
-    void settingsGetFileList(SettingsDialog *dialog, QString path);
+    void settingsGetFileList(SettingsDialog *dialog, const QString &path);
 
     static bool hasOwnCloudSettings(bool withEnabledCheck = true);
 
-    void shareNote(Note note, ShareDialog *shareDialog);
+    void shareNote(const Note &note, ShareDialog *shareDialog);
 
-    void fetchShares(QString path = "");
+    void fetchShares(const QString &path = "");
 
-    void removeNoteShare(Note note, ShareDialog *shareDialog);
+    void removeNoteShare(const Note &note, ShareDialog *shareDialog);
 
     static OwnCloudService *instance();
 
@@ -116,9 +116,9 @@ private:
 
     void addCalendarAuthHeader(QNetworkRequest *r);
 
-    void handleVersionsLoading(QString data);
+    void handleVersionsLoading(const QString &data);
 
-    void handleTrashedLoading(QString data);
+    void handleTrashedLoading(const QString &data);
 
     QList<CalDAVCalendarData> parseCalendarData(QString &data);
 
@@ -129,10 +129,10 @@ private:
     void loadDirectory(QString &data);
 
     void showOwnCloudServerErrorMessage(
-            QString message = QString(""), bool withSettingsButton = true);
+            const QString &message = QString(""), bool withSettingsButton = true);
 
     void showOwnCloudMessage(
-            QString headline = QString(""), QString message = QString(""),
+            const QString &headline = QString(""), const QString &message = QString(""),
             bool withSettingsButton = true);
 
     void updateNoteShareStatusFromShare(QString &data);
@@ -144,7 +144,7 @@ private:
     void updateNoteShareStatus(QXmlQuery &query,
                                bool updateShareDialog = false);
 
-    void handleDeleteNoteShareReply(QString urlPart, QString &data);
+    void handleDeleteNoteShareReply(const QString &urlPart, QString &data);
 
     void checkAppVersion(QNetworkReply *reply);
 

@@ -2,7 +2,7 @@
 #include <QDebug>
 #include <QSettings>
 
-FileDialog::FileDialog(QString name) {
+FileDialog::FileDialog(const QString &name) {
     if (!name.isEmpty()) {
         setObjectName("FileDialog-" + name);
         _generalSettingsKey = "FileDialog/LastPath";
@@ -43,8 +43,8 @@ FileDialog::FileDialog(QString name) {
  *
  * @param path
  */
-void FileDialog::storeDirectory(QString path) {
-    QSettings settings;
+void FileDialog::storeDirectory(const QString &path_) {
+    QString path = path_;
     QFileInfo fileInfo(path);
 
     // get the directory path from the path if it is not a directory
@@ -54,6 +54,7 @@ void FileDialog::storeDirectory(QString path) {
         path = fileInfo.dir().path();
     }
 
+    QSettings settings;
     // this is the path for just this dialog
     settings.setValue(_settingsKey, path);
 
@@ -61,7 +62,7 @@ void FileDialog::storeDirectory(QString path) {
     settings.setValue(_generalSettingsKey, path);
 }
 
-void FileDialog::storeDirectory(QStringList files) {
+void FileDialog::storeDirectory(const QStringList &files) {
     if (files.count() > 0) {
         storeDirectory(files.at(0));
     }

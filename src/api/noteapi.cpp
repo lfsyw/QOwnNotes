@@ -20,13 +20,13 @@ NoteApi* NoteApi::fetch(int id) {
     return this;
 }
 
-NoteApi* NoteApi::fromNote(Note note) {
+NoteApi* NoteApi::fromNote(const Note &note) {
     NoteApi *noteApi = new NoteApi();
     noteApi->fetch(note.getId());
     return noteApi;
 }
 
-//NoteApi NoteApi::fromNote(Note note) {
+//NoteApi NoteApi::fromNote(const Note &note) {
 //    NoteApi noteApi;
 //    noteApi.fetch(note.getId());
 //    return noteApi;
@@ -74,7 +74,7 @@ QStringList NoteApi::tagNames() const {
  * @param tagName
  * @return true if the note was tagged
  */
-bool NoteApi::addTag(QString tagName) {
+bool NoteApi::addTag(const QString &tagName) {
     if (tagName.isEmpty()) {
         return false;
     }
@@ -100,7 +100,7 @@ bool NoteApi::addTag(QString tagName) {
  * @param tagName
  * @return true if the tag was removed from the note
  */
-bool NoteApi::removeTag(QString tagName) {
+bool NoteApi::removeTag(const QString &tagName) {
     Tag tag = Tag::fetchByName(tagName);
     if (!tag.exists()) {
         return false;

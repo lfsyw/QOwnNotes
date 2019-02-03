@@ -14,7 +14,7 @@ BotanWrapper::BotanWrapper(QObject *parent) :
     mPassword = Hash("!@&^jdshUG24!T^!@*&!Y@()&^909+!-@!@#07");
 }
 
-QString BotanWrapper::Hash(QString Data) {
+QString BotanWrapper::Hash(const QString &Data) {
     try {
         Pipe pipe(new Hash_Filter("SHA-1"));
         pipe.process_msg(Data.toStdString());
@@ -25,7 +25,7 @@ QString BotanWrapper::Hash(QString Data) {
     }
 }
 
-QString BotanWrapper::HexHash(QString Data) {
+QString BotanWrapper::HexHash(const QString &Data) {
     try {
         Pipe pipe(new Hash_Filter("SHA-1"), new Hex_Encoder);
         pipe.process_msg(Data.toStdString());
@@ -36,7 +36,7 @@ QString BotanWrapper::HexHash(QString Data) {
     }
 }
 
-QString BotanWrapper::Encode(QString Data) {
+QString BotanWrapper::Encode(const QString &Data) {
     try {
         Pipe pipe(new Base64_Encoder);
         pipe.process_msg(Data.toStdString());
@@ -47,7 +47,7 @@ QString BotanWrapper::Encode(QString Data) {
     }
 }
 
-QString BotanWrapper::Decode(QString Data) {
+QString BotanWrapper::Decode(const QString &Data) {
     try {
         Pipe pipe(new Base64_Decoder);
         pipe.process_msg(Data.toStdString());
@@ -58,7 +58,7 @@ QString BotanWrapper::Decode(QString Data) {
     }
 }
 
-QString BotanWrapper::Encrypt(QString Data) {
+QString BotanWrapper::Encrypt(const QString &Data) {
     try {
         // Setup the key derive functions
         PKCS5_PBKDF2 pbkdf2(new HMAC(new SHA_160));
@@ -86,7 +86,7 @@ QString BotanWrapper::Encrypt(QString Data) {
     }
 }
 
-QString BotanWrapper::Decrypt(QString Data) {
+QString BotanWrapper::Decrypt(const QString &Data) {
     try {
         //Setup the key derive functions
         PKCS5_PBKDF2 pbkdf2(new HMAC(new SHA_160));
@@ -115,7 +115,7 @@ QString BotanWrapper::Decrypt(QString Data) {
     }
 }
 
-bool BotanWrapper::EncryptFile(QString Source, QString Destination) {
+bool BotanWrapper::EncryptFile(const QString &Source, const QString &Destination) {
     try {
         // Setup the key derive functions
         PKCS5_PBKDF2 pbkdf2(new HMAC(new SHA_160));
@@ -154,7 +154,7 @@ bool BotanWrapper::EncryptFile(QString Source, QString Destination) {
     }
 }
 
-bool BotanWrapper::DecryptFile(QString Source, QString Destination) {
+bool BotanWrapper::DecryptFile(const QString &Source, const QString &Destination) {
     try {
         // Setup the key derive functions
         PKCS5_PBKDF2 pbkdf2(new HMAC(new SHA_160));
@@ -193,12 +193,12 @@ bool BotanWrapper::DecryptFile(QString Source, QString Destination) {
     }
 }
 
-void BotanWrapper::setPassword(QString Password) {
+void BotanWrapper::setPassword(const QString &Password) {
     // Set the password
     mPassword = Password;
 }
 
-void BotanWrapper::setSalt(QString Salt) {
+void BotanWrapper::setSalt(const QString &Salt) {
     QByteArray cBytes = Salt.toLatin1();
     for (int i = 0; i < mSalt.size(); i++) {
         mSalt[i] = cBytes[i];

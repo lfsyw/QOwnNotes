@@ -33,11 +33,11 @@ OrphanedImagesDialog::OrphanedImagesDialog(QWidget *parent) :
     ui->progressBar->setMaximum(noteListCount);
     ui->progressBar->show();
 
-    Q_FOREACH(Note note, noteList) {
+    Q_FOREACH(const Note &note, noteList) {
             QStringList mediaFileList = note.getMediaFileList();
 
             // remove all found images from the orphaned files list
-            Q_FOREACH(QString fileName, mediaFileList) {
+            Q_FOREACH(const QString &fileName, mediaFileList) {
                 orphanedFiles.removeAll(fileName);
             }
 
@@ -46,7 +46,7 @@ OrphanedImagesDialog::OrphanedImagesDialog(QWidget *parent) :
 
     ui->progressBar->hide();
 
-    Q_FOREACH(QString fileName, orphanedFiles) {
+    Q_FOREACH(const QString &fileName, orphanedFiles) {
             QTreeWidgetItem *item = new QTreeWidgetItem();
             item->setText(0, fileName);
             item->setData(0, Qt::UserRole, fileName);

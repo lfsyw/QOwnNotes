@@ -1378,7 +1378,7 @@ QList<Diff> diff_match_patch::diff_fromDelta(const QString &text1,
   QList<Diff> diffs;
   int pointer = 0;  // Cursor in text1
   QStringList tokens = delta.split("\t");
-  foreach(QString token, tokens) {
+  foreach(const QString &token, tokens) {
     if (token.isEmpty()) {
       // Blank tokens are ok (from a trailing \t).
       continue;

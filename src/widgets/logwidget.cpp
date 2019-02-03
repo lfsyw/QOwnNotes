@@ -113,7 +113,7 @@ void LogWidget::storeSettings() const {
 /**
  * Adds a log entry
  */
-void LogWidget::log(LogWidget::LogType logType, QString text) {
+void LogWidget::log(LogWidget::LogType logType, const QString &text) {
     // ignore "libpng sRGB profile" and "QXcbConnection: XCB error: 8" warnings
     if (logType == WarningLogType &&
         (text.contains("libpng warning: iCCP: known incorrect sRGB profile") ||
@@ -372,7 +372,7 @@ void LogWidget::logMessageOutput(
  * @param logType
  * @param msg
  */
-void LogWidget::logToFileIfAllowed(LogType logType, QString msg) {
+void LogWidget::logToFileIfAllowed(LogType logType, const QString &msg) {
     QSettings settings;
     if (settings.value("Debug/fileLogging").toBool()) {
         QFile logFile(Utils::Misc::logFilePath());

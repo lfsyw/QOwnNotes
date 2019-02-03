@@ -73,7 +73,7 @@ void EvernoteImportDialog::on_fileButton_clicked() {
  *
  * @param data
  */
-int EvernoteImportDialog::countNotes(QString data) {
+int EvernoteImportDialog::countNotes(const QString &data) {
     QXmlQuery query;
     query.setFocus(data);
     query.setQuery("en-export/note");
@@ -96,7 +96,7 @@ int EvernoteImportDialog::countNotes(QString data) {
  *
  * @param data
  */
-void EvernoteImportDialog::initNoteCount(QString data) {
+void EvernoteImportDialog::initNoteCount(const QString &data) {
     int count = countNotes(data);
 
     ui->progressBar->setMaximum(count);
@@ -108,15 +108,16 @@ void EvernoteImportDialog::initNoteCount(QString data) {
  *
  * @param content
  */
-QString EvernoteImportDialog::importImages(QString content, QXmlQuery query) {
+QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery query) {
     query.setQuery("resource");
 
+    if (!query.isValid()) {
+        return content_;
+    }
+
+    QString content = content_;
     QXmlResultItems result;
     QHash<QString, MediaFileData> mediaFileDataHash;
-
-    if (!query.isValid()) {
-        return content;
-    }
 
     query.evaluateTo(&result);
     QRegularExpressionMatch match;
@@ -250,16 +251,17 @@ QString EvernoteImportDialog::importImages(QString content, QXmlQuery query) {
  *
  * @param content
  */
-QString EvernoteImportDialog::importAttachments(QString content,
+QString EvernoteImportDialog::importAttachments(const QString &content_,
                                                 QXmlQuery query) {
     query.setQuery("resource");
 
+    if (!query.isValid()) {
+        return content_;
+    }
+
+    auto content = content_;
     QXmlResultItems result;
     QHash<QString, MediaFileData> mediaFileDataHash;
-
-    if (!query.isValid()) {
-        return content;
-    }
 
     query.evaluateTo(&result);
     QRegularExpressionMatch match;
@@ -446,7 +448,7 @@ QString EvernoteImportDialog::getMarkdownForAttachmentFileData(
  *
  * @param data
  */
-void EvernoteImportDialog::importNotes(QString data) {
+void EvernoteImportDialog::importNotes(const QString &data) {
     QXmlQuery query;
     query.setFocus(data);
     query.setQuery("en-export/note");
@@ -607,8 +609,8 @@ void EvernoteImportDialog::tagNote(QXmlQuery &query, Note &note) {
  * @return
  */
 QTreeWidgetItem *EvernoteImportDialog::addMetaDataTreeWidgetItem(
-        QString name,
-        QString attributeName,
+        const QString &name,
+        const QString &attributeName,
         QTreeWidgetItem *parentItem) {
     auto *item = new QTreeWidgetItem();
     item->setText(0, name);

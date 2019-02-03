@@ -14,13 +14,13 @@
 class Bookmark {
 public:
     explicit Bookmark();
-    explicit Bookmark(QString url, QString name = "",
-            QStringList tagList = QStringList(), QString description = "");
+    explicit Bookmark(const QString &url, const QString &name = "",
+            const QStringList &tagList = QStringList(), const QString &description = "");
     friend QDebug operator<<(QDebug dbg, const Bookmark &bookmark);
     QJsonObject jsonObject();
-    static QList<Bookmark> parseBookmarks(QString text, bool withBasicUrls = false);
+    static QList<Bookmark> parseBookmarks(const QString &text, bool withBasicUrls = false);
     static QString bookmarksWebServiceJsonText(QList<Bookmark> bookmarks);
-    static QString parsedBookmarksWebServiceJsonText(QString text, bool withBasicUrls = false);
+    static QString parsedBookmarksWebServiceJsonText(const QString &text, bool withBasicUrls = false);
     bool operator==(const Bookmark &bookmark) const;
     static void mergeInList(QList<Bookmark> &bookmarks, Bookmark &bookmark);
     static void mergeListInList(QList<Bookmark> &sourceBookmarks,

@@ -48,7 +48,7 @@ namespace Utils {
         bool isOneTreeWidgetItemChildVisible(QTreeWidgetItem *item);
 
         void searchForTextInTreeWidget(
-                QTreeWidget *treeWidget, QString text,
+                QTreeWidget *treeWidget, const QString &text,
                 TreeWidgetSearchFlags searchFlags = None);
 
         QMessageBox::StandardButton showMessageBox(

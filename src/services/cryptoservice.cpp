@@ -48,13 +48,13 @@ CryptoService * CryptoService::createInstance(QObject *parent) {
 /**
  * Encrypts a string as string
  */
-QString CryptoService::encryptToString(QString text) {
+QString CryptoService::encryptToString(const QString &text) {
     return _simpleCrypt->encryptToString(text);
 }
 
 /**
  * Decrypts a string as string
  */
-QString CryptoService::decryptToString(QString text) {
+QString CryptoService::decryptToString(const QString &text) {
     return _simpleCrypt->decryptToString(text);
 }

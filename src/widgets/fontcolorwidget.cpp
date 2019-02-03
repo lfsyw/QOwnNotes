@@ -110,7 +110,7 @@ void FontColorWidget::initSchemaSelector() {
     // load the custom schemes
     //
     QStringList schemes = settings.value("Editor/ColorSchemes").toStringList();
-    Q_FOREACH(QString schemaKey, schemes) {
+    Q_FOREACH(const QString &schemaKey, schemes) {
             settings.beginGroup(schemaKey);
             QString name = settings.value("Name").toString();
             ui->colorSchemeComboBox->addItem(name, schemaKey);
@@ -220,7 +220,7 @@ void FontColorWidget::initTextTreeWidgetItems() {
     addTextTreeWidgetItem(tr("Broken link"), MarkdownHighlighter::BrokenLink);
 }
 
-void FontColorWidget::addTextTreeWidgetItem(QString text, int index) {
+void FontColorWidget::addTextTreeWidgetItem(const QString &text, int index) {
     QTreeWidgetItem *item = new QTreeWidgetItem();
     item->setText(0, text);
     item->setData(0, Qt::UserRole, index);
@@ -323,7 +323,7 @@ void FontColorWidget::updateSchemeEditFrame() {
  * @param item
  * @return
  */
-QString FontColorWidget::textSettingsKey(QString key, QTreeWidgetItem *item) {
+QString FontColorWidget::textSettingsKey(const QString &key, QTreeWidgetItem *item) {
     return Utils::Schema::textSettingsKey(key, textSettingsIndex(item));
 }
 
@@ -348,8 +348,9 @@ int FontColorWidget::textSettingsIndex(QTreeWidgetItem *item) {
  * @param key
  * @param value
  */
-void FontColorWidget::setSchemaValue(QString key, QVariant value,
-                                     QString schemaKey) {
+void FontColorWidget::setSchemaValue(const QString &key, const QVariant &value,
+                                     const QString &schemaKey_) {
+    auto schemaKey = schemaKey_;
     if (schemaKey.isEmpty()) {
         schemaKey = _currentSchemaKey;
     }
@@ -599,7 +600,7 @@ void FontColorWidget::on_deleteSchemeButton_clicked() {
     initSchemaSelector();
 }
 
-void FontColorWidget::storeCheckBoxState(QString name, bool checked) {
+void FontColorWidget::storeCheckBoxState(const QString &name, bool checked) {
     if (!_currentSchemaIsDefault) {
         setSchemaValue(textSettingsKey(name), checked);
     }
@@ -674,7 +675,7 @@ void FontColorWidget::on_importSchemeButton_clicked() {
     if (ret == QDialog::Accepted) {
         QStringList fileNames = dialog.selectedFiles();
         if (fileNames.count() > 0) {
-            Q_FOREACH(QString fileName, fileNames) {
+            Q_FOREACH(const QString &fileName, fileNames) {
                     QSettings *settings = new QSettings();
                     QSettings *importSettings =
                             new QSettings(fileName, QSettings::IniFormat);
@@ -698,7 +699,7 @@ void FontColorWidget::on_importSchemeButton_clicked() {
                     QStringList keys = importSettings->allKeys();
 
                     // store the color schema data to the settings
-                    Q_FOREACH(QString key, keys) {
+                    Q_FOREACH(const QString &key, keys) {
                             QVariant value = importSettings->value(key);
                             settings->setValue(key, value);
                         }

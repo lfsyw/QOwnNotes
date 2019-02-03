@@ -503,7 +503,7 @@ void ScriptRepositoryDialog::on_installButton_clicked() {
     // download resource files (if any)
     if (filesWereDownloaded) {
         ScriptInfoJson infoJson = script.getScriptInfoJson();
-        foreach (QString resourceFileName, infoJson.resources) {
+        foreach (const QString &resourceFileName, infoJson.resources) {
                 QUrl resourceUrl = script.remoteFileUrl(resourceFileName);
                 qDebug() << "Downloading: " << resourceUrl;
 

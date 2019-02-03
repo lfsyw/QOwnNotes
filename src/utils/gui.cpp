@@ -44,7 +44,7 @@ bool Utils::Gui::isOneTreeWidgetItemChildVisible(QTreeWidgetItem *item) {
  * Searches for text in items of a tree widget
  */
 void Utils::Gui::searchForTextInTreeWidget(QTreeWidget *treeWidget,
-                                           QString text,
+                                           const QString &text,
                                            TreeWidgetSearchFlags searchFlags) {
     QStringList searchList;
 
@@ -72,7 +72,7 @@ void Utils::Gui::searchForTextInTreeWidget(QTreeWidget *treeWidget,
                 for (int index = 0; index < searchColumnCount; index++) {
                     bool loopShow = true;
 
-                    foreach(QString searchText, searchList) {
+                    foreach(const QString &searchText, searchList) {
                             // search for text in the columns
                             bool loopShow2 = item->text(index).contains(
                                     searchText, Qt::CaseInsensitive);

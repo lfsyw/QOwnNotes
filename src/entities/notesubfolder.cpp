@@ -15,7 +15,7 @@ NoteSubFolder::NoteSubFolder() {
     this->name = "";
 }
 
-int NoteSubFolder::getId() {
+int NoteSubFolder::getId() const {
     return this->id;
 }
 
@@ -23,11 +23,11 @@ int NoteSubFolder::getParentId() {
     return this->parentId;
 }
 
-NoteSubFolder NoteSubFolder::getParent() {
+NoteSubFolder NoteSubFolder::getParent() const {
     return NoteSubFolder::fetch(parentId);
 }
 
-QString NoteSubFolder::getName() {
+QString NoteSubFolder::getName() const {
     return this->name;
 }
 
@@ -39,7 +39,7 @@ QDateTime NoteSubFolder::getModified() {
     return this->modified;
 }
 
-void NoteSubFolder::setName(QString text) {
+void NoteSubFolder::setName(const QString &text) {
     this->name = text;
 }
 
@@ -72,7 +72,7 @@ NoteSubFolder NoteSubFolder::fetch(int id) {
 }
 
 NoteSubFolder NoteSubFolder::fetchByNameAndParentId(
-        QString name, int parentId) {
+        const QString &name, int parentId) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 
@@ -97,7 +97,8 @@ NoteSubFolder NoteSubFolder::fetchByNameAndParentId(
 /**
  * Gets the relative path name of the note sub folder
  */
-QString NoteSubFolder::relativePath(QString separator) {
+QString NoteSubFolder::relativePath(const QString &separator_) const {
+    auto separator = separator_;
     if (separator.isEmpty()) {
         // be aware that the separator has to be same on all platforms to
         // work cross platform
@@ -112,7 +113,7 @@ QString NoteSubFolder::relativePath(QString separator) {
 /**
  * Gets the full path of the note sub folder
  */
-QString NoteSubFolder::fullPath() {
+QString NoteSubFolder::fullPath() const {
     return Utils::Misc::removeIfEndsWith(
             Note::getFullNoteFilePathForFile(relativePath()), "/");
 }
@@ -120,7 +121,7 @@ QString NoteSubFolder::fullPath() {
 /**
  * Gets the full path of the note sub folder as QDir
  */
-QDir NoteSubFolder::dir() {
+QDir NoteSubFolder::dir() const {
     return QDir(fullPath());
 }
 
@@ -136,9 +137,9 @@ QString NoteSubFolder::pathData() {
 /**
  * Fetches a note sub folder by its path data
  */
-NoteSubFolder NoteSubFolder::fetchByPathData(QString pathData,
-                                             QString separator) {
-    pathData = Utils::Misc::removeIfStartsWith(pathData, separator);
+NoteSubFolder NoteSubFolder::fetchByPathData(const QString &pathData_,
+                                             const QString &separator) {
+    auto pathData = Utils::Misc::removeIfStartsWith(pathData_, separator);
     QStringList pathList = pathData.split(separator);
     NoteSubFolder noteSubFolder;
     QStringListIterator itr(pathList);
@@ -187,7 +188,7 @@ bool NoteSubFolder::removeFromFileSystem() {
 /**
  * Renames the note subfolder in the file system
  */
-bool NoteSubFolder::rename(QString newName) {
+bool NoteSubFolder::rename(const QString &newName) {
     QDir dir = this->dir();
 
     if (dir.exists() && !newName.isEmpty()) {
@@ -271,7 +272,7 @@ QList<int> NoteSubFolder::fetchAllIds() {
 }
 
 QList<NoteSubFolder> NoteSubFolder::fetchAllByParentId(
-        int parentId, QString sortBy) {
+        int parentId, const QString &sortBy) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 
@@ -445,7 +446,7 @@ bool NoteSubFolder::setAsActive(int noteSubFolderId) {
 /**
  * Checks if this note sub folder is the current one
  */
-bool NoteSubFolder::isActive() {
+bool NoteSubFolder::isActive() const {
     return activeNoteSubFolderId() == id;
 }
 

@@ -215,7 +215,7 @@ QString WebSocketServerService::getBookmarksJsonText() const {
     QList<Bookmark> bookmarks;
 
     // get all bookmark links from notes tagged with the bookmarks tag
-    Q_FOREACH(Note note, noteList) {
+    Q_FOREACH(const Note &note, noteList) {
             QList<Bookmark> noteBookmarks = note.getParsedBookmarks();
 
             // merge bookmark lists
@@ -261,7 +261,7 @@ QString WebSocketServerService::getBookmarksNoteName() {
     return bookmarksNoteName;
 }
 
-QString WebSocketServerService::flashMessageJsonText(QString message) {
+QString WebSocketServerService::flashMessageJsonText(const QString &message) {
     QJsonObject resultObject;
     resultObject.insert("type", QJsonValue::fromVariant("flashMessage"));
     resultObject.insert("message", message);

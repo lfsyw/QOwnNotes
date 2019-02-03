@@ -12,9 +12,9 @@ class TrashItem {
 public:
     explicit TrashItem();
 
-    int getId();
+    int getId() const;
 
-    QString getFileName();
+    QString getFileName() const;
 
     static TrashItem fetch(int id);
 
@@ -24,9 +24,9 @@ public:
 
     friend QDebug operator<<(QDebug dbg, const TrashItem &trashItem);
 
-    bool fileExists();
+    bool fileExists() const;
 
-    bool exists();
+    bool exists() const;
 
     bool refetch();
 
@@ -36,23 +36,23 @@ public:
 
     bool remove(bool withFile = false);
 
-    bool isFetched();
+    bool isFetched() const;
 
-    QDateTime getCreated();
+    QDateTime getCreated() const;
 
     static int countAll();
 
-    QString fileBaseName(bool withFullName = false);
+    QString fileBaseName(bool withFullName = false) const;
 
-    NoteSubFolder getNoteSubFolder();
+    NoteSubFolder getNoteSubFolder() const;
 
     void setNoteSubFolder(NoteSubFolder noteSubFolder);
 
-    QString relativeNoteFilePath(QString separator = "");
+    QString relativeNoteFilePath(const QString &separator = "");
 
-    QString getNoteSubFolderPathData();
+    QString getNoteSubFolderPathData() const;
 
-    qint64 getFileSize();
+    qint64 getFileSize() const;
 
     static TrashItem trashItemFromQuery(QSqlQuery query);
 
@@ -60,25 +60,25 @@ public:
 
     bool fillFromId(int id);
 
-    static bool add(Note note);
+    static bool add(const Note &note);
 
-    static bool add(Note *note);
+    static bool add(const Note *note);
 
-    void setNote(Note note);
+    void setNote(const Note &note);
 
-    void setNote(Note *note);
+    void setNote(const Note *note);
 
-    static TrashItem prepare(Note *note);
+    static TrashItem prepare(const Note *note);
 
     bool doTrashing();
 
-    QString fullFilePath();
+    QString fullFilePath() const;
 
     QString loadFileFromDisk();
 
     bool restoreFile();
 
-    QString restorationFilePath();
+    QString restorationFilePath() const;
 
     static bool isLocalTrashEnabled();
 

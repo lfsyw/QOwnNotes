@@ -10,8 +10,8 @@ public:
     explicit NoteFolder();
 
     int getId();
-    static bool create(QString name, QString localPath,
-                       int ownCloudServerId, QString remotePath);
+    static bool create(const QString &name, const QString &localPath,
+                       int ownCloudServerId, const QString &remotePath);
     static NoteFolder fetch(int id);
     static NoteFolder noteFolderFromQuery(QSqlQuery query);
     bool store();
@@ -26,11 +26,11 @@ public:
     QString getLocalPath();
     QString getRemotePath();
     int getPriority();
-    void setName(QString text);
-    void setLocalPath(QString text);
+    void setName(const QString &text);
+    void setLocalPath(const QString &text);
     void setPriority(int value);
     void setOwnCloudServerId(int id);
-    void setRemotePath(QString text);
+    void setRemotePath(const QString &text);
     static int countAll();
     static bool migrateToNoteFolders();
     void setAsCurrent();

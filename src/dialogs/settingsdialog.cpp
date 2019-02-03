@@ -1225,7 +1225,7 @@ void SettingsDialog::loadInterfaceStyleComboBox() const {
     ui->interfaceStyleComboBox->clear();
     ui->interfaceStyleComboBox->addItem(tr("Automatic (needs restart)"));
 
-    Q_FOREACH(QString style, QStyleFactory::keys()) {
+    Q_FOREACH(const QString &style, QStyleFactory::keys()) {
             ui->interfaceStyleComboBox->addItem(style);
         }
 
@@ -1428,7 +1428,7 @@ void SettingsDialog::loadShortcutSettings() {
  *
  * @param objectName
  */
-void SettingsDialog::keySequenceEvent(QString objectName) {
+void SettingsDialog::keySequenceEvent(const QString &objectName) {
     QKeySequenceWidget *keySequenceWidget = findKeySequenceWidget(objectName);
 
     if (keySequenceWidget == Q_NULLPTR) {
@@ -1493,7 +1493,7 @@ void SettingsDialog::keySequenceEvent(QString objectName) {
  * Finds a QKeySequenceWidget in the shortcutTreeWidget by the objectName
  * of the assigned menu action
  */
-QKeySequenceWidget *SettingsDialog::findKeySequenceWidget(QString objectName) {
+QKeySequenceWidget *SettingsDialog::findKeySequenceWidget(const QString &objectName) {
     // loop all top level tree widget items (menus)
     for (int i = 0; i < ui->shortcutTreeWidget->topLevelItemCount(); i++) {
         QTreeWidgetItem *menuItem = ui->shortcutTreeWidget->topLevelItem(i);
@@ -1557,7 +1557,7 @@ void SettingsDialog::storeShortcutSettings() {
  * Selects a value in a list widget, that is hidden in the whatsThis parameter
  */
 void SettingsDialog::selectListWidgetValue(QListWidget* listWidget,
-                                           QString value) {
+                                           const QString &value) {
     // get all items from the list widget
     QList<QListWidgetItem *> items = listWidget->findItems(
                     QString("*"), Qt::MatchWrap | Qt::MatchWildcard);
@@ -1578,7 +1578,7 @@ void SettingsDialog::selectListWidgetValue(QListWidget* listWidget,
  * list widget
  */
 bool SettingsDialog::listWidgetValueExists(QListWidget* listWidget,
-                                           QString value) {
+                                           const QString &value) {
     // get all items from the list widget
     QList<QListWidgetItem *> items = listWidget->findItems(
                     QString("*"), Qt::MatchWrap | Qt::MatchWildcard);
@@ -1631,15 +1631,15 @@ void SettingsDialog::outputSettings() {
  * @param serverVersion
  */
 void SettingsDialog::connectTestCallback(bool appIsValid,
-                                         QString appVersion,
-                                         QString serverVersion,
-                                         QString notesPathExistsText,
-                                         QString connectionErrorMessage) {
+                                         const QString &appVersion,
+                                         const QString &serverVersion,
+                                         const QString &notesPathExistsText,
+                                         const QString &connectionErrorMessage_) {
     this->appIsValid = appIsValid;
     this->appVersion = appVersion;
     this->serverVersion = serverVersion;
     this->notesPathExistsText = notesPathExistsText;
-    this->connectionErrorMessage = connectionErrorMessage;
+    this->connectionErrorMessage = connectionErrorMessage_;
 
     // store some data for Utils::Misc::generateDebugInformation
     storeOwncloudDebugData();
@@ -1651,6 +1651,7 @@ void SettingsDialog::connectTestCallback(bool appIsValid,
                    "Server version: %1\nQOwnNotesAPI version: %2")
                     .arg(serverVersion).arg(appVersion));
     } else {
+        auto connectionErrorMessage = connectionErrorMessage_;
         // hide password
         if (!ui->passwordEdit->text().isEmpty()) {
             connectionErrorMessage.replace(ui->passwordEdit->text(), "***");
@@ -1674,7 +1675,7 @@ void SettingsDialog::connectTestCallback(bool appIsValid,
  * @param text
  * @param color
  */
-void SettingsDialog::setOKLabelData(int number, QString text,
+void SettingsDialog::setOKLabelData(int number, const QString &text,
                                     OKLabelStatus status) {
     QLabel *label;
 
@@ -2346,7 +2347,7 @@ void SettingsDialog::on_noteFolderRemotePathButton_clicked()
  *
  * Callback function from OwnCloudService::loadDirectory()
  */
-void SettingsDialog::setNoteFolderRemotePathList(QStringList pathList) {
+void SettingsDialog::setNoteFolderRemotePathList(const QStringList &pathList) {
     if (pathList.count() <= 1) {
         noteFolderRemotePathTreeStatusBar->showMessage(
                 tr("No more folders were found in the current folder"), 1000);
@@ -2354,7 +2355,7 @@ void SettingsDialog::setNoteFolderRemotePathList(QStringList pathList) {
         noteFolderRemotePathTreeStatusBar->clearMessage();
     }
 
-    Q_FOREACH(QString path, pathList) {
+    Q_FOREACH(const QString &path, pathList) {
             if (!path.isEmpty()) {
                 addPathToNoteFolderRemotePathTreeWidget(NULL, path);
             }
@@ -2362,7 +2363,7 @@ void SettingsDialog::setNoteFolderRemotePathList(QStringList pathList) {
 }
 
 void SettingsDialog::addPathToNoteFolderRemotePathTreeWidget(
-        QTreeWidgetItem *parent, QString path) {
+        QTreeWidgetItem *parent, const QString &path) {
     if (path.isEmpty()) {
         return;
     }
@@ -2392,7 +2393,7 @@ void SettingsDialog::addPathToNoteFolderRemotePathTreeWidget(
 }
 
 QTreeWidgetItem *SettingsDialog::findNoteFolderRemotePathTreeWidgetItem(
-        QTreeWidgetItem *parent, QString text) {
+        QTreeWidgetItem *parent, const QString &text) {
     if (parent == NULL) {
         for (int i = 0;
             i < ui->noteFolderRemotePathTreeWidget->topLevelItemCount();
@@ -3600,7 +3601,7 @@ void SettingsDialog::on_exportSettingsButton_clicked() {
             QSettings settings;
 
             const QStringList keys = settings.allKeys();
-            Q_FOREACH(QString key, keys) {
+            Q_FOREACH(const QString &key, keys) {
                     exportSettings.setValue(key, settings.value(key));
                 }
         }
@@ -3649,7 +3650,7 @@ void SettingsDialog::on_importSettingsButton_clicked() {
 
     const QStringList keys = importSettings.allKeys();
 
-    Q_FOREACH(QString key, keys) {
+    Q_FOREACH(const QString &key, keys) {
             QVariant value = importSettings.value(key);
             settings.setValue(key, value);
         }

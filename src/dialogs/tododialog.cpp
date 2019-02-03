@@ -10,7 +10,7 @@
 #include <services/metricsservice.h>
 #include <utils/gui.h>
 
-TodoDialog::TodoDialog(MainWindow *mainWindow, QString taskUid,
+TodoDialog::TodoDialog(MainWindow *mainWindow, const QString &taskUid,
                        QWidget *parent) :
         MasterDialog(parent),
         ui(new Ui::TodoDialog) {
@@ -40,7 +40,7 @@ TodoDialog::TodoDialog(MainWindow *mainWindow, QString taskUid,
  *
  * @param taskUid
  */
-void TodoDialog::jumpToTask(QString taskUid) {
+void TodoDialog::jumpToTask(const QString &taskUid) {
     if (taskUid.isEmpty()) {
         return;
     }
@@ -356,7 +356,7 @@ void TodoDialog::resetEditFrameControls() {
  * @param uid
  * @return Returns the row of the task item in the task list, returns -1 if not found
  */
-int TodoDialog::findTodoItemRowByUID(QString uid) {
+int TodoDialog::findTodoItemRowByUID(const QString &uid) {
     int count = ui->todoList->count();
     if (count == 0) {
         return -1;
