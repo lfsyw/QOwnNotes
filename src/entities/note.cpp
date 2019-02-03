@@ -2505,7 +2505,7 @@ void Note::handleNoteRenaming(const QString &oldFileName, const QString &newFile
 QString Note::createNoteHeader(const QString &name) {
     QString header = name.trimmed() + "\n";
 
-    for (int i = 0; i < min(name.length(), 40); i++) {
+    for (int i = 0; i < min(name.length(), 3); i++) {
         header.append("=");
     }
 
