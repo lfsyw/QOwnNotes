@@ -3409,7 +3409,7 @@ void MainWindow::updateShareButton() {
  * Updates the windows title for the current note
  */
 void MainWindow::updateWindowTitle() {
-    setWindowTitle(currentNote.getName() + " - QOwnNotes " + QString(VERSION));
+    setWindowTitle(currentNote.relativeNoteFilePath()  + " - QOwnNotes " + QString(VERSION));
 }
 
 /**
