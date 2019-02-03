@@ -367,7 +367,7 @@ void QOwnNotesMarkdownTextEdit::highlightCurrentLine()
     QList<QTextEdit::ExtraSelection> extraSelections;
 
     // check if current line is really visible!
-    if (!isReadOnly()) {
+    if (!isReadOnly() && !textCursor().hasSelection()) {
         ensureCursorVisible();
         QTextEdit::ExtraSelection selection;
 
