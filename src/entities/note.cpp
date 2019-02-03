@@ -1063,12 +1063,15 @@ bool Note::storeNoteTextFileToDisk() {
 
     // assign the tags to the new name if the name has changed
     if (oldName != newName) {
+#if 0
+        // only note title is changed, no need to add to trash
         if (TrashItem::isLocalTrashEnabled()) {
             qDebug() << __func__ << " - 'trashItem': " << trashItem;
 
             // trash the old note
             trashItem.doTrashing();
         }
+#endif
 
         // TODO(pbek): we need to heed note subfolders here
         Tag::renameNoteFileNamesOfLinks(oldName, newName);
