@@ -396,6 +396,10 @@ QByteArray Utils::Misc::startSynchronousProcess(
     return result;
 }
 
+bool Utils::Misc::renameFile(const QString &oldName, const QString &newName) {
+    return QFile::rename(oldName, newName);
+}
+
 /**
  * Returns the default notes path we are suggesting
  *

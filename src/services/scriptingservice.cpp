@@ -815,6 +815,15 @@ QByteArray ScriptingService::startSynchronousProcess(
             executablePath, parameters, data);
 }
 
+Q_INVOKABLE bool ScriptingService::renameFile(const QString &oldName,
+                                              const QString &newName)
+{
+    MetricsService::instance()->sendVisitIfEnabled(
+        "scripting/" + QString(__func__));
+
+    return Utils::Misc::renameFile(oldName, newName);
+}
+
 /**
  * QML wrapper to get the current note folder path
  *

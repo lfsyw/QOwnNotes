@@ -46,6 +46,8 @@ public:
     Q_INVOKABLE QByteArray startSynchronousProcess(
             const QString &executablePath, const QStringList &parameters,
             QByteArray data = QByteArray());
+    Q_INVOKABLE bool renameFile(const QString &oldName,
+                                const QString &newName);
     Q_INVOKABLE QString currentNoteFolderPath();
     Q_INVOKABLE NoteApi *currentNote();
     Q_INVOKABLE void log(const QString &text);

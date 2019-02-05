@@ -61,6 +61,8 @@ namespace Utils {
         QByteArray startSynchronousProcess(
                 const QString &executablePath, const QStringList &parameters,
                 QByteArray data = QByteArray());
+        bool renameFile(const QString &oldName,
+                        const QString &newName);
         QList<QObject *> getParents(QObject *object);
         QString appDataPath();
         QString logFilePath();
