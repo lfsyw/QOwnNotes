@@ -1146,6 +1146,10 @@ bool Note::storeNoteTextFileToDisk() {
  */
 QString Note::cleanupFileName(const QString &name_) {
     auto name = name_;
+
+    // remove text/image links
+    name.replace(QRegularExpression(R"(!?\[([^\]]+)\]\([^\)]+\))"), "\\1");
+
     // remove characters from the name that are problematic
     name.remove(QRegularExpression("[\\/\\\\:]"));
 

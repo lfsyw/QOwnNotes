@@ -84,6 +84,9 @@ void NavigationWidget::parse(QTextDocument *document) {
             continue;
         }
 
+        // remove text/image links
+        text.replace(QRegularExpression(R"(!?\[([^\]]+)\]\([^\)]+\))"), "\\1");
+
         text.remove(QRegularExpression("^#+"))
                 .remove(QRegularExpression("#+$"))
                 .remove(QRegularExpression("^\\s+"))
