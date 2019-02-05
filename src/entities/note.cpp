@@ -1894,10 +1894,11 @@ QString Note::textToMarkdownHtml(const QString &str_, const QString &notesPath,
                                  "h1 { margin: 5px 0 20px 0; }"
                                  "h2, h3 { margin: 10px 0 15px 0; }"
                                  "table {border-spacing: 0; border-style: solid; border-width: 1px; border-collapse: collapse; margin-top: 0.5em;}"
+                                 "pre { background-color: %4; border-radius: 5px; padding: 10px; }"
                                  "th, td {padding: 2px 5px;}"
                                  "a { color: #FF9137; text-decoration: none; } %1 %3"
                                  "</style></head><body class=\"preview\">%2</body></html>")
-                .arg(codeStyleSheet, result, rtlStyle);
+                .arg(codeStyleSheet, result, rtlStyle, codeBackgroundColor);
     }
 
     // check if there is a script that wants to modify the content
@@ -1966,6 +1967,11 @@ QString Note::textToMarkdownHtml(const QString &str_, const QString &notesPath,
                     QString("<img\\1src=\"data:%1;base64,%2\"").arg(
                             type.name(), QString(ba.toBase64())));
         }
+    }
+
+    if (!forExport) {
+        // remove the extra blank line at the bottom of code block
+        result.replace("\n</code></pre>", "</code></pre>");
     }
 
 //    qDebug() << __func__ << " - 'result': " << result;
