@@ -1,6 +1,6 @@
 [submodule "src/libraries/qmarkdowntextedit"]
 	path = src/libraries/qmarkdowntextedit
-	url = https://github.com/pbek/qmarkdowntextedit.git
+url=https://github.com/liulex/qmarkdowntextedit.git
 [submodule "src/libraries/piwiktracker"]
 	path = src/libraries/piwiktracker
 	url = https://github.com/pbek/qt-piwik-tracker.git
