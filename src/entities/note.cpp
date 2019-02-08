@@ -357,6 +357,18 @@ QStringList Note::getMediaFileList() const {
         fileList << fileName;
     }
 
+    // match image links like ![media-qV920](https://example.com/abc.gif)
+    re.setPattern(R"(!\[[^\]]*\]\((http[^\)]+\.()" + Note::getMediaExtensions().join("|") + R"())\))");
+    i = re.globalMatch(text);
+
+    // remove all found images from the orphaned files list
+    while (i.hasNext()) {
+        QRegularExpressionMatch match = i.next();
+        QString fileName = Note::getUrlMedia(match.captured(1)).mid(13); // file://media/...
+        if (!fileName.isEmpty())
+            fileList << fileName;
+    }
+
     return fileList;
 }
 
