@@ -1038,7 +1038,7 @@ QString ScriptingService::insertMediaFile(const QString &mediaFilePath,
         return "";
     }
 
-    return Note::getInsertMediaMarkdown(mediaFile, true, returnUrlOnly);
+    return Note::getInsertMediaMarkdown(mediaFile, mediaFilePath, true, returnUrlOnly);
 }
 
 /**

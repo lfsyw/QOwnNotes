@@ -743,7 +743,7 @@ void Utils::Misc::restartApplication() {
  * @param url
  * @return {QByteArray} the content of the downloaded url
  */
-QByteArray Utils::Misc::downloadUrl(QUrl url) {
+QByteArray Utils::Misc::downloadUrl(const QUrl &url) {
     QNetworkAccessManager *manager = new QNetworkAccessManager();
     QEventLoop loop;
     QTimer timer;
@@ -786,7 +786,7 @@ QByteArray Utils::Misc::downloadUrl(QUrl url) {
 /**
  * Downloads an url and stores it to a file
  */
-bool Utils::Misc::downloadUrlToFile(QUrl url, QFile *file) {
+bool Utils::Misc::downloadUrlToFile(const QUrl &url, QFile *file) {
     if (!file->open(QIODevice::WriteOnly)) {
         return false;
     }
@@ -1459,19 +1459,19 @@ QString Utils::Misc::importMediaFromBase64(const QString &data_, const QString &
     }
 
     // create a temporary file for the image
-    QTemporaryFile *tempFile = new QTemporaryFile(
+    QTemporaryFile tempFile(
             QDir::tempPath() + QDir::separator() + "media-XXXXXX." +
             imageSuffix);
 
-    if (!tempFile->open()) {
+    if (!tempFile.open()) {
         return "";
     }
 
     // write image to the temporary file
-    tempFile->write(QByteArray::fromBase64(data.toLatin1()));
+    tempFile.write(QByteArray::fromBase64(data.toLatin1()));
 
     // store the temporary image in the media folder and return the markdown code
-    QString markdownCode = Note::getInsertMediaMarkdown(tempFile);
+    QString markdownCode = Note::getInsertMediaMarkdown(&tempFile, data);
 
     return markdownCode;
 }

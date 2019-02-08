@@ -2524,9 +2524,9 @@ QString Note::createNoteHeader(const QString &name) {
 }
 
 /**
- * Returns the markdown of the inserted media file into a note
+ * Returns the markdown of the inserted media file (with a unique identifier) into a note
  */
-QString Note::getInsertMediaMarkdown(QFile *file, bool addNewLine,
+QString Note::getInsertMediaMarkdown(QFile *file, const QString &identifier_, bool addNewLine,
                                      bool returnUrlOnly) {
     // file->exists() is false on Arch Linux for QTemporaryFile!
     if (file->size() > 0) {
@@ -2550,10 +2550,9 @@ QString Note::getInsertMediaMarkdown(QFile *file, bool addNewLine,
             }
         }
 
-        // find a random name for the new file
-        QString newFileName =
-                QString::number(qrand()) + "." + suffix;
-
+        // find a determinant name for the new file
+        QString hash = getHashForString(identifier_.isEmpty() ? file->fileName() : identifier_);
+        QString newFileName = hash + "." + suffix;
         QString newFilePath = mediaDir.path() + QDir::separator() + newFileName;
 
         // copy the file to the media folder
@@ -2578,6 +2577,13 @@ QString Note::getInsertMediaMarkdown(QFile *file, bool addNewLine,
     return "";
 }
 
+QString Note::getHashForString(const QString &str) {
+    // find a determinant name for the new file
+    const auto &ba = str.toLocal8Bit();
+    return QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex().right(6) + "-" +
+        QCryptographicHash::hash(ba, QCryptographicHash::Sha1).toHex().right(6);
+}
+
 /**
  * Returns the markdown of the inserted attachment file into a note
  */
@@ -2594,10 +2600,9 @@ QString Note::getInsertAttachmentMarkdown(QFile *file, const QString &fileName_,
 
         QFileInfo fileInfo(file->fileName());
 
-        // find a random name for the new file
-        QString newFileName =
-                QString::number(qrand()) + "." + fileInfo.suffix();
-
+        // find a determinant name for the new file
+        QString hash = getHashForString(fileName);
+        QString newFileName = hash + "." + fileInfo.suffix();
         QString newFilePath = dir.path() + QDir::separator() + newFileName;
 
         // copy the file to the attachments folder
@@ -2630,32 +2635,54 @@ QString Note::getInsertAttachmentMarkdown(QFile *file, const QString &fileName_,
  * @param returnUrlOnly
  * @return
  */
-QString Note::downloadUrlToMedia(QUrl url, bool returnUrlOnly) {
-    // try to get the suffix from the url
-    QString suffix = url.toString().split(".", QString::SkipEmptyParts).last();
-
-    if (suffix.isEmpty()) {
-        suffix = "image";
-    }
-
-    // remove strings like "?b=16068071000" and non-characters from the suffix
-    suffix.remove(QRegularExpression("\\?.+$"))
-            .remove(QRegularExpression("[^a-zA-Z0-9]"));
+QString Note::downloadUrlToMedia(const QUrl &url, bool returnUrlOnly) {
+    auto suffix = getUrlMediaSuffix(url);
 
     QString text;
-    QTemporaryFile *tempFile = new QTemporaryFile(
-            QDir::tempPath() + QDir::separator() + "media-XXXXXX." + suffix);
-
-    if (tempFile->open()) {
-        // download the image to the temporary file
-        if (Utils::Misc::downloadUrlToFile(url, tempFile)) {
-            // copy image to media folder and generate markdown code for
-            // the image
-            text = Note::getInsertMediaMarkdown(tempFile, true, returnUrlOnly);
+    if (!suffix.isEmpty()) {
+        QTemporaryFile tempFile(QDir::tempPath() + QDir::separator() + "media-XXXXXX." + suffix);
+    
+        if (tempFile.open()) {
+            // download the image to the temporary file
+            if (Utils::Misc::downloadUrlToFile(url, &tempFile)) {
+                // copy image to media folder and generate markdown code for
+                // the image
+                text = Note::getInsertMediaMarkdown(&tempFile, url.toString(), true, returnUrlOnly);
+            }
         }
     }
 
     return text;
+}
+
+QString Note::getUrlMedia(const QUrl &url) {
+    auto suffix = getUrlMediaSuffix(url);
+    if (!suffix.isEmpty()) {
+        QString newFileName = getHashForString(url.toString()) + "." + suffix;
+        QString mappedMeidaPath = NoteFolder::currentMediaPath() + QDir::separator() + newFileName;
+        if (QFile::exists(mappedMeidaPath))
+            return "file://media/" + newFileName;
+    }
+    return "";
+}
+
+QString Note::getUrlMediaSuffix(const QUrl &url) {
+    auto sepParts = url.toString().split(".", QString::SkipEmptyParts);
+    if (!sepParts.isEmpty())
+    {
+        auto suffix = sepParts.last();
+        // remove strings like "?b=16068071000" and non-characters from the suffix
+        suffix.remove(QRegularExpression("\\?.+$"))
+            .remove(QRegularExpression("[^a-zA-Z0-9]"));
+        if (getMediaExtensions().contains(suffix, Qt::CaseInsensitive))
+            return suffix;
+    }
+    return "";
+}
+
+QStringList Note::getMediaExtensions() {
+    static QStringList mediaExtensions{"jpg", "jpeg", "png", "gif" , "bmp", "tiff", "dds", "svg", "tga", "ico", "tex"};
+    return mediaExtensions;
 }
 
 /**

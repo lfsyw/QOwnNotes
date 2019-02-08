@@ -70,8 +70,8 @@ namespace Utils {
         QString replaceOwnCloudText(const QString &text, bool useShortText = false);
         void restartApplication();
         void needRestart();
-        bool downloadUrlToFile(QUrl url, QFile *file);
-        QByteArray downloadUrl(QUrl url);
+        bool downloadUrlToFile(const QUrl &url, QFile *file);
+        QByteArray downloadUrl(const QUrl &url);
         QString genericCSS();
         QHash<int, SearchEngine> getSearchEnginesHashMap();
         int getDefaultSearchEngineId();

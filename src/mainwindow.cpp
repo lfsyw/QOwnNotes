@@ -93,6 +93,7 @@
 #include <widgets/notetreewidgetitem.h>
 #include <helpers/fakevimproxy.h>
 #include <QProgressDialog>
+#include <QBuffer>
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
@@ -6577,19 +6578,24 @@ void MainWindow::handleInsertingFromMimeData(const QMimeData *mimeData) {
         if (!image.isNull()) {
             showStatusBarMessage(tr("Saving temporary image"));
 
-            QTemporaryFile tempFile(
-                    QDir::tempPath() + QDir::separator() +
-                    "qownnotes-media-XXXXXX.png");
+            QByteArray ba;
+            QBuffer buffer(&ba);
+            buffer.open(QIODevice::WriteOnly);
+            image.save(&buffer, "PNG"); // writes image into ba in PNG format
 
-            if (tempFile.open()) {
-                // save temporary png image
-                image.save(tempFile.fileName(), "PNG");
+            QString fileName = QDir::tempPath() + QDir::separator() +
+                "qownnotes-media-" + 
+                QCryptographicHash::hash(ba, QCryptographicHash::Sha1).toHex().right(6) +
+                ".png";
 
+            if (image.save(fileName, "PNG"))
+            {
                 // insert media into note
-                QFile *file = new QFile(tempFile.fileName());
+                QFile *file = new QFile(fileName);
 
                 showStatusBarMessage(tr("Inserting image"));
                 insertMedia(file);
+                QFile::remove(fileName);
 
                 showStatusBarMessage(tr("Done inserting image"), 3000);
             } else {
@@ -6665,10 +6671,9 @@ void MainWindow::insertHtml(const QString &html_) {
  * Evaluates if file is a media file
  */
 bool MainWindow::isValidMediaFile(QFile *file) {
-    QStringList mediaExtensions = QStringList() << "jpg" << "png" << "gif";
     QFileInfo fileInfo(file->fileName());
     QString extension = fileInfo.suffix();
-    return mediaExtensions.contains(extension, Qt::CaseInsensitive);
+    return Note::getMediaExtensions().contains(extension, Qt::CaseInsensitive);
 }
 
 /**

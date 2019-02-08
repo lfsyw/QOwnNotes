@@ -225,8 +225,10 @@ public:
 
     static QString createNoteHeader(const QString &name);
 
-    static QString getInsertMediaMarkdown(QFile *file, bool addNewLine = true,
+    static QString getInsertMediaMarkdown(QFile *file, const QString &identifier = QString(), bool addNewLine = true,
                                           bool returnUrlOnly = false);
+
+    static QString getHashForString(const QString &str);
 
     static QString getInsertAttachmentMarkdown(QFile *file,
                                                const QString &fileName = "",
@@ -234,7 +236,10 @@ public:
 
     static bool scaleDownImageFileIfNeeded(QFile &file);
 
-    static QString downloadUrlToMedia(QUrl url, bool returnUrlOnly = false);
+    static QString downloadUrlToMedia(const QUrl &url, bool returnUrlOnly = false);
+    static QString getUrlMedia(const QUrl &url);
+    static QString getUrlMediaSuffix(const QUrl &url);
+    static QStringList getMediaExtensions();
 
     bool canWriteToNoteFile() const;
 
