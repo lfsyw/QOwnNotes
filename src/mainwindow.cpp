@@ -3844,8 +3844,8 @@ void MainWindow::setNoteTextFromNote(Note *note, bool updateNoteTextViewOnly,
         // we use our hash because ui->noteTextView->toHtml() may return
         // a different text than before
         if (_notePreviewHash != hash) {
-            ui->noteTextView->setHtml(html);
             _notePreviewHash = hash;
+            ui->noteTextView->setHtml(html);
         }
     }
 

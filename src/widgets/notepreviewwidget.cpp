@@ -12,10 +12,13 @@
  */
 
 #include "notepreviewwidget.h"
+#include "entities/note.h"
+#include "entities/notefolder.h"
 #include <QLayout>
 #include <QDebug>
 #include <QRegExp>
 #include <QMovie>
+#include <QtConcurrent>
 
 
 NotePreviewWidget::NotePreviewWidget(QWidget *parent) : QTextBrowser(parent) {
@@ -94,6 +97,26 @@ QStringList NotePreviewWidget::extractGifUrls(const QString &text) const {
     return urls;
 }
 
+QStringList NotePreviewWidget::extractHttpImageUrls(const QString &text) const
+{
+    static QRegExp regex(R"(<img[^>]+src=\"(http[^\"]+\.(gif|jpg|jpeg|png|bmp))\")", Qt::CaseInsensitive);
+
+    QStringList urls;
+    int pos = 0;
+    while (true)
+    {
+        pos = regex.indexIn(text, pos);
+        if (pos == -1)
+            break;
+        QString url = regex.cap(1);
+        if (!urls.contains(url))
+            urls.append(url);
+        pos += regex.matchedLength();
+    }
+
+    return urls;
+}
+
 /**
  * @brief Setup animations for gif
  * @return
@@ -144,7 +167,10 @@ void NotePreviewWidget::animateGif(const QString &text) {
 void NotePreviewWidget::setHtml(const QString &text) {
     animateGif(text);
 
+    //qInfo() << text;
     QTextBrowser::setHtml(text);
+
+    downloadOnlineMedia();
 }
 
 /**
@@ -185,4 +211,62 @@ void NotePreviewWidget::initSearchFrame(QWidget *searchFrame, bool darkMode) {
 void NotePreviewWidget::hide() {
     _searchWidget->hide();
     QWidget::hide();
+}
+
+void NotePreviewWidget::downloadOnlineMedia() {
+    for (const auto &url : extractHttpImageUrls(toHtml())) {
+        if (!m_url2media.contains(url)) {
+            auto mediaPath = Note::getUrlMedia(url);
+            if (!mediaPath.isEmpty()) {
+                m_url2media[url] = mediaPath;
+                continue;
+            }
+
+            auto watcher = new QFutureWatcher<QPair<QString, QString>>();
+            connect(watcher, SIGNAL(finished()), this, SLOT(updateOnlineMedia()));
+            connect(watcher, SIGNAL(finished()), watcher, SLOT(deleteLater()));
+
+            auto future = QtConcurrent::run(
+                [url]{
+                return qMakePair(url, Note::downloadUrlToMedia(url, true));
+            });
+            watcher->setFuture(future);
+            return; // download them one by one in order
+        }
+    }
+    updateOnlineMedia();
+}
+
+void NotePreviewWidget::updateOnlineMedia()
+{
+    if (sender()) {
+        auto watcher = static_cast<QFutureWatcher<QPair<QString, QString>>*>(sender());
+        auto result = watcher->result();
+        if (!m_url2media.contains(result.first)) {
+            m_url2media[result.first] = result.second;
+        }
+    }
+
+    auto html = toHtml();
+    bool changed = false;
+    bool allDownloaded = true;
+    for (const auto &url : extractHttpImageUrls(html)) {
+        if (!m_url2media.contains(url)) {
+            allDownloaded = false;
+        }
+        else {
+            QString mediaFilePath = m_url2media[url];
+            if (!mediaFilePath.isEmpty()) {
+                mediaFilePath.replace("file://media/",
+                                      "file:///" + NoteFolder::currentNoteFolder().getLocalPath() + "/media/");
+                html.replace("src=\"" + url, "src=\"" + mediaFilePath);
+                changed = true;
+            }
+        }
+    }
+
+    if (changed)
+        setHtml(html);
+    else if (!allDownloaded)
+        downloadOnlineMedia();
 }

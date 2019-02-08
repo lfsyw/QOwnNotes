@@ -36,14 +36,18 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
     QStringList extractGifUrls(const QString &text) const;
+    QStringList extractHttpImageUrls(const QString &text) const;
     void animateGif(const QString &text);
 
 public slots:
     void hide();
+    void downloadOnlineMedia();
+    void updateOnlineMedia();
 
 signals:
     void resize(QSize size, QSize oldSize);
 
 private:
     QList<QMovie*> _movies;
+    QMap<QString, QString> m_url2media;
 };
