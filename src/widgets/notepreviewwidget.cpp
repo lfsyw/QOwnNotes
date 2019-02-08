@@ -99,7 +99,7 @@ QStringList NotePreviewWidget::extractGifUrls(const QString &text) const {
 
 QStringList NotePreviewWidget::extractHttpImageUrls(const QString &text) const
 {
-    static QRegExp regex(R"(<img[^>]+src=\"(http[^\"]+\.(gif|jpg|jpeg|png|bmp))\")", Qt::CaseInsensitive);
+    static QRegExp regex(R"(<img[^>]+src=\"(http[^\"]+\.()" + Note::getMediaExtensions().join("|") + R"())\")", Qt::CaseInsensitive);
 
     QStringList urls;
     int pos = 0;

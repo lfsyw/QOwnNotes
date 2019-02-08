@@ -2661,8 +2661,8 @@ QString Note::getUrlMedia(const QUrl &url) {
     auto suffix = getUrlMediaSuffix(url);
     if (!suffix.isEmpty()) {
         QString newFileName = getHashForString(url.toString()) + "." + suffix;
-        QString mappedMeidaPath = NoteFolder::currentMediaPath() + QDir::separator() + newFileName;
-        if (QFile::exists(mappedMeidaPath))
+        QString mappedMediaPath = NoteFolder::currentMediaPath() + QDir::separator() + newFileName;
+        if (QFile::exists(mappedMediaPath))
             return "file://media/" + newFileName;
     }
     return "";
