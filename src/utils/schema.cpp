@@ -190,9 +190,9 @@ QColor Utils::Schema::Settings::getBackgroundColor(int index) const {
                 textSettingsKey("BackgroundColor", index)).value<QColor>();
     }
 
-    // if the color was not valid, try to fetch the color for "Text"
+    // if the color was not valid, make it transparent
     if (!color.isValid() && (index >= 0)) {
-        color = getBackgroundColor(TextPresetIndex);
+        color = Qt::transparent;
     }
 
     // if the color still was not valid, use black
