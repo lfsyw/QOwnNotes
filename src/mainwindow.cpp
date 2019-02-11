@@ -273,6 +273,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // look if we need update the note view every two seconds
     _noteViewUpdateTimer = new QTimer(this);
+    _noteViewUpdateTimer->setSingleShot(true);
     QObject::connect(
             _noteViewUpdateTimer,
             SIGNAL(timeout()),
@@ -2649,6 +2650,7 @@ void MainWindow::noteViewUpdateTimerSlot() {
         }
         _noteViewNeedsUpdate = false;
     }
+    _noteViewUpdateTimer->start(2000);
 }
 
 void MainWindow::storeUpdatedNotesToDisk() {
@@ -5327,7 +5329,7 @@ void MainWindow::on_noteTextView_anchorClicked(const QUrl &url) {
     qDebug() << __func__ << " - 'url': " << url;
     QString scheme = url.scheme();
 
-    if ((scheme == "note" || scheme == "noteid" || scheme == "task")) {
+    if ((scheme == "note" || scheme == "noteid" || scheme == "task" || scheme == "checkbox")) {
         openLocalUrl(url.toString());
     } else {
         ui->noteTextEdit->openUrl(url.toString());
@@ -5444,6 +5446,36 @@ void MainWindow::openLocalUrl(const QString &urlString_) {
         }
     } else if (scheme == "task") {
         return openTodoDialog(url.host());
+    } else if (scheme == "checkbox") {
+        const auto text = ui->noteTextEdit->toPlainText();
+
+        int index = url.host().mid(1).toInt();
+        QRegExp re(R"((^|\n)\s*[-*+]\s\[([xX ]?)\])", Qt::CaseInsensitive);
+        int pos = 0;
+        while (true) {
+            pos = re.indexIn(text, pos);
+            if (pos == -1) // not found
+                return;
+            auto cursor = ui->noteTextEdit->textCursor();
+            cursor.setPosition(pos + re.matchedLength() - 1);
+            if (cursor.block().userState() == MarkdownHighlighter::HighlighterState::List) {
+                if (index == 0) {
+                    auto ch = re.cap(2);
+                    if (ch.isEmpty())
+                        cursor.insertText("x");
+                    else {
+                        cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
+                        cursor.insertText(ch == " " ? "x" : " ");
+                    }
+
+                    // refresh instantly
+                    _noteViewUpdateTimer->start(1);
+                    break;
+                }
+                --index;
+            }
+            pos += re.matchedLength();
+        }
     }
 }
 

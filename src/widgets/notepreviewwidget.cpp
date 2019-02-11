@@ -19,7 +19,19 @@
 #include <QRegExp>
 #include <QMovie>
 #include <QtConcurrent>
+#include <QProxyStyle>
 
+class NoDottedOutlineForLinksStyle: public QProxyStyle {
+public:
+    int styleHint(StyleHint hint,
+                  const QStyleOption *option,
+                  const QWidget *widget,
+                  QStyleHintReturn *returnData) const Q_DECL_OVERRIDE {
+        if (hint == SH_TextControl_FocusIndicatorTextCharFormat)
+            return 0;
+        return QProxyStyle::styleHint(hint, option, widget, returnData);
+    }
+};
 
 NotePreviewWidget::NotePreviewWidget(QWidget *parent) : QTextBrowser(parent) {
     // add the hidden search widget
@@ -36,6 +48,10 @@ NotePreviewWidget::NotePreviewWidget(QWidget *parent) : QTextBrowser(parent) {
 
     installEventFilter(this);
     viewport()->installEventFilter(this);
+
+    auto proxyStyle = new NoDottedOutlineForLinksStyle;
+    proxyStyle->setParent(this);
+    setStyle(proxyStyle);
 }
 
 void NotePreviewWidget::resizeEvent(QResizeEvent* event) {
@@ -164,11 +180,34 @@ void NotePreviewWidget::animateGif(const QString &text) {
     }
 }
 
+QString NotePreviewWidget::handleTaskLists(const QString &text_) {
+    //TODO
+    // to ensure the clicking behavior of checkboxes,
+    // line numbers of checkboxes in the original markdown text
+    // should be provided by the markdown parser
+    auto text = text_;
+
+    const QString checkboxStart = R"(<a class="task-list-item-checkbox" href="checkbox://_)";
+    text.replace(QRegExp(R"((<li>\s*(<p>)*\s*)\[ ?\])", Qt::CaseInsensitive), "\\1" + checkboxStart + "\">&#9744;</a>");
+    text.replace(QRegExp(R"((<li>\s*(<p>)*\s*)\[[xX]\])", Qt::CaseInsensitive), "\\1" + checkboxStart + "\">&#9745;</a>");
+
+    int count = 0;
+    int pos = 0;
+    while (true) {
+        pos = text.indexOf(checkboxStart, pos);
+        if (pos == -1)
+            break;
+
+        pos += checkboxStart.length();
+        text.insert(pos, QString::number(count++));
+    }
+    return text;
+}
+
 void NotePreviewWidget::setHtml(const QString &text) {
     animateGif(text);
 
-    //qInfo() << text;
-    QTextBrowser::setHtml(text);
+    QTextBrowser::setHtml(handleTaskLists(text));
 
     downloadOnlineMedia();
 }
