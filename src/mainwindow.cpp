@@ -10414,8 +10414,8 @@ void MainWindow::on_noteTextView_customContextMenuRequested(const QPoint &pos) {
         });
 
     menu->addAction(tr("Open image"),
-                    [imagePath, this] {
-        ui->noteTextEdit->openUrl(imagePath);
+                    [imageUrl] {
+        QDesktopServices::openUrl(imageUrl);
     });
 
     menu->exec(globalPos);
