@@ -3632,7 +3632,20 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
                 ui->noteTreeWidget->setFocus();
                 return true;
             }
-            return false;
+            else if (keyEvent->key() == Qt::Key_Control) {
+                // double-tap control key to search in all notes
+                static qint64 lastCtrlKeyPressed = 0;
+                auto deltaMsec = QDateTime::currentMSecsSinceEpoch() - lastCtrlKeyPressed;
+                if (deltaMsec < 500) {
+                    selectAllNotesInNoteSubFolderTreeWidget();
+                    selectAllNotesInTagTreeWidget();
+                    lastCtrlKeyPressed = 0;
+                }
+                else {
+                    lastCtrlKeyPressed = QDateTime::currentMSecsSinceEpoch();
+                }
+                return false;
+            }
         } else if (obj == activeNoteTextEdit()) {
             // check if we want to leave the distraction free mode and the
             // search widget is not visible (because we want to close that
