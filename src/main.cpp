@@ -447,7 +447,10 @@ int main(int argc, char *argv[]) {
 
     // if only one app instance is allowed use SingleApplication
     if (allowOnlyOneAppInstance) {
-        SingleApplication app(argc, argv, false, SingleApplication::Mode::User,
+        SingleApplication app(argc, argv, false,
+                              SingleApplication::Mode::User |
+                              SingleApplication::Mode::ExcludeAppVersion |
+                              SingleApplication::Mode::ExcludeAppPath,
                 1000, []() {
             qWarning() << QCoreApplication::translate("main",
                        "Another instance of QOwnNotes was already started! "
