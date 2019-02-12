@@ -10403,6 +10403,11 @@ void MainWindow::on_noteTextView_customContextMenuRequested(const QPoint &pos) {
         QApplication::clipboard()->setText(imagePath);
         });
 
+    menu->addAction(tr("Open image"),
+                    [imagePath, this] {
+        ui->noteTextEdit->openUrl(imagePath);
+    });
+
     menu->exec(globalPos);
     menu->deleteLater();
 }
