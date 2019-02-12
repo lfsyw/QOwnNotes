@@ -936,6 +936,10 @@ private:
 
     int getSelectedNotesCount() const;
 
+    int getFilteredNotesCount() const;
+
+    void updateNoteListLabel();
+
     void updateNoteTreeWidgetItem(Note &note,
                                   QTreeWidgetItem *noteItem = nullptr);
 

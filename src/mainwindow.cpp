@@ -5037,6 +5037,8 @@ void MainWindow::filterNotesBySearchLineEditText() {
             ++it;
         }
     }
+
+    updateNoteListLabel();
 }
 
 /**
@@ -5105,6 +5107,8 @@ void MainWindow::filterNotesByTag() {
 
         ++it;
     }
+
+    updateNoteListLabel();
 }
 
 /**
@@ -5146,6 +5150,8 @@ void MainWindow::filterNotesByNoteSubFolders() {
 
         ++it;
     }
+
+    updateNoteListLabel();
 }
 
 //
@@ -7768,6 +7774,22 @@ void MainWindow::removeNoteTagClicked() {
 
 int MainWindow::getSelectedNotesCount() const {
     return ui->noteTreeWidget->selectedItems().count();
+}
+
+int MainWindow::getFilteredNotesCount() const {
+    int cnt = 0;
+    QTreeWidgetItemIterator it(ui->noteTreeWidget);
+    while (*it) {
+        if (!(*it)->isHidden())
+            ++cnt;
+        ++it;
+    }
+    return cnt;
+}
+
+void MainWindow::updateNoteListLabel()
+{
+    ui->noteListLabel->setText(tr("Notes count: %1").arg(getFilteredNotesCount()));
 }
 
 /**

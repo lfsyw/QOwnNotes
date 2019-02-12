@@ -344,6 +344,13 @@
               </column>
              </widget>
             </item>
+            <item>
+             <widget class="QLabel" name="noteListLabel">
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
