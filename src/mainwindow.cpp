@@ -7821,7 +7821,7 @@ void MainWindow::on_tagTreeWidget_currentItemChanged(
     const QSignalBlocker blocker(ui->searchLineEdit);
     Q_UNUSED(blocker);
 
-    ui->searchLineEdit->clear();
+    //ui->searchLineEdit->clear();
 
     filterNotes();
 }
@@ -9239,7 +9239,7 @@ void MainWindow::on_noteSubFolderTreeWidget_currentItemChanged(
     const QSignalBlocker blocker(ui->searchLineEdit);
     Q_UNUSED(blocker);
 
-    ui->searchLineEdit->clear();
+    //ui->searchLineEdit->clear();
 
     filterNotes();
     reloadTagTree();
