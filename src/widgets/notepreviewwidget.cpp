@@ -194,7 +194,7 @@ QString NotePreviewWidget::handleTaskLists(const QString &text_) {
     int count = 0;
     int pos = 0;
     while (true) {
-        pos = text.indexOf(checkboxStart, pos);
+        pos = text.indexOf(checkboxStart + "\"", pos);
         if (pos == -1)
             break;
 
@@ -210,6 +210,7 @@ void NotePreviewWidget::setHtml(const QString &text) {
 
     _html = handleTaskLists(text);
     QTextBrowser::setHtml(_html);
+    //qInfo() << _html;
 
     downloadOnlineMedia();
 }
