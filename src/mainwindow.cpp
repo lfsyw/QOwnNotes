@@ -5018,8 +5018,8 @@ void MainWindow::filterNotesBySearchLineEditText() {
 
     QTreeWidgetItemIterator it(ui->noteTreeWidget);
 
-    // search notes when at least 2 characters were entered
-    if (arg1.count() >= 2) {
+    // search notes when at least 1 characters were entered
+    if (arg1.count() >= 1) {
         QList<int> noteIdList = Note::searchInNotes(
                 arg1, _showNotesFromAllNoteSubFolders ||
                     NoteSubFolder::isNoteSubfoldersPanelShowNotesRecursively());
