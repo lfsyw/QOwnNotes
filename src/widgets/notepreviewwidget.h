@@ -50,5 +50,6 @@ signals:
 
 private:
     QList<QMovie*> _movies;
-    QMap<QString, QString> m_url2media;
+    QMap<QString, QString> _url2media;
+    QString _html;
 };

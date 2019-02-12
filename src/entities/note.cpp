@@ -2651,33 +2651,32 @@ QString Note::getInsertAttachmentMarkdown(QFile *file, const QString &fileName_,
  */
 QString Note::downloadUrlToMedia(const QUrl &url, bool returnUrlOnly) {
     auto suffix = getUrlMediaSuffix(url);
+    if (suffix.isEmpty())
+        suffix = "png";
 
-    QString text;
-    if (!suffix.isEmpty()) {
-        QTemporaryFile tempFile(QDir::tempPath() + QDir::separator() + "media-XXXXXX." + suffix);
-    
-        if (tempFile.open()) {
-            // download the image to the temporary file
-            if (Utils::Misc::downloadUrlToFile(url, &tempFile)) {
-                // copy image to media folder and generate markdown code for
-                // the image
-                text = Note::getInsertMediaMarkdown(&tempFile, url.toString(), true, returnUrlOnly);
-            }
+    QTemporaryFile tempFile(QDir::tempPath() + QDir::separator() + "media-XXXXXX." + suffix);
+    if (tempFile.open()) {
+        // download the image to the temporary file
+        if (Utils::Misc::downloadUrlToFile(url, &tempFile)) {
+            // copy image to media folder and generate markdown code for
+            // the image
+            return Note::getInsertMediaMarkdown(&tempFile, url.toString(), true, returnUrlOnly);
         }
     }
 
-    return text;
+    return QString();
 }
 
 QString Note::getUrlMedia(const QUrl &url) {
     auto suffix = getUrlMediaSuffix(url);
-    if (!suffix.isEmpty()) {
-        QString newFileName = getHashForString(url.toString()) + "." + suffix;
-        QString mappedMediaPath = NoteFolder::currentMediaPath() + QDir::separator() + newFileName;
-        if (QFile::exists(mappedMediaPath))
-            return "file://media/" + newFileName;
-    }
-    return "";
+    if (suffix.isEmpty())
+        suffix = "png";
+    QString newFileName = getHashForString(url.toString()) + "." + suffix;
+    QString mappedMediaPath = NoteFolder::currentMediaPath() + QDir::separator() + newFileName;
+    if (QFile::exists(mappedMediaPath))
+        return "file://media/" + newFileName;
+    else
+        return "";
 }
 
 QString Note::getUrlMediaSuffix(const QUrl &url) {

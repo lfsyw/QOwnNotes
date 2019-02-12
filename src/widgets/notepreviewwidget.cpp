@@ -115,7 +115,7 @@ QStringList NotePreviewWidget::extractGifUrls(const QString &text) const {
 
 QStringList NotePreviewWidget::extractHttpImageUrls(const QString &text) const
 {
-    static QRegExp regex(R"(<img[^>]+src=\"(http[^\"]+\.()" + Note::getMediaExtensions().join("|") + R"())\")", Qt::CaseInsensitive);
+    static QRegExp regex(R"(<img[^>]+src=\"(http[^\"]+)\")", Qt::CaseInsensitive);
 
     QStringList urls;
     int pos = 0;
@@ -201,13 +201,15 @@ QString NotePreviewWidget::handleTaskLists(const QString &text_) {
         pos += checkboxStart.length();
         text.insert(pos, QString::number(count++));
     }
+
     return text;
 }
 
 void NotePreviewWidget::setHtml(const QString &text) {
     animateGif(text);
 
-    QTextBrowser::setHtml(handleTaskLists(text));
+    _html = handleTaskLists(text);
+    QTextBrowser::setHtml(_html);
 
     downloadOnlineMedia();
 }
@@ -253,11 +255,11 @@ void NotePreviewWidget::hide() {
 }
 
 void NotePreviewWidget::downloadOnlineMedia() {
-    for (const auto &url : extractHttpImageUrls(toHtml())) {
-        if (!m_url2media.contains(url)) {
+    for (const auto &url : extractHttpImageUrls(_html)) {
+        if (!_url2media.contains(url)) {
             auto mediaPath = Note::getUrlMedia(url);
             if (!mediaPath.isEmpty()) {
-                m_url2media[url] = mediaPath;
+                _url2media[url] = mediaPath;
                 continue;
             }
 
@@ -278,23 +280,25 @@ void NotePreviewWidget::downloadOnlineMedia() {
 
 void NotePreviewWidget::updateOnlineMedia()
 {
+    // use m_html instead of toHtml(), because the content
+    // returned by Qt has been heavily tuned.
     if (sender()) {
         auto watcher = static_cast<QFutureWatcher<QPair<QString, QString>>*>(sender());
         auto result = watcher->result();
-        if (!m_url2media.contains(result.first)) {
-            m_url2media[result.first] = result.second;
+        if (!_url2media.contains(result.first)) {
+            _url2media[result.first] = result.second;
         }
     }
 
-    auto html = toHtml();
+    auto html = _html;
     bool changed = false;
     bool allDownloaded = true;
     for (const auto &url : extractHttpImageUrls(html)) {
-        if (!m_url2media.contains(url)) {
+        if (!_url2media.contains(url)) {
             allDownloaded = false;
         }
         else {
-            QString mediaFilePath = m_url2media[url];
+            QString mediaFilePath = _url2media[url];
             if (!mediaFilePath.isEmpty()) {
                 mediaFilePath.replace("file://media/",
                                       "file:///" + NoteFolder::currentNoteFolder().getLocalPath() + "/media/");
