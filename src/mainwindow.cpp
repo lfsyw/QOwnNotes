@@ -3831,6 +3831,11 @@ void MainWindow::setNoteTextFromNote(Note *note, bool updateNoteTextViewOnly,
         ui->noteTextEdit->setText(note->getNoteText());
     }
 
+    auto editScrollBar = activeNoteTextEdit()->verticalScrollBar();
+    auto viewScrollBar = ui->noteTextView->verticalScrollBar();
+    auto prevEditSliderPos = editScrollBar->sliderPosition();
+    auto prevViewSliderPos = viewScrollBar->sliderPosition();
+
     // update the preview text edit if the dock widget is visible
     if (_notePreviewDockWidget->isVisible() || ignorePreviewVisibility) {
         bool decrypt = ui->noteTextEdit->isHidden();
@@ -3852,8 +3857,13 @@ void MainWindow::setNoteTextFromNote(Note *note, bool updateNoteTextViewOnly,
     }
 
     // update the slider when editing notes
-    noteTextSliderValueChanged(
+    if (prevEditSliderPos == editScrollBar->sliderPosition()) {
+        viewScrollBar->setSliderPosition(prevViewSliderPos);
+    }
+    else {
+        noteTextSliderValueChanged(
             activeNoteTextEdit()->verticalScrollBar()->value(), true);
+    }
 }
 
 /**
