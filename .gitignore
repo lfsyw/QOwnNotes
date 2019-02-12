@@ -8,3 +8,8 @@ build-tests-*
 cmake-build-*
 doc/build
 *.qmlc
+src/ui_*.h
+src/Rel_od/
+src/release/
+src/Release_od/
+src/x64/
