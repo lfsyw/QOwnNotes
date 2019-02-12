@@ -10357,34 +10357,54 @@ void MainWindow::updateNoteSortOrderSelectorVisibility(bool visible) {
  */
 void MainWindow::on_noteTextView_customContextMenuRequested(const QPoint &pos) {
     QPoint globalPos = ui->noteTextView->mapToGlobal(pos);
-    QMenu *menu = ui->noteTextView->createStandardContextMenu();
 
     QTextCursor c = ui->noteTextView->cursorForPosition(pos);
     QTextFormat format = c.charFormat();
-    QAction *copyImageAction = new QAction(this);
+    QString imagePath;
+
+    //HACK the image is splitted to left/right halfs,
+    //     the charFormat of the left half is not image format,
+    //     so here we fix the behavior.
+    if (!format.isImageFormat()) {
+        c.setPosition(c.position() + 1);
+        format = c.charFormat();
+    }
 
     // check if clicked object was an image
-    if (format.isImageFormat()) {
-        menu->addSeparator();
-        copyImageAction = menu->addAction(tr("Copy image file path"));
+    if (!format.isImageFormat()) {
+        auto menu = ui->noteTextView->createStandardContextMenu();
+        menu->exec(globalPos);
+        menu->deleteLater();
+        return;
     }
 
-    QAction *selectedItem = menu->exec(globalPos);
+    auto menu = new QMenu(this);
 
-    if (selectedItem) {
-        // copy the image file path to the clipboard
-        if (selectedItem == copyImageAction) {
-            QString imagePath = format.toImageFormat().name();
-            QUrl imageUrl = QUrl(imagePath);
-
-            if (imageUrl.isLocalFile()) {
-                imagePath = imageUrl.toLocalFile();
-            }
-
+    imagePath = format.toImageFormat().name();
+    QUrl imageUrl = QUrl(imagePath);
+    if (imageUrl.isLocalFile()) {
+        imagePath = imageUrl.toLocalFile();
+        menu->addAction(tr("Copy image"),
+                        [imagePath] {
             QClipboard *clipboard = QApplication::clipboard();
-            clipboard->setText(imagePath);
-        }
+            if (!imagePath.endsWith(".gif", Qt::CaseInsensitive))
+                clipboard->setImage(QImage(imagePath));
+            else {
+                // for gif, copy the file
+                auto mimeData = new QMimeData;
+                mimeData->setData("text/uri-list", QUrl::fromLocalFile(imagePath).toEncoded());
+                QApplication::clipboard()->setMimeData(mimeData);
+            }
+        });
     }
+
+    menu->addAction(tr("Copy image file path"),
+                    [imagePath] {
+        QApplication::clipboard()->setText(imagePath);
+        });
+
+    menu->exec(globalPos);
+    menu->deleteLater();
 }
 
 /**
