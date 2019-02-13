@@ -6975,7 +6975,7 @@ void MainWindow::reloadTagTree() {
     allItem->setToolTip(0, toolTip);
     allItem->setToolTip(1, toolTip);
     allItem->setData(0, Qt::UserRole, Tag::AllNotesId);
-    allItem->setFlags(allItem->flags() & ~Qt::ItemIsSelectable);
+    allItem->setFlags(allItem->flags() | Qt::ItemIsSelectable);
     allItem->setIcon(0, QIcon::fromTheme(
             "edit-copy",
             QIcon(":icons/breeze-qownnotes/16x16/edit-copy.svg")));
@@ -7003,7 +7003,7 @@ void MainWindow::reloadTagTree() {
         untaggedItem->setToolTip(0, toolTip);
         untaggedItem->setToolTip(1, toolTip);
         untaggedItem->setData(0, Qt::UserRole, Tag::AllUntaggedNotesId);
-        untaggedItem->setFlags(untaggedItem->flags() & ~Qt::ItemIsSelectable);
+        untaggedItem->setFlags(untaggedItem->flags() | Qt::ItemIsSelectable);
         untaggedItem->setIcon(0, QIcon::fromTheme(
                 "edit-copy",
                 QIcon(":icons/breeze-qownnotes/16x16/edit-copy.svg")));
@@ -7046,7 +7046,7 @@ void MainWindow::reloadNoteSubFolderTree() {
         allItem->setTextColor(1, QColor(Qt::gray));
         allItem->setText(1, QString::number(linkCount));
         allItem->setToolTip(1, toolTip);
-        allItem->setFlags(allItem->flags() & ~Qt::ItemIsSelectable);
+        allItem->setFlags(allItem->flags() | Qt::ItemIsSelectable);
     }
 
     // add the "note folder" item
