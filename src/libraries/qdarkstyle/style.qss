@@ -1226,3 +1226,8 @@ QSplitter::handle:horizontal {
 QSplitter::handle:vertical {
     height: 1px;
 }
+
+/* remove the dotted outline */
+QTableView {
+	outline: 0;
+}
