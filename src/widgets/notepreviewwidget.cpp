@@ -205,10 +205,43 @@ QString NotePreviewWidget::handleTaskLists(const QString &text_) {
     return text;
 }
 
+QString NotePreviewWidget::handleLocalImageLinks(const QString &text_)
+{
+    QString text;
+
+    QRegExp imgRegex(R"(<img[^>]+src=\"(file:\/\/\/[^\"]+)\".*\/>)", Qt::CaseInsensitive);
+    imgRegex.setMinimal(true);
+
+    // avoid genarating <a ...><img ... /></a> into <a ...><a ...><img ... /></a></a>
+    QRegExp linkRegex(R"(<a[^>]+>)", Qt::CaseInsensitive);
+    linkRegex.setMinimal(true);
+
+    int i = 0;
+    while (true)
+    {
+        auto imgPos = imgRegex.indexIn(text_, i);
+        if (imgPos == -1)
+        {
+            text += text_.mid(i);
+            break;
+        }
+        text += text_.mid(i, imgPos - i);
+        auto linkPos = text_.lastIndexOf(linkRegex, imgPos);
+        if (linkPos == -1 || linkPos + linkRegex.matchedLength() != imgPos) {
+            text += QString(R"(<a href="%1">%2</a>)").arg(imgRegex.cap(1), imgRegex.cap(0));
+        } else {
+            text += imgRegex.cap(0);
+        }
+        i = imgPos + imgRegex.matchedLength();
+    }
+
+    return text;
+}
+
 void NotePreviewWidget::setHtml(const QString &text) {
     animateGif(text);
 
-    _html = handleTaskLists(text);
+    _html = handleLocalImageLinks(handleTaskLists(text));
     QTextBrowser::setHtml(_html);
     //qInfo() << _html;
 
