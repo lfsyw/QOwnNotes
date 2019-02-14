@@ -2601,9 +2601,8 @@ QString Note::getHashForString(const QString &str) {
 /**
  * Returns the markdown of the inserted attachment file into a note
  */
-QString Note::getInsertAttachmentMarkdown(QFile *file, const QString &fileName_,
+QString Note::getInsertAttachmentMarkdown(QFile *file, const QString &fileName,
                                           bool returnUrlOnly) {
-    auto fileName = fileName_;
     if (file->exists() && (file->size() > 0)) {
         QDir dir(NoteFolder::currentAttachmentsPath());
 
@@ -2630,12 +2629,8 @@ QString Note::getInsertAttachmentMarkdown(QFile *file, const QString &fileName_,
             return attachmentUrlString;
         }
 
-        if (fileName.isEmpty()) {
-            fileName = fileInfo.fileName();
-        }
-
         // return the attachment link
-        return "[" + fileName + "](" + attachmentUrlString + ")";
+        return "[" + fileInfo.fileName() + "](" + attachmentUrlString + ")";
     }
 
     return "";
