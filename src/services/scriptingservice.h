@@ -74,6 +74,7 @@ public:
     Q_INVOKABLE bool platformIsWindows();
     Q_INVOKABLE void tagCurrentNote(const QString &tagName);
     Q_INVOKABLE void addStyleSheet(const QString &stylesheet);
+    Q_INVOKABLE void setStyleSheet(const QString &stylesheet);
     Q_INVOKABLE void reloadScriptingEngine();
     Q_INVOKABLE NoteApi* fetchNoteByFileName(const QString &fileName,
                                              int noteSubFolderId = -1);

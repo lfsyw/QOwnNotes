@@ -1367,16 +1367,18 @@ void MainWindow::initStyling() {
     QString bgColorName = Utils::Schema::schemaSettings->getBackgroundColor(
             MarkdownHighlighter::HighlighterState::NoState).name();
 
+    QString basicStyleSheet;
     // set the foreground and background color for the note text edits
-    appStyleSheet += QString("QMarkdownTextEdit{color:%1;background-color:%2;}")
+    basicStyleSheet += QString("QMarkdownTextEdit{color:%1;background-color:%2;}")
             .arg(fgColorName, bgColorName);
 
     // set the background color for the note tag frame and its children QFrames
-    appStyleSheet += QString("QFrame#noteTagFrame, QFrame#noteTagFrame QFrame "
+    basicStyleSheet += QString("QFrame#noteTagFrame, QFrame#noteTagFrame QFrame "
                                      "{background-color: %1;}").arg(
             noteTagFrameColorName);
+    qApp->setProperty("basicStyleSheet", basicStyleSheet);
 
-    qApp->setStyleSheet(appStyleSheet);
+    qApp->setStyleSheet(appStyleSheet + basicStyleSheet);
     Utils::Gui::updateInterfaceFontSize();
 
     if (!isInDistractionFreeMode()) {

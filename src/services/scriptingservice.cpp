@@ -1256,6 +1256,19 @@ void ScriptingService::addStyleSheet(const QString &stylesheet) {
 }
 
 /**
+ * Set a stylesheet to the application
+ *
+ * @param stylesheet
+ */
+void ScriptingService::setStyleSheet(const QString &stylesheet) {
+    MetricsService::instance()->sendVisitIfEnabled(
+            "scripting/" + QString(__func__));
+
+    qApp->setStyleSheet(qApp->property("basicStyleSheet").toString() + "\n/* BEGIN CUSTOM STYLESHEET */\n"
+                        + stylesheet + "\n/* END CUSTOM STYLESHEET */");
+}
+
+/**
  * Clears all custom stylesheets
  */
 void ScriptingService::clearCustomStyleSheets() {
