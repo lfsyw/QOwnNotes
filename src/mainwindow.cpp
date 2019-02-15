@@ -42,6 +42,7 @@
 #include <QTreeWidgetItem>
 #include <QCoreApplication>
 #include <QUuid>
+#include <QImageReader>
 #include "ui_mainwindow.h"
 #include "dialogs/linkdialog.h"
 #include "services/owncloudservice.h"
@@ -634,16 +635,28 @@ void MainWindow::initDockWidgets() {
 #endif
     QSizePolicy sizePolicy;
 
-    _noteSubFolderDockWidget = new QDockWidget(tr("Subfolders"), this);
-    _noteSubFolderDockWidget->setObjectName("noteSubFolderDockWidget");
-    _noteSubFolderDockWidget->setWidget(ui->noteSubFolderFrame);
-    _noteSubFolderDockTitleBarWidget =
-            _noteSubFolderDockWidget->titleBarWidget();
-    sizePolicy = _noteSubFolderDockWidget->sizePolicy();
-    sizePolicy.setHorizontalStretch(2);
-    _noteSubFolderDockWidget->setSizePolicy(sizePolicy);
-    addDockWidget(Qt::LeftDockWidgetArea, _noteSubFolderDockWidget,
-                  Qt::Horizontal);
+    _noteSubFolderDockWidget = nullptr;
+    _noteSubFolderDockTitleBarWidget = nullptr;
+    //_noteSubFolderDockWidget = new QDockWidget(tr("Subfolders"), this);
+    //_noteSubFolderDockWidget->setObjectName("noteSubFolderDockWidget");
+    //_noteSubFolderDockWidget->setWidget(ui->noteSubFolderFrame);
+    //_noteSubFolderDockTitleBarWidget =
+    //        _noteSubFolderDockWidget->titleBarWidget();
+    //sizePolicy = _noteSubFolderDockWidget->sizePolicy();
+    //sizePolicy.setHorizontalStretch(2);
+    //_noteSubFolderDockWidget->setSizePolicy(sizePolicy);
+    //addDockWidget(Qt::LeftDockWidgetArea, _noteSubFolderDockWidget,
+    //              Qt::Horizontal);
+
+    connect(ui->filterTypeTabs, &QTabWidget::currentChanged,
+            this, [this](int index) {
+        if (index == 1)
+        {
+            selectAllNotesInNoteSubFolderTreeWidget();
+            reloadTagTree();
+        }
+        selectAllNotesInTagTreeWidget();
+    });
 
     _taggingDockWidget = new QDockWidget(tr("Tags"), this);
     _taggingDockWidget->setObjectName("taggingDockWidget");
@@ -6955,30 +6968,8 @@ void MainWindow::reloadTagTree() {
 
     ui->tagTreeWidget->clear();
 
-    int activeNoteSubFolderId = _showNotesFromAllNoteSubFolders ? -1 : NoteSubFolder::activeNoteSubFolderId();
-    QList<int> noteSubFolderIds;
-    QList<int> noteIdList;
-    int untaggedNoteCount = 0;
-    
-    // check if the notes should be viewed recursively
-    if (NoteSubFolder::isNoteSubfoldersPanelShowNotesRecursively()) {
-        noteSubFolderIds = NoteSubFolder::fetchIdsRecursivelyByParentId(activeNoteSubFolderId);
-    } else {
-        noteSubFolderIds << activeNoteSubFolderId;
-    }
-    
-    qDebug() << __func__ << " - 'noteSubFolderIds': " << noteSubFolderIds;
-    
-    // get the notes from the subfolders
-    Q_FOREACH(int noteSubFolderId, noteSubFolderIds) {
-        // get all notes of a note sub folder
-        QList<Note> noteList = Note::fetchAllByNoteSubFolderId(noteSubFolderId);
-        untaggedNoteCount += Note::countAllNotTagged(noteSubFolderId);
-        noteIdList << Note::noteIdListFromNoteList(noteList);
-    }
-
     // create an item to view all notes
-    int linkCount = _showNotesFromAllNoteSubFolders ? Note::countAll() : noteIdList.count();
+    int linkCount = Note::countAll();
     QString toolTip = tr("show all notes (%1)").arg(QString::number(linkCount));
 
     QTreeWidgetItem *allItem = new QTreeWidgetItem();
@@ -7004,7 +6995,7 @@ void MainWindow::reloadTagTree() {
 
 
     // add an item to view untagged notes if there are any
-    linkCount = _showNotesFromAllNoteSubFolders ? Note::countAllNotTagged() : untaggedNoteCount;
+    linkCount = Note::countAllNotTagged();
 
     if (linkCount > 0) {
         toolTip = tr("show all untagged notes (%1)")
@@ -7234,7 +7225,7 @@ QTreeWidgetItem *MainWindow::addTagToTagTreeWidget(
 
     QTreeWidgetItem *item = new QTreeWidgetItem();
     QString name = tag.getName();
-    int linkCount = tag.countLinkedNoteFileNames(_showNotesFromAllNoteSubFolders,
+    int linkCount = tag.countLinkedNoteFileNames(true,
                             NoteSubFolder::isNoteSubfoldersPanelShowNotesRecursively());
     QString toolTip = tr("show all notes tagged with '%1' (%2)")
                     .arg(name, QString::number(linkCount));
@@ -7866,9 +7857,8 @@ void MainWindow::on_tagTreeWidget_currentItemChanged(
     int tagId = current->data(0, Qt::UserRole).toInt();
     Tag::setAsActive(tagId);
 
-    const QSignalBlocker blocker(ui->searchLineEdit);
-    Q_UNUSED(blocker);
-
+    //const QSignalBlocker blocker(ui->searchLineEdit);
+    //Q_UNUSED(blocker);
     //ui->searchLineEdit->clear();
 
     filterNotes();
@@ -9284,13 +9274,11 @@ void MainWindow::on_noteSubFolderTreeWidget_currentItemChanged(
     settings.setValue("MainWindow/showNotesFromAllNoteSubFolders",
                       _showNotesFromAllNoteSubFolders);
 
-    const QSignalBlocker blocker(ui->searchLineEdit);
-    Q_UNUSED(blocker);
-
+    //const QSignalBlocker blocker(ui->searchLineEdit);
+    //Q_UNUSED(blocker);
     //ui->searchLineEdit->clear();
 
     filterNotes();
-    reloadTagTree();
 }
 
 /**
@@ -10093,9 +10081,11 @@ void MainWindow::restoreCurrentWorkspace() {
 void MainWindow::handleNoteSubFolderVisibility() const {
     // turn the subfolder dock widget on or off according to whether the
     // subfolders are enabled or not
-    bool showSubfolders = NoteFolder::isCurrentShowSubfolders();
-    _noteSubFolderDockWidget->setVisible(
+    if (_noteSubFolderDockWidget) {
+        bool showSubfolders = NoteFolder::isCurrentShowSubfolders();
+        _noteSubFolderDockWidget->setVisible(
             showSubfolders && _noteSubFolderDockWidgetVisible);
+    }
 }
 
 /**
