@@ -209,7 +209,7 @@ QString NotePreviewWidget::handleLocalImageLinks(const QString &text_)
 {
     QString text;
 
-    QRegExp imgRegex(R"(<img[^>]+src=\"(file:\/\/\/[^\"]+)\".*\/>)", Qt::CaseInsensitive);
+    QRegExp imgRegex(R"(<img[^>]+src=\"(file:\/\/\/[^\"]+)\".*\/?>)", Qt::CaseInsensitive);
     imgRegex.setMinimal(true);
 
     // avoid genarating <a ...><img ... /></a> into <a ...><a ...><img ... /></a></a>
