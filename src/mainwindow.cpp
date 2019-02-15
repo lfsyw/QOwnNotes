@@ -6551,7 +6551,39 @@ void MainWindow::handleInsertingFromMimeData(const QMimeData *mimeData) {
         }
     }
 
-    if (mimeData->hasHtml()) {
+    if (mimeData->hasImage()) {
+        // get the image from mime data
+        QImage image = mimeData->imageData().value<QImage>();
+
+        if (!image.isNull()) {
+            showStatusBarMessage(tr("Saving temporary image"));
+
+            QByteArray ba;
+            QBuffer buffer(&ba);
+            buffer.open(QIODevice::WriteOnly);
+            image.save(&buffer, "PNG"); // writes image into ba in PNG format
+
+            QString fileName = QDir::tempPath() + QDir::separator() +
+                "qownnotes-media-" +
+                QCryptographicHash::hash(ba, QCryptographicHash::Sha1).toHex().right(6) +
+                ".png";
+
+            if (image.save(fileName, "PNG")) {
+                // insert media into note
+                QFile *file = new QFile(fileName);
+
+                showStatusBarMessage(tr("Inserting image"));
+                insertMedia(file);
+                QFile::remove(fileName);
+
+                showStatusBarMessage(tr("Done inserting image"), 3000);
+            }
+            else {
+                showStatusBarMessage(
+                    tr("Temporary file can't be opened"), 3000);
+            }
+        }
+    } else if (mimeData->hasHtml()) {
         insertHtml(mimeData->html());
     } else if (mimeData->hasUrls()) {
         int successCount = 0;
@@ -6633,38 +6665,6 @@ void MainWindow::handleInsertingFromMimeData(const QMimeData *mimeData) {
 
         if (!message.isEmpty()) {
             showStatusBarMessage(message, 5000);
-        }
-    } else if (mimeData->hasImage()) {
-        // get the image from mime data
-        QImage image = mimeData->imageData().value<QImage>();
-
-        if (!image.isNull()) {
-            showStatusBarMessage(tr("Saving temporary image"));
-
-            QByteArray ba;
-            QBuffer buffer(&ba);
-            buffer.open(QIODevice::WriteOnly);
-            image.save(&buffer, "PNG"); // writes image into ba in PNG format
-
-            QString fileName = QDir::tempPath() + QDir::separator() +
-                "qownnotes-media-" + 
-                QCryptographicHash::hash(ba, QCryptographicHash::Sha1).toHex().right(6) +
-                ".png";
-
-            if (image.save(fileName, "PNG"))
-            {
-                // insert media into note
-                QFile *file = new QFile(fileName);
-
-                showStatusBarMessage(tr("Inserting image"));
-                insertMedia(file);
-                QFile::remove(fileName);
-
-                showStatusBarMessage(tr("Done inserting image"), 3000);
-            } else {
-                showStatusBarMessage(
-                        tr("Temporary file can't be opened"), 3000);
-            }
         }
     }
 }
