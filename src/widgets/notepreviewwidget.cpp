@@ -14,6 +14,7 @@
 #include "notepreviewwidget.h"
 #include "entities/note.h"
 #include "entities/notefolder.h"
+#include "mainwindow.h"
 #include <QLayout>
 #include <QDebug>
 #include <QRegExp>
@@ -305,6 +306,8 @@ void NotePreviewWidget::downloadOnlineMedia() {
             connect(watcher, SIGNAL(finished()), this, SLOT(updateOnlineMedia()));
             connect(watcher, SIGNAL(finished()), watcher, SLOT(deleteLater()));
 
+            MainWindow::instance()->showStatusBarMessage(tr("Downloading %1").arg(url), 5000);
+            
             auto future = QtConcurrent::run(
                 [url]{
                 return qMakePair(url, Note::downloadUrlToMedia(url, true));
