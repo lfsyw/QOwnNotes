@@ -6708,6 +6708,13 @@ void MainWindow::insertHtml(const QString &html_) {
 
             // download the image and get the media markdown code for it
             markdownCode = Note::downloadUrlToMedia(imageUrl);
+            if (markdownCode.isEmpty())
+                markdownCode = "![](" + imageUrl.toString() + ")";
+
+            // keep alt text
+            QRegExp altRe(R"(alt=\"([^\"]+)\")", Qt::CaseInsensitive);
+            if (imageTag.contains(altRe))
+                markdownCode.replace(QRegExp(R"(\[.*\])"), "[" + altRe.cap(1) + "]");
         }
 
         if (!markdownCode.isEmpty()) {
@@ -6718,11 +6725,15 @@ void MainWindow::insertHtml(const QString &html_) {
 
     showStatusBarMessage(tr("Downloading images finished"));
 
-    // remove all html tags
-    html.remove(QRegularExpression("<.+?>"));
+    QTextDocument doc;
+    doc.setHtml(html);
+    html = doc.toPlainText();
 
     // unescape some html special characters
     html = Utils::Misc::unescapeHtml(html);
+
+    if (html.count('\n') == 0)
+        html += '\n';
 
     QOwnNotesMarkdownTextEdit* textEdit = activeNoteTextEdit();
     QTextCursor c = textEdit->textCursor();
