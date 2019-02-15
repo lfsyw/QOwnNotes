@@ -10434,8 +10434,14 @@ void MainWindow::on_noteTextView_customContextMenuRequested(const QPoint &pos) {
         menu->addAction(tr("Copy image"),
                         [imagePath] {
             QClipboard *clipboard = QApplication::clipboard();
-            if (!imagePath.endsWith(".gif", Qt::CaseInsensitive))
-                clipboard->setImage(QImage(imagePath));
+            if (!imagePath.endsWith(".gif", Qt::CaseInsensitive)) {
+                QImageReader imageReader(imagePath);
+                // some images may have wrong suffixes
+                imageReader.setDecideFormatFromContent(true);
+                QImage image;
+                if (imageReader.read(&image))
+                    clipboard->setImage(image);
+            }
             else {
                 // for gif, copy the file
                 auto mimeData = new QMimeData;

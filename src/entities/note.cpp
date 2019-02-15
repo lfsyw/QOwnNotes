@@ -22,6 +22,7 @@
 #include <services/scriptingservice.h>
 #include <QMimeDatabase>
 #include <QTemporaryFile>
+#include <QImageReader>
 #include <utils/gui.h>
 
 
@@ -1931,7 +1932,6 @@ QString Note::textToMarkdownHtml(const QString &str_, const QString &notesPath,
         QRegularExpressionMatch match = i.next();
         QString fileUrl = match.captured(1);
         QString fileName = QUrl(fileUrl).toLocalFile();
-        QImage image(fileName);
 
         if (forExport) {
             result.replace(
@@ -1944,7 +1944,10 @@ QString Note::textToMarkdownHtml(const QString &str_, const QString &notesPath,
         } else {
             // for preview
             // cap the image width at maxImageWidth (note text view width)
-            int originalWidth = image.width();
+            QImageReader imageReader(fileName);
+            // some images may have wrong suffixes
+            imageReader.setDecideFormatFromContent(true);
+            int originalWidth = imageReader.size().width();
             int displayWidth = (originalWidth > maxImageWidth)
                                ? maxImageWidth
                                : originalWidth;
