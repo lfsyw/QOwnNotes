@@ -52,6 +52,10 @@ NotePreviewWidget::NotePreviewWidget(QWidget *parent) : QTextBrowser(parent) {
     auto proxyStyle = new NoDottedOutlineForLinksStyle;
     proxyStyle->setParent(this);
     setStyle(proxyStyle);
+
+    QFont font;
+    font.fromString(QSettings().value("MainWindow/noteTextView.code.font").toString());
+    setTabStopWidth(4 * QFontMetrics(font).width(' '));
 }
 
 void NotePreviewWidget::resizeEvent(QResizeEvent* event) {
