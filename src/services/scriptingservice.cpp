@@ -1264,8 +1264,9 @@ void ScriptingService::setStyleSheet(const QString &stylesheet) {
     MetricsService::instance()->sendVisitIfEnabled(
             "scripting/" + QString(__func__));
 
-    qApp->setStyleSheet(qApp->property("basicStyleSheet").toString() + "\n/* BEGIN CUSTOM STYLESHEET */\n"
-                        + stylesheet + "\n/* END CUSTOM STYLESHEET */");
+    qApp->setStyleSheet("\n/* BEGIN CUSTOM STYLESHEET */\n"
+                        + stylesheet + "\n/* END CUSTOM STYLESHEET */"
+                        + qApp->property("basicStyleSheet").toString());
 }
 
 /**
