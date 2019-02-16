@@ -6720,7 +6720,7 @@ void MainWindow::insertHtml(const QString &html_) {
             showStatusBarMessage(tr("Downloading %1").arg(imageUrl.toString()));
 
             // download the image and get the media markdown code for it
-            markdownCode = Note::downloadUrlToMedia(imageUrl);
+            //markdownCode = Note::downloadUrlToMedia(imageUrl);
             if (markdownCode.isEmpty())
                 markdownCode = "![](" + imageUrl.toString() + ")";
 
@@ -6736,21 +6736,26 @@ void MainWindow::insertHtml(const QString &html_) {
         }
     }
 
-    showStatusBarMessage(tr("Downloading images finished"));
+    //showStatusBarMessage(tr("Downloading images finished"));
 
-    QTextDocument doc;
-    doc.setHtml(html);
-    html = doc.toPlainText();
+    // remove all html tags
+    html.remove(QRegularExpression("<.+?>"));
+
+    //QTextDocument doc;
+    //doc.setHtml(html);
+    //html = doc.toPlainText();
 
     // unescape some html special characters
     html = Utils::Misc::unescapeHtml(html);
 
+    // empty content
+    if (html.isEmpty() || QRegExp("[\s\n]+").exactMatch(html))
+        return;
+
     if (html.count('\n') == 0)
         html += '\n';
 
-    QOwnNotesMarkdownTextEdit* textEdit = activeNoteTextEdit();
-    QTextCursor c = textEdit->textCursor();
-
+    QTextCursor c = activeNoteTextEdit()->textCursor();
     c.insertText(html);
 }
 
