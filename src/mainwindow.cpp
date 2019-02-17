@@ -6749,7 +6749,7 @@ void MainWindow::insertHtml(const QString &html_) {
     html = Utils::Misc::unescapeHtml(html);
 
     // empty content
-    if (html.isEmpty() || QRegExp("[\s\n]+").exactMatch(html))
+    if (html.isEmpty() || QRegExp("[\\s\\n]+").exactMatch(html))
         return;
 
     if (html.count('\n') == 0)
