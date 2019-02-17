@@ -56,7 +56,7 @@ QString NoteHistoryItem::getNoteSubFolderPathData() const {
     return _noteSubFolderPathData;
 }
 
-Note NoteHistoryItem::getNote() {
+Note NoteHistoryItem::getNote() const{
     NoteSubFolder noteSubFolder = NoteSubFolder::fetchByPathData(
             _noteSubFolderPathData);
     return Note::fetchByName(_noteName, noteSubFolder.getId());
@@ -75,7 +75,7 @@ float NoteHistoryItem::getRelativeScrollBarPosition() const {
  *
  * @param textEdit
  */
-void NoteHistoryItem::restoreTextEditPosition(QPlainTextEdit *textEdit) {
+void NoteHistoryItem::restoreTextEditPosition(QPlainTextEdit *textEdit) const {
     // set the cursor position
     QTextCursor c = textEdit->textCursor();
     c.setPosition(_cursorPosition);
@@ -87,7 +87,7 @@ void NoteHistoryItem::restoreTextEditPosition(QPlainTextEdit *textEdit) {
                             scrollBar->maximum() *_relativeScrollBarPosition));
 }
 
-bool NoteHistoryItem::isNoteValid() {
+bool NoteHistoryItem::isNoteValid() const {
     Note note = getNote();
     return note.exists();
 }
@@ -146,7 +146,6 @@ QDataStream &operator>>(QDataStream &in, NoteHistoryItem &item) {
  */
 
 NoteHistory::NoteHistory() {
-    noteHistory = new QList<NoteHistoryItem>;
     currentIndex = 0;
 }
 
@@ -157,25 +156,25 @@ void NoteHistory::add(const Note &note, QPlainTextEdit *textEdit) {
 
     NoteHistoryItem item(&note, textEdit);
 
-    if (noteHistory->contains(item)) {
+    if (noteHistory.contains(item)) {
         // decrease current index if we are going to remove an item before it
-        if (noteHistory->indexOf(item) < currentIndex) {
+        if (noteHistory.indexOf(item) < currentIndex) {
             currentIndex--;
         }
 
         // remove found item
-        noteHistory->removeAll(item);
+        noteHistory.removeAll(item);
     }
 
-    noteHistory->prepend(item);
+    noteHistory.prepend(item);
 
     if (currentIndex < lastIndex()) {
         // increase current index
         currentIndex++;
     }
 
-    noteHistory->move(0, currentIndex);
-    currentIndex = noteHistory->indexOf(item);
+    noteHistory.move(0, currentIndex);
+    currentIndex = noteHistory.indexOf(item);
 
     qDebug() << " added to history: " << item;
 }
@@ -188,15 +187,15 @@ void NoteHistory::updateCursorPositionOfNote(const Note &note, QPlainTextEdit *t
     NoteHistoryItem item(&note, textEdit);
 
     // create history entry if it does not exist (for renamed notes)
-    if (!noteHistory->contains(item)) {
+    if (!noteHistory.contains(item)) {
         add(note, textEdit);
     }
 
-    int position = noteHistory->indexOf(item);
+    int position = noteHistory.indexOf(item);
 
     // check if we really found the item
     if (position > -1) {
-        noteHistory->replace(position, item);
+        noteHistory.replace(position, item);
     }
 }
 
@@ -208,8 +207,8 @@ void NoteHistory::updateCursorPositionOfNote(const Note &note, QPlainTextEdit *t
  */
 NoteHistoryItem NoteHistory::getLastItemOfNote(const Note &note) {
     if (!isEmpty()) {
-        for (int i = 0; i < noteHistory->count(); i++) {
-            NoteHistoryItem item = noteHistory->at(i);
+        for (int i = 0; i < noteHistory.count(); i++) {
+            NoteHistoryItem item = noteHistory.at(i);
 
             if (item.getNote().getId() == note.getId()) {
                 return item;
@@ -229,11 +228,11 @@ bool NoteHistory::back() {
         currentIndex--;
     }
 
-    currentHistoryItem = noteHistory->at(currentIndex);
+    currentHistoryItem = noteHistory.at(currentIndex);
 
     // check if note still exists, remove item if not
     if (!currentHistoryItem.isNoteValid()) {
-        noteHistory->removeAll(currentHistoryItem);
+        noteHistory.removeAll(currentHistoryItem);
         return back();
     }
 
@@ -249,11 +248,11 @@ bool NoteHistory::forward() {
         currentIndex++;
     }
 
-    currentHistoryItem = noteHistory->at(currentIndex);
+    currentHistoryItem = noteHistory.at(currentIndex);
 
     // check if note still exists, remove item if not
     if (!currentHistoryItem.isNoteValid()) {
-        noteHistory->removeAll(currentHistoryItem);
+        noteHistory.removeAll(currentHistoryItem);
         return forward();
     }
 
@@ -261,7 +260,7 @@ bool NoteHistory::forward() {
 }
 
 int NoteHistory::lastIndex() {
-    return noteHistory->size() - 1;
+    return noteHistory.size() - 1;
 }
 
 NoteHistoryItem NoteHistory::getCurrentHistoryItem() {
@@ -269,14 +268,14 @@ NoteHistoryItem NoteHistory::getCurrentHistoryItem() {
 }
 
 bool NoteHistory::isEmpty() {
-    return noteHistory->size() == 0;
+    return noteHistory.size() == 0;
 }
 
 /**
  * @brief Clears the note history
  */
 void NoteHistory::clear() {
-    noteHistory->clear();
+    noteHistory.clear();
     currentIndex = 0;
 }
 /**
@@ -356,7 +355,7 @@ void NoteHistory::restoreForCurrentNoteFolder() {
 
 QDebug operator<<(QDebug dbg, const NoteHistory &history) {
     dbg.nospace() << "NoteHistory: <index>" << history.currentIndex <<
-    " <noteHistorySize>" << history.noteHistory->size();
+    " <noteHistorySize>" << history.noteHistory.size();
     return dbg.space();
 }
 
@@ -368,8 +367,8 @@ QDebug operator<<(QDebug dbg, const NoteHistory &history) {
 QList<NoteHistoryItem> NoteHistory::getNoteHistoryItems() const {
     QList<NoteHistoryItem> items;
 
-    for (int i = 0; i < noteHistory->count(); i++) {
-        NoteHistoryItem item = noteHistory->at(i);
+    for (int i = 0; i < noteHistory.count(); i++) {
+        NoteHistoryItem item = noteHistory.at(i);
 
         items.append(item);
     }
@@ -383,7 +382,7 @@ QList<NoteHistoryItem> NoteHistory::getNoteHistoryItems() const {
  * @param item
  */
 void NoteHistory::addNoteHistoryItem(NoteHistoryItem item) {
-    noteHistory->append(item);
+    noteHistory.append(item);
 }
 
 /**
