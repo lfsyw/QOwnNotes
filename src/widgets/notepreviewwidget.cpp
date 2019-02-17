@@ -95,6 +95,104 @@ bool NotePreviewWidget::eventFilter(QObject *obj, QEvent *event) {
     return QTextBrowser::eventFilter(obj, event);
 }
 
+void NotePreviewWidget::mouseDoubleClickEvent(QMouseEvent *event) {
+    static QString chineasePunctuations =
+        "\343\200\202\357\274\237\357\274\201\357\274\214"
+        "\343\200\201\357\274\233\357\274\232\342\200\234"
+        "\342\200\235\342\200\230\342\200\231\357\274\210"
+        "\357\274\211\343\200\212\343\200\213\343\200\210"
+        "\343\200\211\343\200\220\343\200\221\343\200\216"
+        "\343\200\217\343\200\214\343\200\215\357\271\203"
+        "\357\271\204\343\200\224\343\200\225\342\200\246"
+        "\342\200\224\357\275\236\357\271\217\357\277\245";
+    static QString punctuations = R"(.,/#!$%\^&\*;:{}=\-_`~())";
+
+    auto oldPos = textCursor().position();
+    QTextBrowser::mouseDoubleClickEvent(event);
+
+    auto cursor = textCursor();
+    if (!cursor.hasSelection()) {
+        if (cursor.atBlockEnd()) {
+            auto blockText = cursor.block().text();
+            if (!blockText.isEmpty()) {
+                cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor);
+                auto text = cursor.selectedText();
+                int n = blockText.length();
+                int sameCharCount = 1;
+                if (text[0].isSpace()) {
+                    while (sameCharCount < n && blockText[n - 1 - sameCharCount].isSpace())
+                        sameCharCount++;
+                }
+                else if (punctuations.contains(text)) {
+                    while (sameCharCount < n && punctuations.contains(QChar(blockText[n - 1 - sameCharCount])))
+                        sameCharCount++;
+                }
+                cursor.movePosition(QTextCursor::Left, QTextCursor::KeepAnchor, sameCharCount - 1);
+                setTextCursor(cursor);
+            }
+        }
+        else if (cursor.atBlockStart()) {
+            auto blockText = cursor.block().text();
+            if (!blockText.isEmpty()) {
+                int spaceCount = 0;
+                while (spaceCount < blockText.length() && blockText[spaceCount].isSpace())
+                    ++spaceCount;
+                cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, spaceCount);
+                setTextCursor(cursor);
+            }
+        }
+        return;
+    }
+    
+    auto selStart = cursor.selectionStart();
+    auto selEnd = cursor.selectionEnd();
+
+    // cursor at spaces
+    if (selEnd < oldPos) {
+        auto blockText = cursor.block().text();
+        cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+        selStart = selEnd = oldPos - cursor.position();
+        while (selStart >= 1 && blockText[selStart - 1].isSpace())
+            --selStart;
+        while (selEnd < blockText.length() && blockText[selEnd].isSpace())
+            ++selEnd;
+        selStart += cursor.position();
+        selEnd += cursor.position();
+        cursor.setPosition(selStart);
+        cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, selEnd - selStart);
+        setTextCursor(cursor);
+        return;
+    }
+
+    auto text = cursor.selectedText();
+    oldPos -= selStart;
+    
+    QRegExp re("[" + chineasePunctuations + "]+");
+    auto index = text.lastIndexOf(re, oldPos);
+    bool punctuationUnderCursor = false;
+    if (index != -1) {
+        if (index == oldPos || (cursor.atBlockEnd() && index == oldPos - 1)) {
+            index = text.lastIndexOf(QRegExp("[^" + chineasePunctuations + "]"), oldPos);
+            punctuationUnderCursor = true;
+        }
+        selStart += index + 1;
+    }
+    index = text.indexOf(re, oldPos);
+    if (index != -1) {
+        if (!punctuationUnderCursor)
+            selEnd -= text.length() - index;
+        else
+            selEnd -= text.length() - (index + re.matchedLength());
+    }
+    
+    if (selEnd - selStart == text.length())
+        return;
+
+    cursor.setPosition(selStart);
+    cursor.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, selEnd - selStart);
+    setTextCursor(cursor);
+}
+
 /**
  * @brief Extract local gif urls from html
  * @param text

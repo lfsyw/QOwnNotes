@@ -34,6 +34,7 @@ protected:
 
     void resizeEvent(QResizeEvent* event);
     bool eventFilter(QObject *obj, QEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
 
     QStringList extractGifUrls(const QString &text) const;
     QStringList extractHttpImageUrls(const QString &text) const;
