@@ -648,6 +648,9 @@ void MainWindow::initDockWidgets() {
     //addDockWidget(Qt::LeftDockWidgetArea, _noteSubFolderDockWidget,
     //              Qt::Horizontal);
 
+    // no multi-selection for subfolders
+    ui->noteSubFolderTreeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+
     connect(ui->filterTypeTabs, &QTabWidget::currentChanged,
             this, [this](int index) {
         if (index == 1)
