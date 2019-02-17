@@ -3317,6 +3317,9 @@ void MainWindow::setCurrentNote(Note note,
 
             ui->noteTreeWidget->setCurrentItem(items[0]);
         }
+
+        if (ui->searchLineEdit->text().isEmpty())
+            jumpToNoteSubFolder(note.getNoteSubFolderId());
     }
 
     // update the text of the text edit
