@@ -96,6 +96,7 @@ namespace Utils {
         QString generateDebugInformation(bool withGitHubLineBreaks = true);
         bool regExpInListMatches(const QString &text, const QStringList &regExpList);
         QString importMediaFromBase64(const QString &data, const QString &imageSuffix = "dat");
+        void copyImage(const QString &path);
     }  // namespace Misc
 }  // namespace Utils
 

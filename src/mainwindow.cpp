@@ -42,7 +42,6 @@
 #include <QTreeWidgetItem>
 #include <QCoreApplication>
 #include <QUuid>
-#include <QImageReader>
 #include "ui_mainwindow.h"
 #include "dialogs/linkdialog.h"
 #include "services/owncloudservice.h"
@@ -10472,28 +10471,14 @@ void MainWindow::on_noteTextView_customContextMenuRequested(const QPoint &pos) {
         imagePath = imageUrl.toLocalFile();
         menu->addAction(tr("Copy image"),
                         [imagePath] {
-            QClipboard *clipboard = QApplication::clipboard();
-            if (!imagePath.endsWith(".gif", Qt::CaseInsensitive)) {
-                QImageReader imageReader(imagePath);
-                // some images may have wrong suffixes
-                imageReader.setDecideFormatFromContent(true);
-                QImage image;
-                if (imageReader.read(&image))
-                    clipboard->setImage(image);
-            }
-            else {
-                // for gif, copy the file
-                auto mimeData = new QMimeData;
-                mimeData->setData("text/uri-list", QUrl::fromLocalFile(imagePath).toEncoded());
-                QApplication::clipboard()->setMimeData(mimeData);
-            }
+            Utils::Misc::copyImage(imagePath);
         });
     }
 
     menu->addAction(tr("Copy image file path"),
                     [imagePath] {
         QApplication::clipboard()->setText(imagePath);
-        });
+    });
 
     menu->addAction(tr("Open image"),
                     [imageUrl] {

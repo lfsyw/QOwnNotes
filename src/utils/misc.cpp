@@ -28,6 +28,9 @@
 #include <QTimer>
 #include <QSettings>
 #include <QTemporaryFile>
+#include <QMimeData>
+#include <QImageReader>
+#include <QClipboard>
 #include <services/databaseservice.h>
 #include <entities/note.h>
 #include <entities/notefolder.h>
@@ -1480,4 +1483,21 @@ QString Utils::Misc::importMediaFromBase64(const QString &data_, const QString &
     QString markdownCode = Note::getInsertMediaMarkdown(&tempFile, data);
 
     return markdownCode;
+}
+
+void Utils::Misc::copyImage(const QString &path) {
+    if (!path.endsWith(".gif", Qt::CaseInsensitive)) {
+        QImageReader imageReader(path);
+        // some images may have wrong suffixes
+        imageReader.setDecideFormatFromContent(true);
+        QImage image;
+        if (imageReader.read(&image))
+            QApplication::clipboard()->setImage(image);
+    }
+    else {
+        // for gif, copy the file
+        auto mimeData = new QMimeData;
+        mimeData->setData("text/uri-list", QUrl::fromLocalFile(path).toEncoded());
+        QApplication::clipboard()->setMimeData(mimeData);
+    }
 }

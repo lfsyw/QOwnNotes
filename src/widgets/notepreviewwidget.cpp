@@ -15,6 +15,7 @@
 #include "entities/note.h"
 #include "entities/notefolder.h"
 #include "mainwindow.h"
+#include "utils/misc.h"
 #include <QLayout>
 #include <QDebug>
 #include <QRegExp>
@@ -87,6 +88,23 @@ bool NotePreviewWidget::eventFilter(QObject *obj, QEvent *event) {
             _searchWidget->doSearch(
                     !keyEvent->modifiers().testFlag(Qt::ShiftModifier));
             return true;
+        } else if (keyEvent == QKeySequence::Copy) {
+            auto cursor = textCursor();
+            if (cursor.selectedText() == "\357\277\274") { // the 'obj' symbol
+                QTextFormat format = cursor.charFormat();
+                if (!format.isImageFormat()) {
+                    cursor.setPosition(cursor.position() + 1);
+                    format = cursor.charFormat();
+                }
+                if (format.isImageFormat()) {
+                    auto imagePath = format.toImageFormat().name();
+                    QUrl imageUrl = QUrl(imagePath);
+                    if (imageUrl.isLocalFile()) {
+                        Utils::Misc::copyImage(imageUrl.toLocalFile());
+                        return true;
+                    }
+                }
+            }
         }
 
         return false;
