@@ -223,7 +223,10 @@ bool NoteHistory::back() {
     if ((currentIndex < 0) || (currentIndex > lastIndex()) || isEmpty()) {
         return false;
     } else if (currentIndex == 0) {
-        currentIndex = lastIndex();
+        if (loopable)
+            currentIndex = lastIndex();
+        else
+            return false;
     } else {
         currentIndex--;
     }
@@ -243,7 +246,10 @@ bool NoteHistory::forward() {
     if ((currentIndex < 0) || (currentIndex > lastIndex()) || isEmpty()) {
         return false;
     } else if (currentIndex == lastIndex()) {
-        currentIndex = 0;
+        if (loopable)
+            currentIndex = 0;
+        else
+            return false;
     } else {
         currentIndex++;
     }

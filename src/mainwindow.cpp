@@ -200,6 +200,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initTagButtonScrollArea();
 
     noteHistory = NoteHistory();
+    noteHistory.setLoopable(false);
 
     // set our signal mapper
     recentNoteFolderSignalMapper = new QSignalMapper(this);
@@ -9294,8 +9295,10 @@ void MainWindow::on_noteSubFolderTreeWidget_currentItemChanged(
     // select the last active note in the subfolder
     if (ui->searchLineEdit->text().isEmpty() &&
         ui->noteSubFolderTreeWidget->selectedItems().size() == 1 &&
-        getCurrentNote().getNoteSubFolderId() != noteSubFolderId) {
+        getCurrentNote().getNoteSubFolderId() != noteSubFolderId &&
+        getFilteredNotesCount() > 0) {
         auto history = noteHistory; // clone it
+        history.setLoopable(false);
         while (history.back()) {
             auto item = history.getCurrentHistoryItem();
             if (item.isNoteValid() &&

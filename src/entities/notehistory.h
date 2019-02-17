@@ -42,10 +42,12 @@ private:
     QList<NoteHistoryItem> noteHistory;
     int currentIndex;
     NoteHistoryItem currentHistoryItem;
+    bool loopable;
     int lastIndex();
 
 public:
     explicit NoteHistory();
+    void setLoopable(bool loop) { loopable = loop; }
     void add(const Note &note, QPlainTextEdit *textEdit);
     friend QDebug operator<<(QDebug dbg, const NoteHistory &history);
     bool back();
