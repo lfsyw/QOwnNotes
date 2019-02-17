@@ -9284,6 +9284,25 @@ void MainWindow::on_noteSubFolderTreeWidget_currentItemChanged(
     //ui->searchLineEdit->clear();
 
     filterNotes();
+
+    // select the last active note in the subfolder
+    if (ui->searchLineEdit->text().isEmpty() &&
+        ui->noteSubFolderTreeWidget->selectedItems().size() == 1 &&
+        getCurrentNote().getNoteSubFolderId() != noteSubFolderId) {
+        auto history = noteHistory; // clone it
+        while (history.back()) {
+            auto item = history.getCurrentHistoryItem();
+            if (item.isNoteValid() &&
+                item.getNote().getNoteSubFolderId() == noteSubFolderId) {
+                //setCurrentNoteFromHistoryItem(*iter);
+                setCurrentNote(item.getNote(), true, true, true);
+                item.restoreTextEditPosition(ui->noteTextEdit);
+                return;
+            }
+        }
+        // if not found in history, jump to the first note
+        ui->noteTreeWidget->setCurrentItem(ui->noteTreeWidget->itemAt(0, 0));
+    }
 }
 
 /**
