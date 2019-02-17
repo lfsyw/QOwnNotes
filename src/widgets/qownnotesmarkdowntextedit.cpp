@@ -378,8 +378,11 @@ void QOwnNotesMarkdownTextEdit::highlightCurrentLine()
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         selection.cursor = textCursor();
-//        selection.cursor.clearSelection();
-//        selection.cursor.select(QTextCursor::BlockUnderCursor);
+        selection.cursor.movePosition(QTextCursor::StartOfBlock);
+        selection.cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        // include the paragraph separator
+        selection.cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 1);
+        //selection.cursor.select(QTextCursor::BlockUnderCursor);
         extraSelections.append(selection);
     }
 
