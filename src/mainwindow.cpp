@@ -9297,7 +9297,8 @@ void MainWindow::on_noteSubFolderTreeWidget_currentItemChanged(
     if (ui->searchLineEdit->text().isEmpty() &&
         ui->noteSubFolderTreeWidget->selectedItems().size() == 1 &&
         getFilteredNotesCount() > 0) {
-        if (getCurrentNote().getNoteSubFolderId() == noteSubFolderId)
+        if (_showNotesFromAllNoteSubFolders ||
+            getCurrentNote().getNoteSubFolderId() == noteSubFolderId)
             ui->noteTreeWidget->scrollToItem(ui->noteTreeWidget->currentItem());
         else {
             auto history = noteHistory; // clone it
