@@ -47,6 +47,9 @@ public slots:
     void downloadOnlineMedia();
     void updateOnlineMedia();
 
+private slots:
+    void updateOnlineMediaFromFutureWatcher();
+
 signals:
     void resize(QSize size, QSize oldSize);
 

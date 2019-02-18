@@ -419,7 +419,7 @@ void NotePreviewWidget::downloadOnlineMedia() {
             }
 
             auto watcher = new QFutureWatcher<QPair<QString, QString>>();
-            connect(watcher, SIGNAL(finished()), this, SLOT(updateOnlineMedia()));
+            connect(watcher, SIGNAL(finished()), this, SLOT(updateOnlineMediaFromFutureWatcher()));
             connect(watcher, SIGNAL(finished()), watcher, SLOT(deleteLater()));
 
             MainWindow::instance()->showStatusBarMessage(tr("Downloading %1").arg(url), 5000);
@@ -437,17 +437,10 @@ void NotePreviewWidget::downloadOnlineMedia() {
 
 void NotePreviewWidget::updateOnlineMedia()
 {
-    // use m_html instead of toHtml(), because the content
+    // use _html instead of toHtml(), because the content
     // returned by Qt has been heavily tuned.
-    if (sender()) {
-        auto watcher = static_cast<QFutureWatcher<QPair<QString, QString>>*>(sender());
-        auto result = watcher->result();
-        if (!_url2media.contains(result.first)) {
-            _url2media[result.first] = result.second;
-        }
-    }
-
     auto html = _html;
+
     bool changed = false;
     bool allDownloaded = true;
     for (const auto &url : extractHttpImageUrls(html)) {
@@ -469,4 +462,17 @@ void NotePreviewWidget::updateOnlineMedia()
         setHtml(html);
     else if (!allDownloaded)
         downloadOnlineMedia();
+}
+
+void NotePreviewWidget::updateOnlineMediaFromFutureWatcher()
+{
+    if (sender()) {
+        auto watcher = static_cast<QFutureWatcher<QPair<QString, QString>>*>(sender());
+        auto result = watcher->result();
+        if (!_url2media.contains(result.first)) {
+            _url2media[result.first] = result.second;
+        }
+    }
+
+    updateOnlineMedia();
 }
