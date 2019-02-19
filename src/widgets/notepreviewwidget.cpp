@@ -301,31 +301,6 @@ void NotePreviewWidget::animateGif(const QString &text) {
     }
 }
 
-QString NotePreviewWidget::handleTaskLists(const QString &text_) {
-    //TODO
-    // to ensure the clicking behavior of checkboxes,
-    // line numbers of checkboxes in the original markdown text
-    // should be provided by the markdown parser
-    auto text = text_;
-
-    const QString checkboxStart = R"(<a class="task-list-item-checkbox" href="checkbox://_)";
-    text.replace(QRegExp(R"((<li>\s*(<p>)*\s*)\[ ?\])", Qt::CaseInsensitive), "\\1" + checkboxStart + "\">&#9744;</a>");
-    text.replace(QRegExp(R"((<li>\s*(<p>)*\s*)\[[xX]\])", Qt::CaseInsensitive), "\\1" + checkboxStart + "\">&#9745;</a>");
-
-    int count = 0;
-    int pos = 0;
-    while (true) {
-        pos = text.indexOf(checkboxStart + "\"", pos);
-        if (pos == -1)
-            break;
-
-        pos += checkboxStart.length();
-        text.insert(pos, QString::number(count++));
-    }
-
-    return text;
-}
-
 QString NotePreviewWidget::handleLocalImageLinks(const QString &text_)
 {
     QString text;
@@ -362,7 +337,7 @@ QString NotePreviewWidget::handleLocalImageLinks(const QString &text_)
 void NotePreviewWidget::setHtml(const QString &text) {
     animateGif(text);
 
-    _html = handleLocalImageLinks(handleTaskLists(text));
+    _html = handleLocalImageLinks(Utils::Misc::parseTaskList(text, true));
     QTextBrowser::setHtml(_html);
     //qInfo() << _html;
 

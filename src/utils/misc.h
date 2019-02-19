@@ -58,6 +58,7 @@ namespace Utils {
                                                 bool ifNotEmptyOnly = false);
         QString makePathRelativeToPortableDataPathIfNeeded(const QString &path);
         QString htmlToMarkdown(const QString &text);
+        QString parseTaskList(const QString &html, bool clickable);
         QByteArray startSynchronousProcess(
                 const QString &executablePath, const QStringList &parameters,
                 QByteArray data = QByteArray());

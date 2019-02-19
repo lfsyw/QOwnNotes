@@ -4818,12 +4818,7 @@ bool MainWindow::prepareExportNoteAsPDFPrinter(QPrinter *printer) {
  * @param textEdit
  */
 void MainWindow::exportNoteAsPDF(QPlainTextEdit *textEdit) {
-    QPrinter *printer = new QPrinter(QPrinter::HighResolution);
-
-    if (prepareExportNoteAsPDFPrinter(printer)) {
-        textEdit->document()->print(printer);
-        Utils::Misc::openFolderSelect(printer->outputFileName());
-    }
+    exportNoteAsPDF(textEdit->document());
 }
 
 /**
@@ -4831,10 +4826,19 @@ void MainWindow::exportNoteAsPDF(QPlainTextEdit *textEdit) {
  * @param textEdit
  */
 void MainWindow::exportNoteAsPDF(QTextEdit *textEdit) {
+    exportNoteAsPDF(textEdit->document());
+}
+
+/**
+ * @brief Exports the docuemnt as PDF
+ * @param doc
+ */
+void MainWindow::exportNoteAsPDF(QTextDocument *doc)
+{
     QPrinter *printer = new QPrinter(QPrinter::HighResolution);
 
     if (prepareExportNoteAsPDFPrinter(printer)) {
-        textEdit->document()->print(printer);
+        doc->print(printer);
         Utils::Misc::openFolderSelect(printer->outputFileName());
     }
 }
@@ -5901,10 +5905,9 @@ void MainWindow::noteTextEditCustomContextMenuRequested(
             on_actionSearch_text_on_the_web_triggered();
         } else if (selectedItem == printTextAction) {
             // print the selected text
-            QOwnNotesMarkdownTextEdit *textEdit =
-                    new QOwnNotesMarkdownTextEdit(this);
-            textEdit->setPlainText(selectedNoteTextEditText());
-            printNote(textEdit);
+            QOwnNotesMarkdownTextEdit textEdit(this);
+            textEdit.setPlainText(selectedNoteTextEditText());
+            printNote(&textEdit);
         } else if (selectedItem == printHTMLAction) {
             // print the selected text (preview)
             QString html = currentNote.textToMarkdownHtml(
@@ -5915,18 +5918,18 @@ void MainWindow::noteTextEditCustomContextMenuRequested(
             printNote(textEdit);
         } else if (selectedItem == exportTextAction) {
             // export the selected text as PDF
-            QOwnNotesMarkdownTextEdit *textEdit =
-                    new QOwnNotesMarkdownTextEdit(this);
-            textEdit->setPlainText(selectedNoteTextEditText());
-            exportNoteAsPDF(textEdit);
+            QOwnNotesMarkdownTextEdit textEdit(this);
+            textEdit.setPlainText(selectedNoteTextEditText());
+            exportNoteAsPDF(&textEdit);
         } else if (selectedItem == exportHTMLAction) {
             // export the selected text (preview) as PDF
             QString html = currentNote.textToMarkdownHtml(
                     selectedNoteTextEditText(), NoteFolder::currentLocalPath(),
                     getMaxImageWidth());
-            QTextEdit *textEdit = new QTextEdit(this);
-            textEdit->setHtml(html);
-            exportNoteAsPDF(textEdit);
+            html = Utils::Misc::parseTaskList(html, false);
+            QTextEdit textEdit(this);
+            textEdit.setHtml(html);
+            exportNoteAsPDF(&textEdit);
         } else if (selectedItem == copyCodeBlockAction) {
             // copy the text from a copy block around currentTextBlock to the
             // clipboard
@@ -6006,10 +6009,15 @@ void MainWindow::on_actionOpen_List_triggered() {
  * @brief Exports the current note as PDF (markdown)
  */
 void MainWindow::on_action_Export_note_as_PDF_markdown_triggered() {
-    // reload the preview in case it is turned off
-    setNoteTextFromNote(&currentNote, true, true);
+    bool decrypt = ui->noteTextEdit->isHidden();
+    QString html = currentNote.toMarkdownHtml(NoteFolder::currentLocalPath(),
+                                              getMaxImageWidth(), false, decrypt);
+    html = Utils::Misc::parseTaskList(html, false);
 
-    exportNoteAsPDF(ui->noteTextView);
+    auto doc = ui->noteTextView->document()->clone();
+    doc->setHtml(html);
+    exportNoteAsPDF(doc);
+    doc->deleteLater();
 }
 
 /**
