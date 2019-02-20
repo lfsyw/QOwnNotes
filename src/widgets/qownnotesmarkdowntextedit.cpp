@@ -378,12 +378,15 @@ void QOwnNotesMarkdownTextEdit::highlightCurrentLine()
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         selection.cursor = textCursor();
-        selection.cursor.movePosition(QTextCursor::StartOfBlock);
-        selection.cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        // include the paragraph separator
-        selection.cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, 1);
-        //selection.cursor.select(QTextCursor::BlockUnderCursor);
+        selection.cursor.movePosition(QTextCursor::EndOfBlock);
         extraSelections.append(selection);
+
+        const auto blockNumber = selection.cursor.block().blockNumber();
+        while ((selection.cursor.movePosition(QTextCursor::Up) ||
+                selection.cursor.movePosition(QTextCursor::Left)) &&
+               blockNumber == selection.cursor.block().blockNumber()) {
+            extraSelections.append(selection);
+        }
     }
 
     // be aware that extra selections, like for global searching, gets
