@@ -1939,7 +1939,7 @@ QString Note::textToMarkdownHtml(const QString &str_, const QString &notesPath,
                                        QRegularExpression::escape(windowsSlash +
                                                                   fileName) +
                                        "\""),
-                    QString("<img src=\"file://%2\"").arg(windowsSlash +
+                    QString("<img src=\"file://%1\"").arg(windowsSlash +
                                                           fileName));
         } else {
             // for preview
