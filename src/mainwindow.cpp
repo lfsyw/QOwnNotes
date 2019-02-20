@@ -2675,6 +2675,12 @@ void MainWindow::storeUpdatedNotesToDisk() {
     const QSignalBlocker blocker(noteDirectoryWatcher);
     Q_UNUSED(blocker);
 
+    if (sender() == this->noteSaveTimer) {
+        // postpone saving the current note if the cursor is in the first block
+        if (ui->noteTextEdit->textCursor().block().blockNumber() == 0)
+            return;
+    }
+
     QString oldNoteName = currentNote.getName();
 
     // For some reason this->noteDirectoryWatcher gets an event from this.
@@ -3302,6 +3308,8 @@ void MainWindow::setCurrentNote(Note note,
     if (currentNote.exists() && (currentNote.getId() != note.getId())) {
         this->noteHistory.updateCursorPositionOfNote(
                 this->currentNote, ui->noteTextEdit);
+        storeUpdatedNotesToDisk();
+        note.refetch(); // the note could have been modified by storeUpdatedNotesToDisk()
     }
 
     this->currentNote = note;
