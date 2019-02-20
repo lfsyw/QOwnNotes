@@ -305,12 +305,15 @@ QString NotePreviewWidget::handleLocalImageLinks(const QString &text_)
 {
     QString text;
 
-    QRegExp imgRegex(R"(<img[^>]+src=\"(file:\/\/\/[^\"]+)\".*\/?>)", Qt::CaseInsensitive);
+    QRegExp imgRegex(R"(<img[^>]+(src=\"(file:\/\/\/[^\"]+)\".*\/?>))", Qt::CaseInsensitive);
     imgRegex.setMinimal(true);
 
     // avoid genarating <a ...><img ... /></a> into <a ...><a ...><img ... /></a></a>
     QRegExp linkRegex(R"(<a[^>]+>)", Qt::CaseInsensitive);
     linkRegex.setMinimal(true);
+
+    QMargins margins = contentsMargins();
+    const int maxImageWidth = viewport()->width() - margins.left() - margins.right() - 15;
 
     int i = 0;
     while (true)
@@ -324,7 +327,15 @@ QString NotePreviewWidget::handleLocalImageLinks(const QString &text_)
         text += text_.mid(i, imgPos - i);
         auto linkPos = text_.lastIndexOf(linkRegex, imgPos);
         if (linkPos == -1 || linkPos + linkRegex.matchedLength() != imgPos) {
-            text += QString(R"(<a href="%1">%2</a>)").arg(imgRegex.cap(1), imgRegex.cap(0));
+            // cap the image width at maxImageWidth (note text view width)
+            QString fileName = QUrl(imgRegex.cap(2)).toLocalFile();
+            QImageReader imageReader(fileName);
+            // some images may have wrong suffixes
+            imageReader.setDecideFormatFromContent(true);
+            text += QString(R"(<a href="%1"><img width="%2" %3</a>)")
+                .arg(imgRegex.cap(2))
+                .arg(qMin(imageReader.size().width(), maxImageWidth))
+                .arg(imgRegex.cap(1));
         } else {
             text += imgRegex.cap(0);
         }
