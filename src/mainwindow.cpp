@@ -4838,7 +4838,7 @@ void MainWindow::exportNoteAsPDF(QTextEdit *textEdit) {
 }
 
 /**
- * @brief Exports the docuemnt as PDF
+ * @brief Exports the document as PDF
  * @param doc
  */
 void MainWindow::exportNoteAsPDF(QTextDocument *doc)
