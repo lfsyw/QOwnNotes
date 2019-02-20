@@ -9919,14 +9919,13 @@ void MainWindow::on_actionUnlock_panels_toggled(bool arg1) {
             }
     } else {
         // add the old title bar widgets to all dock widgets
-        _noteSubFolderDockWidget->setTitleBarWidget(
-                _noteSubFolderDockTitleBarWidget);
+        if (_noteSubFolderDockWidget)
+            _noteSubFolderDockWidget->setTitleBarWidget(_noteSubFolderDockTitleBarWidget);
         _taggingDockWidget->setTitleBarWidget(_taggingDockTitleBarWidget);
         _noteSearchDockWidget->setTitleBarWidget(_noteSearchDockTitleBarWidget);
         _noteFolderDockWidget->setTitleBarWidget(_noteFolderDockTitleBarWidget);
         _noteListDockWidget->setTitleBarWidget(_noteListDockTitleBarWidget);
-        _noteNavigationDockWidget->setTitleBarWidget(
-                _noteNavigationDockTitleBarWidget);
+        _noteNavigationDockWidget->setTitleBarWidget(_noteNavigationDockTitleBarWidget);
 
         if (!_noteEditIsCentralWidget) {
             _noteEditDockWidget->setTitleBarWidget(_noteEditDockTitleBarWidget);
