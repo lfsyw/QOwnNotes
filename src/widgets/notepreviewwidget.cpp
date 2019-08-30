@@ -35,6 +35,15 @@ public:
     }
 };
 
+static bool checkFileHead(const QString &fileName, const QString &identifier)
+{
+    QFile f(fileName);
+    if (f.open(QIODevice::ReadOnly))
+        return f.peek(identifier.length()) == identifier;
+    else
+        return false;
+}
+
 NotePreviewWidget::NotePreviewWidget(QWidget *parent) : QTextBrowser(parent) {
     // add the hidden search widget
     _searchWidget = new QTextEditSearchWidget(this);
@@ -217,7 +226,7 @@ void NotePreviewWidget::mouseDoubleClickEvent(QMouseEvent *event) {
  * @return Urls to gif files
  */
 QStringList NotePreviewWidget::extractGifUrls(const QString &text) const {
-    static QRegExp regex(R"(<img[^>]+src=\"(file:\/\/\/[^\"]+\.gif)\")", Qt::CaseInsensitive);
+    static QRegExp regex(R"(<img[^>]+src=\"(file:\/\/\/[^\"]+\.(gif|png))\")", Qt::CaseInsensitive);
 
     QStringList urls;
     int pos = 0;
@@ -277,8 +286,12 @@ void NotePreviewWidget::animateGif(const QString &text) {
     _movies.removeAll(nullptr);
 
     for (const QString &url : urls) {
+        QString localFn = QUrl(url).toLocalFile();
+        if (checkFileHead(localFn, "gif"))
+            continue;
+
         auto* movie = new QMovie(this);
-        movie->setFileName(QUrl(url).toLocalFile());
+        movie->setFileName(localFn);
         movie->setCacheMode(QMovie::CacheNone);
 
         if (!movie->isValid() || movie->frameCount() < 2) {
