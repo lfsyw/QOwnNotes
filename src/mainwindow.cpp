@@ -10473,7 +10473,7 @@ void MainWindow::on_noteTextView_customContextMenuRequested(const QPoint &pos) {
 
     // check if clicked object was an image
     if (!format.isImageFormat()) {
-        auto menu = ui->noteTextView->createStandardContextMenu();
+        auto menu = ui->noteTextView->createStandardContextMenu(pos);
         menu->exec(globalPos);
         menu->deleteLater();
         return;
@@ -10500,6 +10500,14 @@ void MainWindow::on_noteTextView_customContextMenuRequested(const QPoint &pos) {
                     [imageUrl] {
         QDesktopServices::openUrl(imageUrl);
     });
+
+#if defined(Q_OS_WIN)
+    menu->addAction(tr("Reveal image in Explorer"),
+        [imagePath] {
+        QProcess::startDetached("explorer.exe /select," + QDir::toNativeSeparators(imagePath));
+    });
+#endif
+    
 
     menu->exec(globalPos);
     menu->deleteLater();
