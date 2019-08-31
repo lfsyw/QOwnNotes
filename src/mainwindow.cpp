@@ -10684,68 +10684,6 @@ void MainWindow::updateNoteSortOrderSelectorVisibility(bool visible) {
 }
 
 /**
- * Shows a context menu for the note preview
- *
- * @param pos
- */
-void MainWindow::on_noteTextView_customContextMenuRequested(const QPoint &pos) {
-    QPoint globalPos = ui->noteTextView->mapToGlobal(pos);
-
-    QTextCursor c = ui->noteTextView->cursorForPosition(pos);
-    QTextFormat format = c.charFormat();
-    QString imagePath;
-
-    //HACK the image is splitted to left/right halfs,
-    //     the charFormat of the left half is not image format,
-    //     so here we fix the behavior.
-    if (!format.isImageFormat()) {
-        c.setPosition(c.position() + 1);
-        format = c.charFormat();
-    }
-
-    // check if clicked object was an image
-    if (!format.isImageFormat()) {
-        auto menu = ui->noteTextView->createStandardContextMenu(pos);
-        menu->exec(globalPos);
-        menu->deleteLater();
-        return;
-    }
-
-    auto menu = new QMenu(this);
-
-    imagePath = format.toImageFormat().name();
-    QUrl imageUrl = QUrl(imagePath);
-    if (imageUrl.isLocalFile()) {
-        imagePath = imageUrl.toLocalFile();
-        menu->addAction(tr("Copy image"),
-                        [imagePath] {
-            Utils::Misc::copyImage(imagePath);
-        });
-    }
-
-    menu->addAction(tr("Copy image file path"),
-                    [imagePath] {
-        QApplication::clipboard()->setText(imagePath);
-    });
-
-    menu->addAction(tr("Open image"),
-                    [imageUrl] {
-        QDesktopServices::openUrl(imageUrl);
-    });
-
-#if defined(Q_OS_WIN)
-    menu->addAction(tr("Reveal image in Explorer"),
-        [imagePath] {
-        QProcess::startDetached("explorer.exe /select," + QDir::toNativeSeparators(imagePath));
-    });
-#endif
-
-
-    menu->exec(globalPos);
-    menu->deleteLater();
-}
-
-/**
  * Commits changes from the current note folder to git
  */
 void MainWindow::gitCommitCurrentNoteFolder() {

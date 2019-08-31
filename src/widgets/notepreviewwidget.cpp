@@ -26,6 +26,7 @@
 #include <QMenu>
 #include <QClipboard>
 #include <QProxyStyle>
+#include <QDesktopServices>
 #include <dialogs/filedialog.h>
 
 class NoDottedOutlineForLinksStyle: public QProxyStyle {
@@ -486,59 +487,64 @@ void NotePreviewWidget::updateOnlineMediaFromFutureWatcher()
  * @param event
  */
 void NotePreviewWidget::contextMenuEvent(QContextMenuEvent *event) {
-    QPoint pos = event->pos();
-    QPoint globalPos = event->globalPos();
-    QMenu *menu = this->createStandardContextMenu();
-
-    QTextCursor c = this->cursorForPosition(pos);
+    QTextCursor c = this->cursorForPosition(event->pos());
     QTextFormat format = c.charFormat();
-    const QString &anchorHref = format.toCharFormat().anchorHref();
-    bool isImageFormat = format.isImageFormat();
-    bool isAnchor = !anchorHref.isEmpty();
 
-    if (isImageFormat || isAnchor) {
-        menu->addSeparator();
+    //HACK the image is splitted to left/right halfs,
+    //     the charFormat of the left half is not image format,
+    //     so here we fix the behavior.
+    if (!format.isImageFormat()) {
+        c.setPosition(c.position() + 1);
+        format = c.charFormat();
     }
 
-    auto *copyImageAction = new QAction(this);
-    auto *copyLinkLocationAction = new QAction(this);
+    auto menu = new QMenu(this);
 
     // check if clicked object was an image
-    if (isImageFormat) {
-        copyImageAction = menu->addAction(tr("Copy image file path"));
+    if (format.isImageFormat()) {
+        QString imagePath = format.toImageFormat().name();
+        QUrl imageUrl = QUrl(imagePath);
+        if (imageUrl.isLocalFile()) {
+            imagePath = imageUrl.toLocalFile();
+            menu->addAction(tr("Copy image"), this, [imagePath] {
+                Utils::Misc::copyImage(imagePath);
+            });
+            menu->addAction(tr("Copy image file"), this, [imagePath] {
+                auto mimeData = new QMimeData;
+                mimeData->setData("text/uri-list", QUrl::fromLocalFile(imagePath).toEncoded());
+                QApplication::clipboard()->setMimeData(mimeData);
+            });
+        }
+
+        menu->addAction(tr("Copy image file path"), this, [imagePath] {
+            QApplication::clipboard()->setText(imagePath);
+        });
+
+        menu->addSeparator();
+
+        menu->addAction(tr("Open image"), this, [imageUrl] {
+            QDesktopServices::openUrl(imageUrl);
+        });
+
+#if defined(Q_OS_WIN)
+        menu->addAction(tr("Reveal image in Explorer"),
+            [imagePath] {
+            QProcess::startDetached("explorer.exe /select," + QDir::toNativeSeparators(imagePath));
+        });
+#endif
+    } else {
+        QString anchorHref = format.toCharFormat().anchorHref();
+        if (!anchorHref.isEmpty()) {
+            menu->addAction(tr("Copy link location"), this, [anchorHref] {
+                QApplication::clipboard()->setText(anchorHref);
+            });
+        }
+
+        menu->addAction(tr("Export generated raw HTML"), this, SLOT(exportAsHTMLFile()));
     }
 
-    if (isAnchor) {
-        copyLinkLocationAction = menu->addAction(tr("Copy link location"));
-    }
-
-    auto *htmlFileExportAction = menu->addAction(tr("Export generated raw HTML"));
-
-    QAction *selectedItem = menu->exec(globalPos);
-
-    if (selectedItem) {
-        // copy the image file path to the clipboard
-        if (selectedItem == copyImageAction) {
-            QString imagePath = format.toImageFormat().name();
-            QUrl imageUrl = QUrl(imagePath);
-
-            if (imageUrl.isLocalFile()) {
-                imagePath = imageUrl.toLocalFile();
-            }
-
-            QClipboard *clipboard = QApplication::clipboard();
-            clipboard->setText(imagePath);
-        }
-        // copy link location to the clipboard
-        else if (selectedItem == copyLinkLocationAction) {
-            QClipboard *clipboard = QApplication::clipboard();
-            clipboard->setText(anchorHref);
-        }
-        // export the generated html as html file
-        else if (selectedItem == htmlFileExportAction) {
-            exportAsHTMLFile();
-        }
-    }
+    menu->exec(event->globalPos());
+    menu->deleteLater();
 }
 
 void NotePreviewWidget::exportAsHTMLFile() {

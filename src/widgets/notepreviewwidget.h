@@ -29,8 +29,6 @@ public:
 
     void setHtml(const QString &text);
 
-    void exportAsHTMLFile();
-
 protected:
     QTextEditSearchWidget *_searchWidget;
     QWidget *_searchFrame;
@@ -50,6 +48,7 @@ public slots:
     void hide();
     void downloadOnlineMedia();
     void updateOnlineMedia();
+    void exportAsHTMLFile();
 
 private slots:
     void updateOnlineMediaFromFutureWatcher();
