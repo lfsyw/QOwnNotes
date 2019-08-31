@@ -249,8 +249,7 @@ QStringList NotePreviewWidget::extractHttpImageUrls(const QString &text) const
 
     QStringList urls;
     int pos = 0;
-    while (true)
-    {
+    while (true) {
         pos = regex.indexIn(text, pos);
         if (pos == -1)
             break;
