@@ -1863,7 +1863,7 @@ QString Note::textToMarkdownHtml(const QString &str_, const QString &notesPath,
     hoedown_html_renderer_free(renderer);
 
     // transform remote preview image tags
-    Utils::Misc::transformRemotePreviewImages(result);
+    //Utils::Misc::transformRemotePreviewImages(result);
 
     // transform Nextcloud preview image tags
     Utils::Misc::transformNextcloudPreviewImages(result);
