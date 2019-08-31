@@ -110,7 +110,7 @@ void FontColorWidget::initSchemaSelector() {
     // load the custom schemes
     //
     QStringList schemes = settings.value("Editor/ColorSchemes").toStringList();
-    Q_FOREACH(const QString &schemaKey, schemes) {
+    Q_FOREACH(QString schemaKey, schemes) {
             settings.beginGroup(schemaKey);
             QString name = settings.value("Name").toString();
             ui->colorSchemeComboBox->addItem(name, schemaKey);
@@ -220,8 +220,8 @@ void FontColorWidget::initTextTreeWidgetItems() {
     addTextTreeWidgetItem(tr("Broken link"), MarkdownHighlighter::BrokenLink);
 }
 
-void FontColorWidget::addTextTreeWidgetItem(const QString &text, int index) {
-    QTreeWidgetItem *item = new QTreeWidgetItem();
+void FontColorWidget::addTextTreeWidgetItem(const QString& text, int index) {
+    auto *item = new QTreeWidgetItem();
     item->setText(0, text);
     item->setData(0, Qt::UserRole, index);
 
@@ -288,28 +288,28 @@ void FontColorWidget::updateSchemeEditFrame() {
 
     if (index >= 0) {
         const QSignalBlocker blocker(ui->boldCheckBox);
-        Q_UNUSED(blocker);
+        Q_UNUSED(blocker)
 
         ui->boldCheckBox->setChecked(
                 Utils::Schema::schemaSettings->getSchemaValue(
                         textSettingsKey("Bold")).toBool());
 
         const QSignalBlocker blocker2(ui->italicCheckBox);
-        Q_UNUSED(blocker2);
+        Q_UNUSED(blocker2)
 
         ui->italicCheckBox->setChecked(
                 Utils::Schema::schemaSettings->getSchemaValue(
                         textSettingsKey("Italic")).toBool());
 
         const QSignalBlocker blocker3(ui->underlineCheckBox);
-        Q_UNUSED(blocker3);
+        Q_UNUSED(blocker3)
 
         ui->underlineCheckBox->setChecked(
                 Utils::Schema::schemaSettings->getSchemaValue(
                         textSettingsKey("Underline")).toBool());
 
         const QSignalBlocker blocker4(ui->fontSizeAdaptionSpinBox);
-        Q_UNUSED(blocker4);
+        Q_UNUSED(blocker4)
 
         ui->fontSizeAdaptionSpinBox->setValue(Utils::Schema::schemaSettings->getSchemaValue(
                         textSettingsKey("FontSizeAdaption"), 100).toInt());
@@ -323,7 +323,7 @@ void FontColorWidget::updateSchemeEditFrame() {
  * @param item
  * @return
  */
-QString FontColorWidget::textSettingsKey(const QString &key, QTreeWidgetItem *item) {
+QString FontColorWidget::textSettingsKey(const QString& key, QTreeWidgetItem *item) {
     return Utils::Schema::textSettingsKey(key, textSettingsIndex(item));
 }
 
@@ -348,9 +348,8 @@ int FontColorWidget::textSettingsIndex(QTreeWidgetItem *item) {
  * @param key
  * @param value
  */
-void FontColorWidget::setSchemaValue(const QString &key, const QVariant &value,
-                                     const QString &schemaKey_) {
-    auto schemaKey = schemaKey_;
+void FontColorWidget::setSchemaValue(const QString& key, const QVariant& value,
+                                     QString schemaKey) {
     if (schemaKey.isEmpty()) {
         schemaKey = _currentSchemaKey;
     }
@@ -527,7 +526,7 @@ void FontColorWidget::on_foregroundColorCheckBox_toggled(bool checked) {
 
 void FontColorWidget::updateForegroundColorCheckBox(bool checked, bool store) {
     const QSignalBlocker blocker(ui->foregroundColorCheckBox);
-    Q_UNUSED(blocker);
+    Q_UNUSED(blocker)
 
     ui->foregroundColorCheckBox->setChecked(checked);
     ui->foregroundColorButton->setEnabled(checked);
@@ -557,7 +556,7 @@ void FontColorWidget::on_backgroundColorCheckBox_toggled(bool checked) {
 
 void FontColorWidget::updateBackgroundColorCheckBox(bool checked, bool store) {
     const QSignalBlocker blocker(ui->backgroundColorCheckBox);
-    Q_UNUSED(blocker);
+    Q_UNUSED(blocker)
 
     ui->backgroundColorCheckBox->setChecked(checked);
     ui->backgroundColorButton->setEnabled(checked);
@@ -600,7 +599,7 @@ void FontColorWidget::on_deleteSchemeButton_clicked() {
     initSchemaSelector();
 }
 
-void FontColorWidget::storeCheckBoxState(const QString &name, bool checked) {
+void FontColorWidget::storeCheckBoxState(const QString& name, bool checked) {
     if (!_currentSchemaIsDefault) {
         setSchemaValue(textSettingsKey(name), checked);
     }
@@ -675,10 +674,9 @@ void FontColorWidget::on_importSchemeButton_clicked() {
     if (ret == QDialog::Accepted) {
         QStringList fileNames = dialog.selectedFiles();
         if (fileNames.count() > 0) {
-            Q_FOREACH(const QString &fileName, fileNames) {
-                    QSettings *settings = new QSettings();
-                    QSettings *importSettings =
-                            new QSettings(fileName, QSettings::IniFormat);
+            Q_FOREACH(const QString& fileName, fileNames) {
+                    auto *settings = new QSettings();
+                    auto *importSettings = new QSettings(fileName, QSettings::IniFormat);
                     QString schemaKey = importSettings->value(
                             "Export/SchemaKey").toString();
 
@@ -699,7 +697,7 @@ void FontColorWidget::on_importSchemeButton_clicked() {
                     QStringList keys = importSettings->allKeys();
 
                     // store the color schema data to the settings
-                    Q_FOREACH(const QString &key, keys) {
+                    Q_FOREACH(QString key, keys) {
                             QVariant value = importSettings->value(key);
                             settings->setValue(key, value);
                         }

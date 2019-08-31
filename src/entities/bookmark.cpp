@@ -21,14 +21,14 @@ Bookmark::Bookmark() {
 
 Bookmark::Bookmark(const QString &url, const QString &name, const QStringList &tagList,
         const QString &description) {
-    this->url = std::move(url);
-    this->name = std::move(name);
-    this->tags = std::move(tagList);
-    this->description = std::move(description);
+    this->url = url;
+    this->name = name;
+    this->tags = tagList;
+    this->description = description;
 };
 
 
-QJsonObject Bookmark::jsonObject() {
+QJsonObject Bookmark::jsonObject() const {
     QJsonObject bookmarkObject;
     bookmarkObject.insert("name", QJsonValue::fromVariant(name));
     bookmarkObject.insert("url", QJsonValue::fromVariant(url));
@@ -54,7 +54,7 @@ bool Bookmark::operator==(const Bookmark &bookmark) const {
  * @param text
  * @return
  */
-QList<Bookmark> Bookmark::parseBookmarks(const QString &text, bool withBasicUrls) {
+QList<Bookmark> Bookmark::parseBookmarks(const QString& text, bool withBasicUrls) {
     QRegularExpressionMatchIterator i;
     QList<Bookmark> bookmarks;
 
@@ -130,11 +130,16 @@ QList<Bookmark> Bookmark::parseBookmarks(const QString &text, bool withBasicUrls
  *
  * @return
  */
-QString Bookmark::bookmarksWebServiceJsonText(QList<Bookmark> bookmarks) {
+QString Bookmark::bookmarksWebServiceJsonText(const QList<Bookmark>& bookmarks) {
     QJsonArray bookmarkObjectList;
+    QJsonArray noteFolderObjectList;
 
-    Q_FOREACH(Bookmark bookmark, bookmarks) {
+    Q_FOREACH(const Bookmark& bookmark, bookmarks) {
             bookmarkObjectList.push_back(bookmark.jsonObject());
+        }
+
+    Q_FOREACH(const NoteFolder& noteFolder, NoteFolder::fetchAll()) {
+            noteFolderObjectList.push_back(noteFolder.jsonObject());
         }
 
     QJsonObject bookmarkResultObject;
@@ -142,8 +147,9 @@ QString Bookmark::bookmarksWebServiceJsonText(QList<Bookmark> bookmarks) {
     bookmarkResultObject.insert("data", bookmarkObjectList);
     bookmarkResultObject.insert("noteFolderName",
             NoteFolder::currentNoteFolder().getName());
-    bookmarkResultObject.insert("noteFolders",
-            NoteFolder::noteFoldersWebServiceJsonText());
+    bookmarkResultObject.insert("noteFolders", noteFolderObjectList);
+    bookmarkResultObject.insert("noteFolderId",
+            NoteFolder::currentNoteFolderId());
 
     QJsonDocument doc(bookmarkResultObject);
 
@@ -156,9 +162,9 @@ QString Bookmark::bookmarksWebServiceJsonText(QList<Bookmark> bookmarks) {
  * @return
  */
 QString Bookmark::parsedBookmarksWebServiceJsonText(
-        const QString &text, bool withBasicUrls) {
+        const QString& text, bool withBasicUrls) {
     return bookmarksWebServiceJsonText(parseBookmarks(
-            std::move(text), withBasicUrls));
+        text, withBasicUrls));
 }
 
 /**

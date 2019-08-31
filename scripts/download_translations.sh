@@ -37,3 +37,12 @@ mv QOwnNotes_hi_IN.ts QOwnNotes_hi.ts
 mv QOwnNotes_ur_PK.ts QOwnNotes_ur.ts
 mv QOwnNotes_fi_FI.ts QOwnNotes_fi.ts
 mv QOwnNotes_el_GR.ts QOwnNotes_el.ts
+mv QOwnNotes_gl_ES.ts QOwnNotes_gl.ts
+mv QOwnNotes_no_NO.ts QOwnNotes_no.ts
+mv QOwnNotes_da_DK.ts QOwnNotes_da.ts
+mv QOwnNotes_ro_RO.ts QOwnNotes_ro.ts
+mv QOwnNotes_sk_SK.ts QOwnNotes_sk.ts
+mv QOwnNotes_sl_SI.ts QOwnNotes_sl.ts
+mv QOwnNotes_eu_ES.ts QOwnNotes_eu.ts
+mv QOwnNotes_sr_SP.ts QOwnNotes_sr.ts
+mv QOwnNotes_fa_IR.ts QOwnNotes_fa.ts

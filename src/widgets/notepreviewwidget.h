@@ -15,6 +15,7 @@
 
 #include <QTextBrowser>
 #include <QResizeEvent>
+#include <QPoint>
 #include <widgets/qtexteditsearchwidget.h>
 
 class NotePreviewWidget : public QTextBrowser
@@ -28,18 +29,22 @@ public:
 
     void setHtml(const QString &text);
 
+    void exportAsHTMLFile();
+
 protected:
     QTextEditSearchWidget *_searchWidget;
     QWidget *_searchFrame;
 
-    void resizeEvent(QResizeEvent* event);
-    bool eventFilter(QObject *obj, QEvent *event);
+    void resizeEvent(QResizeEvent* event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event);
 
     QStringList extractGifUrls(const QString &text) const;
     QStringList extractHttpImageUrls(const QString &text) const;
     void animateGif(const QString &text);
     QString handleLocalImageLinks(const QString &text);
+
+    void contextMenuEvent(QContextMenuEvent *event) override;
 
 public slots:
     void hide();

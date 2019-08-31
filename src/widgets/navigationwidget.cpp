@@ -43,7 +43,7 @@ void NavigationWidget::onCurrentItemChanged(
         QTreeWidgetItem *current, QTreeWidgetItem *previous) {
     Q_UNUSED(previous);
 
-    if (current == NULL) {
+    if (current == nullptr) {
         return;
     }
 
@@ -55,7 +55,7 @@ void NavigationWidget::onCurrentItemChanged(
  */
 void NavigationWidget::parse(QTextDocument *document) {
     const QSignalBlocker blocker(this);
-    Q_UNUSED(blocker);
+    Q_UNUSED(blocker)
 
     setDocument(document);
     clear();
@@ -97,7 +97,7 @@ void NavigationWidget::parse(QTextDocument *document) {
             continue;
         }
 
-        QTreeWidgetItem *item = new QTreeWidgetItem();
+        auto *item = new QTreeWidgetItem();
         item->setText(0, text);
         item->setData(0, Qt::UserRole, block.position());
         item->setToolTip(0, tr("headline %1").arg(
@@ -106,7 +106,7 @@ void NavigationWidget::parse(QTextDocument *document) {
         // attempt to find a suitable parent item for the element type
         QTreeWidgetItem *lastHigherItem = findSuitableParentItem(elementType);
 
-        if (lastHigherItem == NULL) {
+        if (lastHigherItem == nullptr) {
             // if there wasn't a last higher level item then add the current
             // item to the top level
             addTopLevelItem(item);
@@ -129,7 +129,7 @@ QTreeWidgetItem * NavigationWidget::findSuitableParentItem(int elementType) {
     elementType--;
     QTreeWidgetItem *lastHigherItem = _lastHeadingItemList[elementType];
 
-    return ((lastHigherItem == NULL) &&
+    return ((lastHigherItem == nullptr) &&
             (elementType > MarkdownHighlighter::H1)) ?
            findSuitableParentItem(elementType) : lastHigherItem;
 }

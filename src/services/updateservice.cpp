@@ -30,7 +30,7 @@ void UpdateService::checkForUpdates(MainWindow *mainWindow,
         settings.setValue("LastUpdateCheck", QDateTime::currentDateTime());
     }
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    auto *manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply *)),
             this, SLOT(onResult(QNetworkReply *)));
 
@@ -91,6 +91,8 @@ void UpdateService::onResult(QNetworkReply *reply) {
     if (reply == Q_NULLPTR) {
         return;
     }
+
+    reply->deleteLater();
 
     // abort if there was an error
     if (reply->error() != QNetworkReply::NoError) {

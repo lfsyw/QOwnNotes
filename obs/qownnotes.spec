@@ -52,9 +52,9 @@ Source0:        %{name}-%{version}.tar.xz
 
 
 %description
-QOwnNotes is the open source notepad and todo list manager, that works together with the default notes application of ownCloud.
+Plain-text file markdown note taking with Nextcloud/ownCloud integration.
 
-So you are able to write down your thoughts with QOwnNotes and edit or search for them later from your mobile device (like with CloudNotes or the ownCloud/Nextcloud web-service.
+You are able to write down your thoughts with QOwnNotes and edit or search for them later from your mobile device (like with CloudNotes or the ownCloud/Nextcloud web-service.
 
 The notes are stored as plain text files and are synced with ownCloud's/Nextcloud's file sync functionality. Of course other software, like Dropbox can be used too.
 
@@ -154,6 +154,15 @@ install -D -m 0644 languages/QOwnNotes_hil.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNo
 install -D -m 0644 languages/QOwnNotes_ur.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_ur.qm
 install -D -m 0644 languages/QOwnNotes_fi.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_fi.qm
 install -D -m 0644 languages/QOwnNotes_el.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_el.qm
+install -D -m 0644 languages/QOwnNotes_gl.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_gl.qm
+install -D -m 0644 languages/QOwnNotes_no.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_no.qm
+install -D -m 0644 languages/QOwnNotes_da.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_da.qm
+install -D -m 0644 languages/QOwnNotes_ro.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_ro.qm
+install -D -m 0644 languages/QOwnNotes_sl.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_sl.qm
+install -D -m 0644 languages/QOwnNotes_sk.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_sk.qm
+install -D -m 0644 languages/QOwnNotes_eu.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_eu.qm
+install -D -m 0644 languages/QOwnNotes_sr.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_sr.qm
+install -D -m 0644 languages/QOwnNotes_fa.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_fa.qm
 
 %if 0%{?suse_version}
 # see: https://de.opensuse.org/openSUSE:Paketbauvereinbarungen_zu_RPM-Makros
@@ -211,6 +220,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/QOwnNotes/languages/QOwnNotes_ur.qm
 %{_datadir}/QOwnNotes/languages/QOwnNotes_fi.qm
 %{_datadir}/QOwnNotes/languages/QOwnNotes_el.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_gl.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_no.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_da.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_ro.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_sl.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_sk.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_eu.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_sr.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_fa.qm
 %{_datadir}/applications/PBE.QOwnNotes.desktop
 
 %dir %{_datadir}/icons/hicolor/512x512/apps

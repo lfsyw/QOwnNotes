@@ -41,6 +41,9 @@
 #include "version.h"
 #include "release.h"
 #include "misc.h"
+#include <utility>
+#include <services/owncloudservice.h>
+#include <QMimeDatabase>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -243,7 +246,7 @@ QString Utils::Misc::shorten(
 /**
  * Cycles text through lowercase, uppercase, start case, and sentence case
  */
-QString Utils::Misc::cycleTextCase(const QString &text) {
+QString Utils::Misc::cycleTextCase(const QString& text) {
     QString asLower = text.toLower();
     QString asUpper = text.toUpper();
 
@@ -289,14 +292,13 @@ QString Utils::Misc::cycleTextCase(const QString &text) {
 /**
  * Converts text to sentence case
  */
-QString Utils::Misc::toSentenceCase(
-        const QString &text) {
+QString Utils::Misc::toSentenceCase(const QString& text) {
     // A sentence is a string of characters immediately preceded by:
     // (beginning of string followed by any amount of horizontal or vertical
     //     whitespace) or
     // (any of [.?!] followed by at least one horizontal or vertical
     //     whitespace)
-    QRegularExpression sentenceSplitter("(^[\\s\\v]*|[.?!][\\s\\v]+)\\K");
+    QRegularExpression sentenceSplitter(R"((^[\s\v]*|[.?!][\s\v]+)\K)");
 
     QStringList sentences = text.toLower().split(sentenceSplitter);
 
@@ -313,8 +315,7 @@ QString Utils::Misc::toSentenceCase(
 /**
  * Converts text to start case
  */
-QString Utils::Misc::toStartCase(
-        const QString &text) {
+QString Utils::Misc::toStartCase(const QString& text) {
     // A word is a string of characters immediately preceded by horizontal or
     // vertical whitespace
     QRegularExpression wordSplitter("(?<=[\\s\\v])");
@@ -338,12 +339,11 @@ QString Utils::Misc::toStartCase(
  * @param workingDirectory the directory to run the executable from
  * @return true on success, false otherwise
  */
-bool Utils::Misc::startDetachedProcess(const QString &executablePath,
-                                       const QStringList &parameters,
-                                       const QString &workingDirectory_) {
+bool Utils::Misc::startDetachedProcess(const QString& executablePath,
+                                       const QStringList& parameters,
+                                       QString workingDirectory) {
     QProcess process;
 
-    auto workingDirectory = workingDirectory_;
     if (workingDirectory.isEmpty()) {
         // set the directory to run the executable from
         // process.setWorkingDirectory() doesn't seem
@@ -371,7 +371,7 @@ bool Utils::Misc::startDetachedProcess(const QString &executablePath,
  * @return the text that was returned by the process
  */
 QByteArray Utils::Misc::startSynchronousProcess(
-        const QString &executablePath, const QStringList &parameters, QByteArray data) {
+        const QString& executablePath, const QStringList& parameters, QByteArray data) {
     QProcess process;
 
     // start executablePath synchronous with parameters
@@ -432,7 +432,7 @@ QString Utils::Misc::defaultNotesPath() {
     path += Utils::Misc::dirSeparator() + "Notes";
 
     // remove the snap path for Snapcraft builds
-    path.remove(QRegularExpression("snap\\/qownnotes\\/\\w\\d+\\/"));
+    path.remove(QRegularExpression(R"(snap\/qownnotes\/\w\d+\/)"));
 
     return path;
 }
@@ -740,7 +740,7 @@ QString Utils::Misc::logFilePath() {
  * @return
  */
 QString Utils::Misc::transformLineFeeds(const QString &text) {
-    return QString(text).replace(QRegExp("(\\r\\n)|(\\n\\r)|\\r|\\n"), "\n");
+    return QString(text).replace(QRegExp(R"((\r\n)|(\n\r)|\r|\n)"), "\n");
 }
 
 /**
@@ -755,7 +755,7 @@ QString Utils::Misc::replaceOwnCloudText(const QString &text, bool useShortText)
         return text;
     }
 
-    QString replaceText = useShortText ? "oC / NC" : "ownCloud / Nextcloud";
+    QString replaceText = useShortText ? "NC / oC" : "Nextcloud / ownCloud";
     return QString(text).replace("ownCloud", replaceText, Qt::CaseInsensitive);
 }
 
@@ -786,8 +786,8 @@ void Utils::Misc::restartApplication() {
  * @param url
  * @return {QByteArray} the content of the downloaded url
  */
-QByteArray Utils::Misc::downloadUrl(const QUrl &url) {
-    QNetworkAccessManager *manager = new QNetworkAccessManager();
+QByteArray Utils::Misc::downloadUrl(const QUrl& url) {
+    auto *manager = new QNetworkAccessManager();
     QEventLoop loop;
     QTimer timer;
 
@@ -822,6 +822,9 @@ QByteArray Utils::Misc::downloadUrl(const QUrl &url) {
             data = reply->readAll();
         }
     }
+
+    reply->deleteLater();
+    delete(manager);
 
     return data;
 }
@@ -1056,7 +1059,7 @@ QDataStream& Utils::Misc::dataStreamRead(QDataStream &is, QPrinter &printer) {
  * @param printer
  * @param settingsKey
  */
-void Utils::Misc::storePrinterSettings(QPrinter *printer, const QString &settingsKey) {
+void Utils::Misc::storePrinterSettings(QPrinter *printer, const QString& settingsKey) {
     QByteArray byteArr;
     QDataStream os(&byteArr, QIODevice::WriteOnly);
     dataStreamWrite(os, *printer);
@@ -1070,7 +1073,7 @@ void Utils::Misc::storePrinterSettings(QPrinter *printer, const QString &setting
  * @param printer
  * @param settingsKey
  */
-void Utils::Misc::loadPrinterSettings(QPrinter *printer, const QString &settingsKey) {
+void Utils::Misc::loadPrinterSettings(QPrinter *printer, const QString& settingsKey) {
     QSettings settings;
 
     if (!settings.value(settingsKey).isValid()) {
@@ -1101,6 +1104,17 @@ bool Utils::Misc::isNoteEditingAllowed() {
 bool Utils::Misc::isSocketServerEnabled() {
     QSettings settings;
     return settings.value("enableSocketServer", true).toBool();
+}
+
+/**
+ * Returns if "darkModeIconTheme" is turned on
+ *
+ * @return
+ */
+bool Utils::Misc::isDarkModeIconTheme() {
+    QSettings settings;
+    bool darkMode = settings.value("darkMode").toBool();
+    return settings.value("darkModeIconTheme", darkMode).toBool();
 }
 
 /**
@@ -1163,7 +1177,7 @@ QString Utils::Misc::htmlspecialchars(const QString &text_) {
  *
  * @param text
  */
-void Utils::Misc::printInfo(const QString &text) {
+void Utils::Misc::printInfo(const QString& text) {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
     qInfo() << text;
 #else
@@ -1179,7 +1193,7 @@ void Utils::Misc::printInfo(const QString &text) {
  */
 QString Utils::Misc::toHumanReadableByteSize(qint64 size)
 {
-    float num = size;
+    double num = size;
     QStringList list;
     list << "KB" << "MB" << "GB" << "TB";
 
@@ -1200,12 +1214,11 @@ QString Utils::Misc::toHumanReadableByteSize(qint64 size)
  * @param data
  */
 QString Utils::Misc::prepareDebugInformationLine(
-        const QString &headline, const QString &data_, bool withGitHubLineBreaks,
-        const QString &typeText) {
+        const QString &headline, QString data, bool withGitHubLineBreaks,
+        const QString& typeText) {
     // add two spaces if we don't want GitHub line breaks
     QString spaces = withGitHubLineBreaks ? "" : "  ";
 
-    auto data = data_;
     if (data.contains("\n")) {
         data = "\n```\n" + data.trimmed() + "\n```";
     } else {
@@ -1280,6 +1293,8 @@ QString Utils::Misc::generateDebugInformation(bool withGitHubLineBreaks) {
                                           QIcon::themeName(), withGitHubLineBreaks);
     output += prepareDebugInformationLine("Notes in current note folder",
                                           QString::number(Note::countAll()), withGitHubLineBreaks);
+    output += prepareDebugInformationLine("Calendar items",
+                                          QString::number(CalendarItem::countAll()), withGitHubLineBreaks);
     output += prepareDebugInformationLine("Enabled scripts",
                                           QString::number(
                                                   Script::countEnabled()), withGitHubLineBreaks);
@@ -1471,13 +1486,13 @@ QString Utils::Misc::generateDebugInformation(bool withGitHubLineBreaks) {
 }
 
 /**
- * Checks if text matches a regular exporession in regExpList
+ * Checks if text matches a regular expression in regExpList
  *
  * @param text
  * @param regExpList
  * @return
  */
-bool Utils::Misc::regExpInListMatches(const QString &text, const QStringList &regExpList) {
+bool Utils::Misc::regExpInListMatches(const QString& text, const QStringList& regExpList) {
     Q_FOREACH(QString regExp, regExpList) {
             regExp = regExp.trimmed();
 
@@ -1500,8 +1515,7 @@ bool Utils::Misc::regExpInListMatches(const QString &text, const QStringList &re
  * @param imageSuffix
  * @return
  */
-QString Utils::Misc::importMediaFromBase64(const QString &data_, const QString &imageSuffix) {
-    auto data = data_;
+QString Utils::Misc::importMediaFromBase64(QString data, const QString &imageSuffix) {
     // if data still starts with base64 prefix remove it
     if (data.startsWith("base64,", Qt::CaseInsensitive)) {
         data = data.mid(6);
@@ -1540,4 +1554,77 @@ void Utils::Misc::copyImage(const QString &path) {
         mimeData->setData("text/uri-list", QUrl::fromLocalFile(path).toEncoded());
         QApplication::clipboard()->setMimeData(mimeData);
     }
+}
+
+/**
+ * Transforms Nextcloud preview image tags
+ *
+ * @param html
+ */
+void Utils::Misc::transformNextcloudPreviewImages(QString &html) {
+    OwnCloudService *ownCloud = OwnCloudService::instance();
+
+    QRegularExpression re(R"(<img src=\"(\/core\/preview\?fileId=.+#mimetype=[\w\d%]+&.+)\" alt=\".+\"\/?>)",
+                          QRegularExpression::CaseInsensitiveOption | QRegularExpression::MultilineOption);
+    QRegularExpressionMatchIterator i = re.globalMatch(html);
+
+    while (i.hasNext()) {
+        QRegularExpressionMatch match = i.next();
+        QString imageTag = match.captured(0);
+
+        QString inlineImageTag = ownCloud->nextcloudPreviewImageTagToInlineImageTag(
+                imageTag);
+
+        html.replace(imageTag, inlineImageTag);
+    }
+}
+
+/**
+ * Transforms remote preview image tags
+ *
+ * @param html
+ */
+void Utils::Misc::transformRemotePreviewImages(QString &html) {
+    QRegularExpression re(R"(<img src=\"(https?:\/\/.+)\".*\/?>)",
+                          QRegularExpression::CaseInsensitiveOption | QRegularExpression::MultilineOption | QRegularExpression::InvertedGreedinessOption);
+    QRegularExpressionMatchIterator i = re.globalMatch(html);
+
+    while (i.hasNext()) {
+        QRegularExpressionMatch match = i.next();
+        QString imageTag = match.captured(0);
+
+        QString inlineImageTag = remotePreviewImageTagToInlineImageTag(imageTag);
+        html.replace(imageTag, inlineImageTag);
+    }
+}
+
+/**
+ * Transforms a remote preview image tag to an inline image tag
+ *
+ * @param data
+ * @param imageSuffix
+ * @return
+ */
+QString Utils::Misc::remotePreviewImageTagToInlineImageTag(QString imageTag) {
+    imageTag.replace("&amp;", "&");
+
+    QRegularExpression re(R"(<img src=\"(https?:\/\/.+)\")",
+                          QRegularExpression::CaseInsensitiveOption |
+                          QRegularExpression::InvertedGreedinessOption);
+
+    QRegularExpressionMatch match = re.match(imageTag);
+    if (!match.hasMatch()) {
+        return imageTag;
+    }
+
+    QString url = match.captured(1);
+    QByteArray data = downloadUrl(url);
+    QMimeDatabase db;
+    auto type = db.mimeTypeForData(data);
+
+    // for now we do no caching, because we don't know when to invalidate the cache
+    const QString replace = "data:" + type.name() + ";base64," + data.toBase64();
+    const QString inlineImageTag = imageTag.replace(url, replace);
+
+    return inlineImageTag;
 }

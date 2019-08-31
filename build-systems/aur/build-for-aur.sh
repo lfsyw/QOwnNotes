@@ -20,6 +20,21 @@ BRANCH=develop
 PROJECT_PATH="/tmp/QOwnNotes-aur-$$"
 CUR_DIR=$(pwd)
 
+# use temporary checksum variable file
+_QQwnNotesCheckSumVarFile="/tmp/QOwnNotes.checksum.vars"
+
+if [[ ! -f ${_QQwnNotesCheckSumVarFile} ]]; then
+	echo "${_QQwnNotesCheckSumVarFile} doesn't exist. build-tuxfamily-src.sh must be run ahead of build script!"
+	exit 1
+fi
+
+source ${_QQwnNotesCheckSumVarFile}
+
+# check checksum variable from build-systems/tuxfamily/build-tuxfamily-src.sh
+if [ -z ${QOWNNOTES_ARCHIVE_SHA256} ]; then
+    echo "QOWNNOTES_ARCHIVE_SHA256 was not set!"
+	exit 1
+fi
 
 echo "Started the AUR packaging process, using latest '$BRANCH' git tree"
 
@@ -33,10 +48,10 @@ cd $PROJECT_PATH
 echo "Project path: $PROJECT_PATH"
 
 # checkout AUR repository
-git clone --depth=5 ssh://aur@aur.archlinux.org/qownnotes.git aur -b master
+git clone --depth=1 ssh://aur@aur.archlinux.org/qownnotes.git aur -b master
 
 # checkout the source code
-git clone --depth=5 git@github.com:pbek/QOwnNotes.git QOwnNotes -b $BRANCH
+git clone --depth=1 git@github.com:pbek/QOwnNotes.git QOwnNotes -b $BRANCH
 cd QOwnNotes
 
 gitCommitHash=`git rev-parse HEAD`
@@ -58,15 +73,8 @@ sed -i "s/VERSION-STRING/$QOWNNOTES_VERSION/g" PKGBUILD
 sed -i "s/COMMIT-HASH/$gitCommitHash/g" PKGBUILD
 
 # replace the archive sha256 hash in the PKGBUILD file
-ARCHIVE_SHA256=`wget -qO- https://download.tuxfamily.org/qownnotes/src/qownnotes-${QOWNNOTES_VERSION}.tar.xz.sha256`
-sed -i "s/ARCHIVE-SHA256/$ARCHIVE_SHA256/g" PKGBUILD
-echo "Archive sha256: ${ARCHIVE_SHA256}"
-
-if [ -z ${ARCHIVE_SHA256} ]; then
-    echo
-    echo "Archive sha256 is empty!"
-    exit 1
-fi
+sed -i "s/ARCHIVE-SHA256/$QOWNNOTES_ARCHIVE_SHA256/g" PKGBUILD
+echo "Archive sha256: ${QOWNNOTES_ARCHIVE_SHA256}"
 
 # replace the version in the .SRCINFO file
 sed -i "s/VERSION-STRING/$QOWNNOTES_VERSION/g" .SRCINFO

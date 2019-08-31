@@ -1,5 +1,7 @@
 language: cpp
 dist: trusty
+osx_image: xcode10.2
+cache: ccache
 
 os:
   - linux
@@ -24,6 +26,11 @@ env:
     - secure: "Mte2zY0rgIa4M4bIeSKijFAFOtFy+DahRYCUgOB60cuS4b/+HMHnfmVGMqnBKitC9KVzb5fctMt2pGPK2hdlirvfkOd9ctEaEd1qSzADJjfQUKqLReOfi1N6Ln2dYqlZoDjnYpGWwTUl/uX+KtWomYW2TCZZG/uJEeh3QYkxlJQ="
     # DEVELOPER_NAME
     - secure: "CrB159u8KEwtsiCxnwvnCumiRkGgL+9aFgI2dosUvj3PtfebcVdhzRKBt+17jLapLCQEYoml8RVszLNuYpZu8y/3DhCk4ftWMumnvKOp8CIFb/4BFKMZxyuw+HlMg5oKwY4GOopnHo4mTEM51pDHMP8rfIxCjLimVeDc0uZaaj8="
+    # CCACHE
+    - USE_CCACHE=1
+    - CCACHE_COMPRESS=1
+    - CCACHE_MAXSIZE=1G
+    - CCACHE_CPP2=1
   matrix:
     - CONFIG=release
     #- CONFIG=debug
@@ -46,7 +53,8 @@ install:
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
       brew update > /dev/null
-      brew install qt5
+      brew install qt5 ccache
+      export PATH="/usr/local/opt/ccache/bin:$PATH"
       export QTDIR="/usr/local/opt/qt5"
     fi
 
@@ -66,7 +74,7 @@ script:
       CPPFLAGS=-I$QTDIR/include
     fi
   - cd ./tests
-  - qmake DEFINES+=INTEGRATION_TESTS && make -s -j 2
+  - qmake DEFINES+=INTEGRATION_TESTS CONFIG+=ccache && make -s -j 2
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
       if [ "${TRAVIS_BRANCH}" != "master" ]; then
            ./../bin/tests/tests -platform minimal -txt
@@ -81,7 +89,7 @@ script:
   - cd ./../src
   - echo "#define BUILD ""$TRAVIS_BUILD_NUMBER" > build_number.h
   - echo "#define RELEASE \"Travis CI\"" > release.h
-  - qmake QOwnNotes.pro CONFIG+=$CONFIG
+  - qmake QOwnNotes.pro CONFIG+=$CONFIG CONFIG+=ccache
   - make
 
 before_deploy:
@@ -92,7 +100,9 @@ before_deploy:
     then
       cd ../travis
       dpkg-deb -x QOwnNotes.deb build
-      mv ../src/QOwnNotes build/opt/QOwnNotes/
+      install ../src/QOwnNotes build/opt/QOwnNotes
+      mkdir -p build/usr/bin
+      ln -s /opt/QOwnNotes/QOwnNotes build/usr/bin
       mv ../src/languages/*.qm build/opt/QOwnNotes/
       mv ../icons/* build/opt/QOwnNotes/
       sed -i 's/VERSION_NUMBER/'"$VERSION_NUMBER"'/g' build/DEBIAN/control
@@ -186,20 +196,21 @@ notifications:
       - developer@bekerle.com
     on_success: change
     on_failure: change
-  irc:
-    # https://docs.travis-ci.com/user/notifications/#IRC-notification
-    channels:
-      - "chat.freenode.net#qownnotes"
-    template:
-      - "[%{commit}] %{repository} (%{branch}): %{message} | Commit message: %{commit_message} | Changes: %{compare_url} | Build details: %{build_url}"
-    on_success: always
-    on_failure: always
-    use_notice: true
-    skip_join: true
+#  irc:
+#    # https://docs.travis-ci.com/user/notifications/#IRC-notification
+#    channels:
+#      - "chat.freenode.net#qownnotes"
+#    template:
+#      - "[%{commit}] %{repository} (%{branch}): %{message} | Commit message: %{commit_message} | Changes: %{compare_url} | Build details: %{build_url}"
+#    on_success: never
+#    on_failure: change
+#    use_notice: true
+#    skip_join: true
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/7c80d5baa6681f02dca5
       #- https://fathomless-fjord-24024.herokuapp.com/notify
-    on_success: always  # options: [always|never|change] default: always
+      #- "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MHBiZWslM0FtYXRyaXgub3JnLyUyMXJVenJSdnJuck9zTGFzRGRicCUzQW1hdHJpeC5vcmc"
+    on_success: change  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: never     # options: [always|never|change] default: always

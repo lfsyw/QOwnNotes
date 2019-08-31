@@ -43,8 +43,8 @@ FileDialog::FileDialog(const QString &name) {
  *
  * @param path
  */
-void FileDialog::storeDirectory(const QString &path_) {
-    QString path = path_;
+void FileDialog::storeDirectory(QString path) {
+    QSettings settings;
     QFileInfo fileInfo(path);
 
     // get the directory path from the path if it is not a directory
@@ -54,7 +54,6 @@ void FileDialog::storeDirectory(const QString &path_) {
         path = fileInfo.dir().path();
     }
 
-    QSettings settings;
     // this is the path for just this dialog
     settings.setValue(_settingsKey, path);
 
@@ -62,7 +61,7 @@ void FileDialog::storeDirectory(const QString &path_) {
     settings.setValue(_generalSettingsKey, path);
 }
 
-void FileDialog::storeDirectory(const QStringList &files) {
+void FileDialog::storeDirectory(const QStringList& files) {
     if (files.count() > 0) {
         storeDirectory(files.at(0));
     }

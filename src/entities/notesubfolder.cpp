@@ -1,6 +1,8 @@
+#include <utility>
 #include "entities/notesubfolder.h"
 #include "notefolder.h"
 #include "note.h"
+#include "tag.h"
 #include <QDebug>
 #include <QSqlRecord>
 #include <QSqlError>
@@ -72,7 +74,7 @@ NoteSubFolder NoteSubFolder::fetch(int id) {
 }
 
 NoteSubFolder NoteSubFolder::fetchByNameAndParentId(
-        const QString &name, int parentId) {
+        const QString& name, int parentId) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 
@@ -138,7 +140,7 @@ QString NoteSubFolder::pathData() {
  * Fetches a note sub folder by its path data
  */
 NoteSubFolder NoteSubFolder::fetchByPathData(const QString &pathData_,
-                                             const QString &separator) {
+                                             const QString& separator) {
     auto pathData = Utils::Misc::removeIfStartsWith(pathData_, separator);
     QStringList pathList = pathData.split(separator);
     NoteSubFolder noteSubFolder;
@@ -188,13 +190,20 @@ bool NoteSubFolder::removeFromFileSystem() {
 /**
  * Renames the note subfolder in the file system
  */
-bool NoteSubFolder::rename(const QString &newName) {
+bool NoteSubFolder::rename(const QString& newName) {
     QDir dir = this->dir();
 
     if (dir.exists() && !newName.isEmpty()) {
         QString oldPath = fullPath();
+        QString oldRelativePath = relativePath();
         setName(newName);
         QString newPath = fullPath();
+        QString newRelativePath = relativePath();
+
+        // rename the note sub folder paths of note tag links
+        // (needs to be done before the folder rename because folder renaming
+        // will cause a reload which would trigger the removal of the tag links)
+        Tag::renameNoteSubFolderPathsOfLinks(oldRelativePath, newRelativePath);
 
         // rename the note subfolder
         return dir.rename(oldPath, newPath);
@@ -203,13 +212,13 @@ bool NoteSubFolder::rename(const QString &newName) {
     return false;
 }
 
-NoteSubFolder NoteSubFolder::noteSubFolderFromQuery(QSqlQuery query) {
+NoteSubFolder NoteSubFolder::noteSubFolderFromQuery(const QSqlQuery& query) {
     NoteSubFolder noteSubFolder;
     noteSubFolder.fillFromQuery(query);
     return noteSubFolder;
 }
 
-bool NoteSubFolder::fillFromQuery(QSqlQuery query) {
+bool NoteSubFolder::fillFromQuery(const QSqlQuery& query) {
     id = query.value("id").toInt();
     parentId = query.value("parent_id").toInt();
     name = query.value("name").toString();
@@ -272,7 +281,7 @@ QList<int> NoteSubFolder::fetchAllIds() {
 }
 
 QList<NoteSubFolder> NoteSubFolder::fetchAllByParentId(
-        int parentId, const QString &sortBy) {
+        int parentId, const QString& sortBy) {
     QSqlDatabase db = QSqlDatabase::database("memory");
     QSqlQuery query(db);
 

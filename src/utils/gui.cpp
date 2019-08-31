@@ -44,7 +44,7 @@ bool Utils::Gui::isOneTreeWidgetItemChildVisible(QTreeWidgetItem *item) {
  * Searches for text in items of a tree widget
  */
 void Utils::Gui::searchForTextInTreeWidget(QTreeWidget *treeWidget,
-                                           const QString &text,
+                                           const QString& text,
                                            TreeWidgetSearchFlags searchFlags) {
     QStringList searchList;
 
@@ -72,7 +72,7 @@ void Utils::Gui::searchForTextInTreeWidget(QTreeWidget *treeWidget,
                 for (int index = 0; index < searchColumnCount; index++) {
                     bool loopShow = true;
 
-                    foreach(const QString &searchText, searchList) {
+                    foreach(QString searchText, searchList) {
                             // search for text in the columns
                             bool loopShow2 = item->text(index).contains(
                                     searchText, Qt::CaseInsensitive);
@@ -119,7 +119,7 @@ void Utils::Gui::searchForTextInTreeWidget(QTreeWidget *treeWidget,
  * Checks if a variant exists as user data in a tree widget
  */
 bool Utils::Gui::userDataInTreeWidgetExists(QTreeWidget *treeWidget,
-                                            QVariant userData, int column) {
+                                            const QVariant& userData, int column) {
     return getTreeWidgetItemWithUserData(treeWidget, userData, column) != Q_NULLPTR;
 }
 
@@ -144,6 +144,27 @@ QTreeWidgetItem *Utils::Gui::getTreeWidgetItemWithUserData(
         }
 
     return Q_NULLPTR;
+}
+
+/**
+ * Resets the bold state of all tree widget items of a tree widget
+ *
+ * @param treeWidget
+ * @param column
+ */
+void Utils::Gui::resetBoldStateOfAllTreeWidgetItems(
+        QTreeWidget *treeWidget, int column) {
+    // get all items
+    QList<QTreeWidgetItem*> allItems = treeWidget->
+            findItems("", Qt::MatchContains | Qt::MatchRecursive);
+
+    Q_FOREACH(QTreeWidgetItem *item, allItems) {
+            auto font = item->font(column);
+            if (font.bold()) {
+                font.setBold(false);
+                item->setFont(column, font);
+            }
+        }
 }
 
 /**
@@ -190,6 +211,27 @@ QMessageBox::StandardButton Utils::Gui::question(
 }
 
 /**
+ * Shows a warning message box with a checkbox to override the message box in
+ * the future
+ *
+ * @param parent
+ * @param title
+ * @param text
+ * @param identifier
+ * @param buttons
+ * @param defaultButton
+ * @return
+ */
+QMessageBox::StandardButton Utils::Gui::warning(
+        QWidget *parent, const QString &title, const QString &text,
+        const QString &identifier,
+        QMessageBox::StandardButtons buttons,
+        QMessageBox::StandardButton defaultButton) {
+    return showMessageBox(parent, QMessageBox::Icon::Warning, title, text,
+                          identifier, buttons, defaultButton);
+}
+
+/**
  * Shows a message box with a checkbox to override the message box in the future
  *
  * @param parent
@@ -224,7 +266,6 @@ Utils::Gui::showMessageBox(QWidget *parent, QMessageBox::Icon icon,
             icon == QMessageBox::Icon::Question ?
             QObject::tr("Don't ask again!") : QObject::tr("Don't show again!"),
             parent);
-    msgBox.setCheckBox(checkBox);
 
     uint mask = QMessageBox::FirstButton;
     while (mask <= QMessageBox::LastButton) {
@@ -243,6 +284,10 @@ Utils::Gui::showMessageBox(QWidget *parent, QMessageBox::Icon icon,
                 sb == uint(defaultButton)))
             msgBox.setDefaultButton(button);
     }
+
+    // set the checkbox in the end so it doesn't get the focus on the dialog.
+    // this would lead to accidentally checking the checkbox
+    msgBox.setCheckBox(checkBox);
 
     if (msgBox.exec() == -1)
         return QMessageBox::Cancel;
@@ -263,7 +308,7 @@ Utils::Gui::showMessageBox(QWidget *parent, QMessageBox::Icon icon,
 bool Utils::Gui::isMessageBoxPresent() {
     QWidgetList topWidgets = QApplication::topLevelWidgets();
     foreach (QWidget *w, topWidgets) {
-            if (QMessageBox *mb = dynamic_cast<QMessageBox *>(w)) {
+            if (auto *mb = dynamic_cast<QMessageBox *>(w)) {
                 Q_UNUSED(mb);
                 return true;
             }
@@ -300,7 +345,7 @@ QFont Utils::Gui::fontDialogGetFont(bool *ok, const QFont &initial,
  *
  * @param initialBlock
  */
-void Utils::Gui::copyCodeBlockText(QTextBlock initialBlock) {
+void Utils::Gui::copyCodeBlockText(const QTextBlock& initialBlock) {
     QTextBlock block = initialBlock;
     QString codeBlockText = block.text();
     QStringList codeBlockTextList;

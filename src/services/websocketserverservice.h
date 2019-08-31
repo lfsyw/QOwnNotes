@@ -16,6 +16,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QList>
+#include <dialogs/websockettokendialog.h>
 
 QT_FORWARD_DECLARE_CLASS(QWebSocketServer)
 QT_FORWARD_DECLARE_CLASS(QWebSocket)
@@ -43,7 +44,9 @@ public:
 
     static QString getBookmarksNoteName();
 
-    QString flashMessageJsonText(const QString &message);
+    QString flashMessageJsonText(const QString& message);
+
+    static QJsonArray createBookmarks(const QJsonObject &jsonObject);
 
 private slots:
     void onNewConnection();
@@ -56,4 +59,12 @@ private:
     quint16 m_port;
 
     QString getBookmarksJsonText() const;
+
+    QString getNoteFolderSwitchedJsonText(bool switched) const;
+
+    QString getTokenQueryJsonText() const;
+
+#ifndef INTEGRATION_TESTS
+    WebSocketTokenDialog *_webSocketTokenDialog;
+#endif
 };

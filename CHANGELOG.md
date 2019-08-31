@@ -1,5 +1,507 @@
 # QOwnNotes Changelog
 
+## 19.8.8
+- there now is a **full-screen mode** that can be toggled with <kbd>F11</kbd>
+  (for [#1271](https://github.com/pbek/QOwnNotes/issues/1271))
+  - the shortcut is <kbd>⌘</kbd> + <kbd>F11</kbd> on macOS
+- added support for **automatic numbering and indentation of ordered lists**
+  (for [#1148](https://github.com/pbek/QOwnNotes/issues/1148))
+    - if you press <kbd>Enter</kbd> after `1. a list item` you will get a `2. ` in the next line 
+    - if you press <kbd>Enter</kbd> after `1. ` it will remove the current line 
+    - if you press <kbd>Tab</kbd> after `1. ` it will indent the current line 
+    - if you press <kbd>Shift</kbd> + <kbd>Tab</kbd> after `1. ` it will un-indent the current line 
+- added more Spanish, Catalan, German, Serbian (Cyrillic), Persian translation
+  (thank you richarson, MGuerra, rakekniven, Fabijenna)
+
+## 19.8.7
+- fixed a menu bar problem when exiting the application in distraction free mode
+  (for [#1267](https://github.com/pbek/QOwnNotes/issues/1267))
+- attempted to fix an occasional operating system shutdown process interruption
+  (for [#1269](https://github.com/pbek/QOwnNotes/issues/1269))
+- added more Persian, Serbian (Cyrillic) translation (thank you Fabijenna)
+
+## 19.8.6
+- fixed a possible segmentation fault on macOS (Qt 5.12.2) with todo lists
+  (for [#1266](https://github.com/pbek/QOwnNotes/issues/1266))
+    - this was a regression from 19.8.5
+- added more Persian, Dutch, Hungarian translation (thank you Fabijenna)
+
+## 19.8.5
+- fixed many **memory leaks** when **receiving network data**
+  (for [#1264](https://github.com/pbek/QOwnNotes/issues/1264))
+- the amount of calendar items will now be showed in the output of the *Debug settings*
+  (for [#1264](https://github.com/pbek/QOwnNotes/issues/1264))
+- added integration test to test https download (for [#1260](https://github.com/pbek/QOwnNotes/issues/1260))
+- added more Italian, Spanish translation (thank you tiwi90, richarson)
+
+## 19.8.4
+- added **Persian translation** (a big thank you to Fabijenna)
+    - join us at [QOwnNotes on Crowdin](https://crowdin.com/project/qownnotes)
+      to make QOwnNotes available in more languages or help with the current 
+      translation
+- updated OpenSSL to 1.1.1c for the Qt 5.13 release of QOwnNotes for Windows to
+  prevent network problems with https on some computer (for [#1260](https://github.com/pbek/QOwnNotes/issues/1260))
+    - if you had troubles with the latest few releases for Windows you need to
+      download the latest release manually once or download the files from
+      [OpenSSL](https://github.com/pbek/QOwnNotes/tree/develop/appveyor/OpenSSL)
+      and put them into your QOwnNotes folder 
+- added more German translation
+
+## 19.8.3
+- added support for a real time preview of remote images (for [#1244](https://github.com/pbek/QOwnNotes/issues/1244))
+    - the image links in the image tags will be transformed to inline images
+    - no caching of the image can currently be done
+- added more Serbian (Cyrillic), Portuguese, Catalan, Danish, Finnish, Greek,
+  Norwegian, Romanian, Slovak, Slovenian, Russian, Polish, Spanish, Dutch,
+  Hungarian, Czech, German, Italian translation (thank you Fabijenna, tiwi90,
+  manuelarodsilva, MGuerra, mikhail-khokhlov, lucjan, richarson, rakekniven)
+
+## 19.8.2
+- the cursor will now be positioned in the 4th line again after creating a new
+  note with the note search panel (for [#1255](https://github.com/pbek/QOwnNotes/issues/1255))
+- made confirmation message for conflicted database copies more affirmative
+  (for [#1111](https://github.com/pbek/QOwnNotes/issues/1111))
+- now it shows `-` instead of 0 in the in-note search count (for [#1247](https://github.com/pbek/QOwnNotes/issues/1247))
+- added more German, Spanish, Serbian (Cyrillic), Hungarian, Romanian, Dutch,
+  Basque, Cebuano, Czech, Danish, Finnish, Greek, Norwegian, Slovak,
+  Slovenian translation (thank you rakekniven, richarson, Fabijenna)
+
+## 19.8.1
+- you will now see how many **search results** there are when **searching in a note**
+  and at **what search result** you **currently** are
+    - the search will now start from top when search parameters are changed 
+    - regular expression search restart at top was fixed
+    - the text cases in the note text edit search bar are now fixed and more
+      tooltips are added
+- when a **note** is about to get the **same filename** as an existing note now
+  a **number** is **added** instead of the current date and time to prevent name
+  clashes when multiple notes are created in the same second
+  (for [#1252](https://github.com/pbek/QOwnNotes/issues/1252))
+- in the **note list** now the **note filename with extension** is displayed in the
+  **tooltips** instead of just the note name (for [#1157](https://github.com/pbek/QOwnNotes/issues/1157))
+- when a note was created via shortcut or via the note search the search bar in
+  the note edit will now be reset to default properties and hidden
+  (for [#1255](https://github.com/pbek/QOwnNotes/issues/1255))
+- when conflicted database copies were removed a status bar message is now shown
+  (for [#1111](https://github.com/pbek/QOwnNotes/issues/1111))
+- improved tab order in main window for panels
+- added more Italian, Brazilian Portuguese, German, Serbian (Cyrillic), Dutch,
+  Hungarian, Catalan, Greek, Persian, Polish translation (thank you tiwi90,
+  mlimacarlos, mlocati, 2fake1987, Fabijenna, MGuerra, rakekniven, athrouss, lucjan)
+
+## 19.8.0
+- added **Serbian translation** (a big thank you to Fabijenna)
+    - join us at [QOwnNotes on Crowdin](https://crowdin.com/project/qownnotes)
+      to make QOwnNotes available in more languages or help with the current 
+      translation
+- added more Italian, Basque, Czech, Danish, Finnish, Brazilian Portuguese,
+  German translation (thank you Fabijenna, tiwi90, mlimacarlos, rakekniven)
+
+## 19.7.11
+- **whitespaces** at the **beginning of the current line** are now **reproduced**
+  in the next line too when pressing <kbd>Return</kbd> in the note editor
+  (for [#1249](https://github.com/pbek/QOwnNotes/issues/1249))
+- there now is a **progress dialog** to see the progress of **loading notes** on
+  slow systems with a lot of notes
+- the column size of the search count in the note list was reduced
+  (for [#1248](https://github.com/pbek/QOwnNotes/issues/1248))
+- `"` characters will be now cut out of the search text in the local search text
+  when searching for text globally (for [#1247](https://github.com/pbek/QOwnNotes/issues/1247))
+- added more Spanish, Russian, Basque, Czech, Danish, Finnish, Brazilian
+  Portuguese, German, Romanian, Slovak, Slovenian, Dutch, Norwegian, Hungarian,
+  Italian translation (thank you richarson, mikhail-khokhlov, Fabijenna,
+  mlimacarlos, rakekniven, tiwi90)
+
+## 19.7.10
+- the search result count ([#1248](https://github.com/pbek/QOwnNotes/issues/1248))
+  and the automatic search inside the current note ([#1247](https://github.com/pbek/QOwnNotes/issues/1247))
+  will now also support exact searches like `"exact phrase"`
+- added more German, Spanish, Brazilian Portuguese, Italian translation (thank
+  you rakekniven, richarson, mlimacarlos, mlocati)
+
+## 19.7.9
+- there now is a menu entry *Riot* in the *Help / Open chat* menu to open
+  a browser window with the **[QOwnNotes Riot room](https://riot.im/app/#/room/!rUzrRvrnrOsLasDdbp:matrix.org?via=matrix.org)**
+- if you are **searching for text in all notes** you will now **see how many times**
+  any of the words of your **search term occurred** in each note in a new column
+  in the note list (for [#1248](https://github.com/pbek/QOwnNotes/issues/1248))
+    - the new column will automatically be resized to be visible next to the
+      note name without horizontal scrolling
+- if you are browsing notes while there are **words in the note search panel**
+  the **search dialog in the note** will now be **opened automatically** and
+  **search for the words** entered in the note search panel for
+  [#1247](https://github.com/pbek/QOwnNotes/issues/1247))
+- every time the note folder is reloaded it will now be **checked** for
+  **conflicting copies** of the **`notes.sqlite` database** that will block your
+  Nextcloud/ownCloud sync process (for [#1111](https://github.com/pbek/QOwnNotes/issues/1111))
+    - you will be asked if you want to remove the conflicting copies
+- fixed some ownCloud/Nextcloud wordings and reversed the words
+- added more Indonesian, Dutch, Hungarian, Czech, Danish, Finnish, Galician,
+  Chinese Simplified, Spanish, Catalan, German translation (thank you zmni,
+  Fabijenna, Libnux, richarson, MGuerra, rakekniven)
+
+## 19.7.8
+- you can now **turn off cursor blinking** in the *Editor settings*
+  (for [#1246](https://github.com/pbek/QOwnNotes/issues/1246))
+- added a package for Ubuntu 19.10 (Eoan Ermine) to the Launchpad build process
+- added more Spanish, Greek, German translation (thank you richarson, athrouss, rakekniven)
+
+## 19.7.7
+- some strange cursor behavior on macOS when leaving or entering read-only mode	was fixed
+    - also fixed some ui inconsistency with read-only note files
+- the ready-only state of the text edits are now better checked on automatic
+  bracket-closing and similar operations
+- more keys were added to trigger read-only mode notification
+
+## 19.7.6
+- the **immediate focus** on the `Don't ask again!` **checkbox** for
+  **message dialogs** was now **disabled**, because this would lead to
+  accidentally checking the checkbox (for [#1234](https://github.com/pbek/QOwnNotes/issues/1234))
+
+## 19.7.5
+- if you are now pressing **<kbd>Escape</kbd>** in the note text edit the
+  **read-only mode** will be **activated**
+- added more Italian, Indonesian, Brazilian Portuguese translation (thank you
+  tiwi90, zmni, mlimacarlos)
+
+## 19.7.4
+- the text in the **note text edit** is now also **selectable by keyboard** in
+  **read-only mode**
+- the text in the **note preview** is now also **selectable by keyboard**
+- if you now edit text in read-only mode you will get a **dialog** that allows
+  you to **disable** the **read-only mode** again
+- you can now (beside exporting a note as HTML file) **export** the content of
+  the **note preview as raw html file** in the context menu of the note preview
+- added **Basque translation** (a big thank you to Fabijenna)
+    - join us at [QOwnNotes on Crowdin](https://crowdin.com/project/qownnotes)
+      to make QOwnNotes available in more languages or help with the current 
+      translation
+- added more Cebuano and Swedish translation (thank you Fabijenna)
+
+## 19.7.3
+- support for **strike out highlighting** was added (for [#1240](https://github.com/pbek/QOwnNotes/issues/1240))
+    `~~this is striked out~~` will now be shown as masked text
+- fixed a crash when navigating between notes with the <kbd>Alt + Up</kbd> and
+  <kbd>Alt + Down</kbd> shortcut keys (for [#1238](https://github.com/pbek/QOwnNotes/issues/1238))
+- disabled shortcuts for the *Note folders* menu in the *Shortcuts settings*
+  because shortcuts for them are not supported (for [#1235](https://github.com/pbek/QOwnNotes/issues/1235))
+- fixed wrongly detected tray icon context menu items in toolbar settings
+  (for [#1239](https://github.com/pbek/QOwnNotes/issues/1239))
+- there now is a software repository for **Debian Linux 10.0**
+    - please visit the [Debian installation page](https://www.qownnotes.org/installation#Debian)
+      for instructions
+- added more Slovenian, Greek, Slovak, Galician, Finnish, Romanian translation
+  (thank you Fabijenna)
+
+## 19.7.2
+- added a **new editor color schema** *MountainDebo* by @Deboart
+  (for [#1232](https://github.com/pbek/QOwnNotes/issues/1232))
+- the [Web Companion browser extension](https://github.com/qownnotes/web-companion)
+  was updated to version 19.7.0
+    - you can now **substring search** for **all parts of your search text**,
+      for example `qo sto` will find `Firefox Store Page QOwnNotes`
+    - added more German, Indonesian and Czech translation
+- added Flatpak installation notes to the [Flatpak installation page](https://www.qownnotes.org/installation#flatpak)
+
+## 19.7.1
+- added a lot fixes for possible memory leaks
+- added more Romanian, Slovak, Slovenian translation (thank you Fabijenna)
+
+## 19.7.0
+- added support for a real time preview of [Nextcloud Text](https://github.com/nextcloud/text)
+  images (for [#1226](https://github.com/pbek/QOwnNotes/issues/1226))
+    - the preview image tags from Nextcloud Text will be transformed to inline images
+    - no caching can currently be done because images could be modified on the Nextcloud server
+ 
+## 19.6.6
+- the default shortcuts were changed from the Opt-key to the Ctrl-key on macOS to prevent
+  blocking of accent characters when writing text (for [#1222](https://github.com/pbek/QOwnNotes/issues/1222))
+- the storing of the main window position was re-enabled after being disabled in
+  [#1015](https://github.com/pbek/QOwnNotes/issues/1015) (for [#1225](https://github.com/pbek/QOwnNotes/issues/1225))
+- the QOwnNotesAPI url was updated and the Firefox Add-on link was added to the
+  `Welcome to QOwnNotes.md` note file
+- added more Chinese Simplified, Brazilian Portuguese, Dutch, Hungarian, Croatian,
+  Czech, Danish, Finnish, Norwegian, Polish, Russian, Catalan, Spanish, German,
+  Italian translation (thank you KeRouDing, mlimacarlos, Fabijenna, mikhail-khokhlov,
+  MGuerra, richarson, rakekniven, tiwi90)
+
+## 19.6.5
+- fixed icon-text-overlap for checkboxes and radio groups in the main menu in dark mode
+  (for [#1221](https://github.com/pbek/QOwnNotes/issues/1221))
+- there now is a new checkbox `Ignore code font size to allow zooming` in the
+  *Preview settings* to allow zooming of code fonts (for [#1202](https://github.com/pbek/QOwnNotes/issues/1202))
+    - this checkbox is checked by default
+- fixed search widget colors in the log widget in dark mode
+- added more German, Indonesian translation (thank you rakekniven, zmni)
+
+## 19.6.4
+- if you right-click on a link in the preview you now can select `Copy link location`
+  to copy the location of the link (for [#800](https://github.com/pbek/QOwnNotes/issues/800))
+- added more Italian, Dutch, Hungarian, Indonesian, Brazilian Portuguese translation
+  (thank you tiwi90, Fabijenna, zmni, mlimacarlos)
+
+## 19.6.3
+- fixed syntax highlighting of non-formatted urls
+- added more Spanish, German translation (thank you richarson, rakekniven)
+
+## 19.6.2
+- fixed Debian 8.0 build problem on Qt 5.3
+- updated application description
+- added more Italian and German translation (thank you mlocati)
+
+## 19.6.1
+- fixed openSUSE, Fedora and Debian build problem
+- added more Catalan, Dutch, Hungarian, Russian, Italian, German, Spanish translation
+  (thank you MGuerra, Fabijenna, mikhail-khokhlov, mlocati, rakekniven, soysexy03)
+
+## 19.6.0
+- You are now able to distinctively tell QOwnNotes to use the **dark mode icon theme**
+  without using the *dark mode* in the *Interface settings*
+  (for [#1209](https://github.com/pbek/QOwnNotes/issues/1209)) and
+  [#1177](https://github.com/pbek/QOwnNotes/issues/1177))
+- added more Danish, Czech, Finnish, Greek, Spanish, Hungarian, Dutch translation
+  (thank you Fabijenna, richarson)
+
+## 19.5.7
+- fixed unnecessary scrolling and dark mode link colors in the *Browser extension*
+  settings (for [#1213](https://github.com/pbek/QOwnNotes/issues/1213))
+- if the current note has a certain tag it will be now highlighted as bold in
+  the tags panel (for [#1210](https://github.com/pbek/QOwnNotes/issues/1210))
+- did general performance and memory consumption improvements
+- added more Russian translation (thank you mikhail-khokhlov)
+
+## 19.5.6
+- fixed creation of empty notes at the note root folder when importing Evernote enex
+  files into a note sub-folder and improved overall import speed
+  (for [#1212](https://github.com/pbek/QOwnNotes/issues/1212))
+- added a more descriptive text in the browser extension security token dialog
+- the [Web Companion browser extension](https://github.com/qownnotes/web-companion)
+  was updated to version 19.5.5
+    - the **security token** will now be sent correctly to QOwnNotes for context menu operations
+      (for [#10](https://github.com/qownnotes/web-companion/issues/10))
+- added more Russian, Italian, Indonesian translation (thank you mikhail-khokhlov, mlocati, zmni)
+
+## 19.5.5
+- you are now able to **manually edit the security token** for your
+  [Web Companion browser extension](https://github.com/qownnotes/web-companion)
+  to be able to use the same token across different devices in case you are
+  syncing your browser settings
+- the [Web Companion browser extension](https://github.com/qownnotes/web-companion)
+  was updated to version 19.5.4
+    - you are now also able to enter the **security token** in the browser extension options
+    - added more translation
+- added more Catalan, Spanish, Italian translation (thank you MGuerra, richarson, mlocati)
+
+## 19.5.4
+- when using the [Web Companion browser extension](https://github.com/qownnotes/web-companion)
+  you now need to enter a **security token** to communicate with QOwnNotes to
+  ensure no other website or application can access your bookmarks
+    - you will get a new dialog that shows the token as soon as the browser
+      extension accesses QOwnNotes
+    - you can also change the security token later in the *Browser extension* settings
+- the [Web Companion browser extension](https://github.com/qownnotes/web-companion)
+  was updated to version 19.5.3
+  - you are now able to enter a **security token** to communicate with QOwnNotes 
+  - added a lot of translation
+  - you now can **import all browser bookmarks** (for [#8](https://github.com/qownnotes/web-companion/issues/8))
+  - fixed a bookmark filtering problem
+- added a new editor color schema *Solarized Light* by @fairplay
+  (for [#1208](https://github.com/pbek/QOwnNotes/issues/1208))
+- improved Mojave dark mode support for macOS 
+  (for [#1209](https://github.com/pbek/QOwnNotes/issues/1209))
+- added more Indonesian, Slovenian, Swedish, Romanian, Slovak, Russian, Italian,
+  Spanish, Brazilian Portuguese, Finnish, Norwegian, Danish, Greek, Polish,
+  Cebuano, Hungarian, Dutch, Czech, Croatian translation (thank you zmni,
+  Fabijenna, mikhail-khokhlov, mlocati, richarson, mlimacarlos, tiwi90)
+
+## 19.5.3
+- if the setting `Show all notes in a folder including their subfolders` is
+  activated now the note-subfolder list will show the note count recursively for
+  all children note-subfolders (for [#1206](https://github.com/pbek/QOwnNotes/issues/1206))
+- added `aarch64` architecture to AUR build process
+- added more Czech, Finnish, Croatian, Romanian, Slovak, Slovenian, Brazilian
+  Portuguese, Russian, German, Spanish, Hungarian, Dutch, Italian translation
+  (thank you Fabijenna, mlimacarlos, mikhail-khokhlov, rakekniven, richarson,
+  tiwi90, mlocati)
+
+## 19.5.2
+- now more than 10 bookmarks can be imported from [Nextcloud bookmarks](https://github.com/nextcloud/bookmarks)
+  in the *Notes / Import* menu (for [#1198](https://github.com/pbek/QOwnNotes/issues/1198))
+- added more Romanian translation (thank you Fabijenna)
+
+## 19.5.1
+- added feedback if the note folder was switched via the websocket to the websocket api
+- the [Web Companion browser extension](https://github.com/qownnotes/web-companion)
+  was updated to version 19.5.0
+    - you can now also **search** for the **description of bookmarks**
+    - a **loading progressbar** will now be shown while bookmarks are loaded
+      when the **note folder is switched** by the user 
+- there now is a software repository for **Fedora 30** (for [#1199](https://github.com/pbek/QOwnNotes/issues/1199))
+    - please visit the [Fedora installation page](https://www.qownnotes.org/installation#Fedora)
+      for instructions
+- added more Spanish, Catalan, Romanian, Dutch, Hungarian, Norwegian, Danish,
+  Czech, Italian translation (thank you richarson, MGuerra, Fabijenna, mlocati)
+
+## 19.5.0
+- you are now able to **import bookmarks** from [Nextcloud bookmarks](https://github.com/nextcloud/bookmarks)
+  in the *Notes / Import* menu (for [#1198](https://github.com/pbek/QOwnNotes/issues/1198))
+    - the bookmarks will be imported to your bookmarks note 
+    - for more information about the **bookmarks feature** please visit
+      [Web Companion browser extension](https://www.qownnotes.org/Knowledge-base/QOwnNotes-Web-Companion-browser-extension)
+- **QOwnNotesAPI** is now ready for **Nextcloud 16**
+    - see [QOwnNotesAPI for Nextcloud](https://apps.nextcloud.com/apps/qownnotesapi)
+- added more Italian, German, Russian, Dutch, Norwegian, Danish, Hungarian,
+  Spanish, Catalan, Romanian, Brazilian Portuguese translation (thank you
+  mlocati, rakekniven, mikhail-khokhlov, Fabijenna, richarson, MGuerra, mlimacarlos)
+
+## 19.4.5
+- you now will get a warning dialog if your git client couldn't be executed when
+  a git command is issued (for [#1192](https://github.com/pbek/QOwnNotes/issues/1192))
+    - you will be able to turn off that dialog
+- more checksum generation improvements for the AUR and added checksum support
+  to the build processes of Launchpad Snap, Slackware and Gentoo
+  (for [#1175](https://github.com/pbek/QOwnNotes/issues/1175))
+- added more German translation
+
+## 19.4.4
+- fixed renaming issue on case-insensitive file-systems
+  (for [#1190](https://github.com/pbek/QOwnNotes/issues/1190))
+- an other attempt to build the Windows version of QOwnNotes with Qt 5.12.2
+  (for AppVeyor [#2871](https://github.com/appveyor/ci/issues/2871))
+- added more Spanish translation (thank you richarson)
+
+## 19.4.3
+- you can now reorder your note folders in the *Note folders settings* via drag and drop
+  (for [#1181](https://github.com/pbek/QOwnNotes/issues/1181))
+- more checksum generation improvements for the AUR
+  (for [#1175](https://github.com/pbek/QOwnNotes/issues/1175))
+- added more Romanian, Slovenian, Slovak, Dutch, Hungarian, Indonesian,
+  Brazilian Portuguese, Italian, German, Russian translation (thank you
+  Fabijenna, zmni, mlimacarlos, mlocati, rakekniven, mikhail-khokhlov)
+
+## 19.4.2
+- for Linux there there now is a setting in the *Interface settings* to enforce
+  the system icon theme in case your desktop environment doesn't report the icon
+  theme correctly (for [#1177](https://github.com/pbek/QOwnNotes/issues/1177))
+    - KDE currently seems to have this problem on Qt 5.12
+    - in addition if built on Qt 5.12 or newer there now also will be tried to
+      check if there is a fallback icon theme in case there is no icon theme reported
+- checksum generation improvement for the AUR (for [#1175](https://github.com/pbek/QOwnNotes/issues/1175))
+- added more German, Russian, Catalan, Brazilian Portuguese, Dutch, Italian,
+  Slovak, Slovenian, Danish, Hungarian, Norwegian, Czech, Greek, Spanish translation
+  (thank you MGuerra, mlimacarlos, vistausss, tiwi90, Fabijenna, richarson, pu.sash)
+
+## 19.4.1
+- added support for **listing** the **note folders** and **changing** the
+  **current note folder** to the websocket api
+- the [Web Companion browser extension](https://github.com/qownnotes/web-companion)
+  was updated to version 19.4.0
+    - you can now **change** the **current note folder** in a select box in the
+      toolbar of the **bookmarks popup**
+- added more Slovak, Slovenian, Danish, Hungarian, Dutch, Norwegian, Czech, Greek,
+  Russian, German translation (thank you Fabijenna, mikhail-khokhlov, rakekniven)
+
+## 19.4.0
+- added **Romanian**, **Slovak** and **Slovenian translation** (a big thank you to Fabijenna)
+    - join us at [QOwnNotes on Crowdin](https://crowdin.com/project/qownnotes)
+      to make QOwnNotes available in more languages or help with the current 
+      translation
+- added a package for Ubuntu 19.04 (Disco Dingo) to the Launchpad build process
+  (for [#1169](https://github.com/pbek/QOwnNotes/issues/1169))
+- added more Indonesian, Danish translation (thank you zmni, flywheel)
+
+## 19.3.4
+- fixed layout damaging when in dark mode closing the app with the `x` button or
+  if getting a HUP signal (for [#1015](https://github.com/pbek/QOwnNotes/issues/1015))
+- made an attempt to remedy `notes.sqlite` sync issues with Nextcloud
+  (for [#1111](https://github.com/pbek/QOwnNotes/issues/1111))
+- added more Slovak, Slovenian, Hungarian, German, Catalan, Spanish, Brazilian
+  Portuguese, Romanian, Italian, Dutch, Russian translation (thank you Fabijenna,
+  rakekniven, MGuerra, richarson, mlimacarlos, mlocati, mikhail-khokhlov)
+
+## 19.3.3
+- there now are new scripting commands `script.noteTextEditSetSelection()`,
+  `script.noteTextEditSelectionStart()` and `script.noteTextEditSelectionEnd()`
+  to set and get the currently selected text in the note text edit
+  (for [#1167](https://github.com/pbek/QOwnNotes/issues/1167))
+    - for more information please take a look at the
+      [scripting documentation](https://docs.qownnotes.org/en/develop/scripting/README.html#set-the-currently-selected-text-in-the-note-text-edit)
+- you now can activate the context menu of the current widget with the shortcut <kbd>F10</kbd>
+  (for [#1154](https://github.com/pbek/QOwnNotes/issues/1154))
+    - please visit [QOwnNotes shortcuts](https://www.qownnotes.org/shortcuts/QOwnNotes)
+      for a list of all shortcuts
+- added more Chinese Traditional, German translation (thank you abev66, rakekniven)
+
+## 19.3.2
+- there now is a new *script settings variable* for select-boxes (for [#1167](https://github.com/pbek/QOwnNotes/issues/1167))
+    - you can define items with an index and a text
+    - you will receive the selected index
+    - for more information please take a look at the
+      [scripting documentation](https://docs.qownnotes.org/en/develop/scripting/README.html#registering-script-settings-variables)
+- there are now shortcuts to jump to the *note list* (<kbd>F5</kbd>), the
+  *note subfolder panel* (<kbd>F6</kbd>) and the *tags panel* (<kbd>F7</kbd>)
+  (for [#1153](https://github.com/pbek/QOwnNotes/issues/1153))
+    - please visit [QOwnNotes shortcuts](https://www.qownnotes.org/shortcuts/QOwnNotes)
+      for a list of all shortcuts
+- there now is a new scripting command `script.noteTextEditSelectCurrentLine()`
+  to select the current line in the note text edit (for [#1167](https://github.com/pbek/QOwnNotes/issues/1167))
+    - for more information please take a look at the [scripting documentation](https://docs.qownnotes.org/en/develop/scripting/README.html#select-the-current-line-in-the-note-text-edit)
+- added more Spanish, Italian, Russian, Cebuano, Hiligaynon, Dutch, Hungarian,
+  Swedish, Greek translation (thank you richarson, mlocati, mikhail-khokhlov,
+  Fabijenna, druus, tiwi90)
+
+## 19.3.1
+- added **Danish translation** (a big thank you to Fabijenna)
+    - join us at [QOwnNotes on Crowdin](https://crowdin.com/project/qownnotes)
+      to make QOwnNotes available in more languages or help with the current 
+      translation
+- implemented preserving of note tag links when renaming note sub-folders
+  (for [#1166](https://github.com/pbek/QOwnNotes/issues/1166))
+- added some markdown text edit fixes and changes
+  (for [QMarkdownTextEdit #21](https://github.com/pbek/qmarkdowntextedit/pull/21), thank you @sandsmark)
+- added more Czech, Polish, Swedish, Greek, Catalan, Galician, Indonesian,
+  Norwegian, Dutch, Hungarian, German, Italian, Portuguese, Brazilian, Spanish
+  translation (thank you Fabijenna, zmni, rakekniven, mlocati, jan_sh,
+  mlimacarlos, richarson)
+
+## 19.3.0
+- added **Galician translation** and **Norwegian translation** (a big thank you
+  to Fabijenna)
+    - join us at [QOwnNotes on Crowdin](https://crowdin.com/project/qownnotes/)
+      to make QOwnNotes available in more languages or help with the current 
+      translation
+- added an option to disable underline rendering in the preview to the *Preview settings*
+  (for [#1160](https://github.com/pbek/QOwnNotes/issues/1160))
+- added more Chinese Simplified, Indonesian, Danish, Cebuano, Hungarian, German
+  translation (thank you cptbl00dra1n, Fabijenna, zmni)
+
+## 19.2.5
+- fixed numpad 0 being recognized as tick character in the note text edit
+  (for [#1152](https://github.com/pbek/QOwnNotes/issues/1152), thank you @liulex)
+- added checkboxes support to the preview pdf export
+  (for [#235](https://github.com/pbek/QOwnNotes/issues/235), thank you @liulex)
+- added more Chinese Traditional translation (thank you abev66)
+
+## 19.2.4
+- you can now click checkboxes like `- []` in the preview
+  (for [#235](https://github.com/pbek/QOwnNotes/issues/235), thank you @liulex)
+- fixed single-line paste behavior when there is already text selection
+  (for [qmarkdowntextedit #19](https://github.com/pbek/qmarkdowntextedit/pull/19), thank you @liulex)
+- fixed settings lost after canceling the welcome dialog
+  (for [#1040](https://github.com/pbek/QOwnNotes/issues/1040), thank you @liulex)
+
+## 19.2.3
+- fixed a crash on first start introduced with feature [#1135](https://github.com/pbek/QOwnNotes/issues/1135)
+  (for [#1146](https://github.com/pbek/QOwnNotes/issues/1146))
+- fixed a problem with pasting text with newline characters at the end introduced
+  with [qmarkdowntextedit #15](https://github.com/pbek/qmarkdowntextedit/pull/15)
+  (for [qmarkdowntextedit #18](https://github.com/pbek/qmarkdowntextedit/pull/18), thank you @liulex)
+- fixed a problem with resetting layout settings if the note folder was not found
+  (for [#1140](https://github.com/pbek/QOwnNotes/issues/1140), thank you @liulex)
+- fixed some possible problems with finding existing note folders 
+  (for [#1144](https://github.com/pbek/QOwnNotes/issues/1144), thank you @liulex)
+    - this also fixes some problems upon first start in portable mode
+
 ## 19.2.2
 - fixed lost note after changing its title and switching to another note
   (for [#522](https://github.com/pbek/QOwnNotes/issues/522) and
@@ -3351,7 +3853,7 @@
 - added some fixes to the demo script
   [insert-headline-with-link-from-github-url.qml](https://github.com/pbek/QOwnNotes/blob/develop/doc/scripting/insert-headline-with-link-from-github-url.qml)
 - the menu entry `Show tag pane under navigation pane` was replaced by
-  `Show note list under tag pane` where note list and tag pane are swapped
+  `Show note list under tag panel` where note list and tag pane are swapped
   (for [#340](https://github.com/pbek/QOwnNotes/issues/340))
 - added more Portuguese, Russian, Japanese, Spanish, Italian, French and
   German translation (thank you mlimacarlos, Maboroshy, piyo,

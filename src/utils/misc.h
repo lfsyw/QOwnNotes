@@ -44,7 +44,7 @@ namespace Utils {
         QString appendIfDoesNotEndWith(const QString &text, const QString &endString);
         bool startDetachedProcess(const QString &executablePath,
                                   const QStringList &parameters = QStringList(),
-                                  const QString &workingDirectory = "");
+                                  QString workingDirectory = "");
         QString shorten(const QString &text, int length, const QString &sequence = "...");
         QString cycleTextCase(const QString &text);
         QString toSentenceCase(const QString &text);
@@ -91,13 +91,17 @@ namespace Utils {
         bool isNoteListPreview();
         QString toHumanReadableByteSize(qint64 size);
         QString prepareDebugInformationLine(
-            const QString &headline, const QString &data,
+            const QString &headline, QString data,
             bool withGitHubLineBreaks = true,
-            const QString &typeText = "");
+            const QString& typeText = "");
         QString generateDebugInformation(bool withGitHubLineBreaks = true);
-        bool regExpInListMatches(const QString &text, const QStringList &regExpList);
-        QString importMediaFromBase64(const QString &data, const QString &imageSuffix = "dat");
+        bool regExpInListMatches(const QString& text, const QStringList& regExpList);
         void copyImage(const QString &path);
+        QString importMediaFromBase64(QString data, const QString& imageSuffix = "dat");
+        bool isDarkModeIconTheme();
+        void transformNextcloudPreviewImages(QString &html);
+        void transformRemotePreviewImages(QString &html);
+        QString remotePreviewImageTagToInlineImageTag(QString imageTag);
     }  // namespace Misc
 }  // namespace Utils
 

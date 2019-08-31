@@ -2,6 +2,7 @@
 #include "services/owncloudservice.h"
 #include "dialogs/settingsdialog.h"
 #include "dialogs/trashdialog.h"
+#include "dialogs/serverbookmarksimportdialog.h"
 #include "dialogs/versiondialog.h"
 #include <QSettings>
 #include <QDebug>
@@ -33,8 +34,8 @@ const QString NS_DAV("DAV:");
 
 OwnCloudService::OwnCloudService(QObject *parent)
         : QObject(parent) {
-    networkManager = new QNetworkAccessManager();
-    calendarNetworkManager = new QNetworkAccessManager();
+    networkManager = new QNetworkAccessManager(this);
+    calendarNetworkManager = new QNetworkAccessManager(this);
 
     QObject::connect(networkManager,
                      SIGNAL(authenticationRequired(QNetworkReply *,
@@ -112,6 +113,7 @@ void OwnCloudService::readSettings() {
     restoreTrashedNotePath = rootPath + "note/restore_trashed";
     webdavPath = "/remote.php/webdav";
     sharePath = "/ocs/v1.php/apps/files_sharing/api/v1/shares";
+    bookmarkPath = "/apps/bookmarks/public/rest/v2/bookmark";
 
     int calendarBackend = settings.value(
             "ownCloud/todoCalendarBackend", DefaultOwnCloudCalendar).toInt();
@@ -223,8 +225,6 @@ void OwnCloudService::slotReplyFinished(QNetworkReply *reply) {
             // check if everything is all right and call the callback method
             checkAppInfo(reply);
         }
-
-        return;
     } else {
         QByteArray arr = reply->readAll();
         QString data = QString(arr);
@@ -236,14 +236,12 @@ void OwnCloudService::slotReplyFinished(QNetworkReply *reply) {
 
             // handle the versions loading
             handleVersionsLoading(data);
-            return;
         } else if (urlPath.endsWith(trashListPath)) {
             qDebug() << "Reply from trash list";
             // qDebug() << data;
 
             // handle the loading of trashed notes
             handleTrashedLoading(data);
-            return;
         } else if (urlPath.endsWith(capabilitiesPath)) {
             qDebug() << "Reply from capabilities page";
 
@@ -254,8 +252,6 @@ void OwnCloudService::slotReplyFinished(QNetworkReply *reply) {
                 settingsDialog->setOKLabelData(3, "not correct",
                                                SettingsDialog::Failure);
             }
-
-            return;
         } else if (urlPath.endsWith(ownCloudTestPath)) {
             qDebug() << "Reply from ownCloud test page";
 
@@ -266,13 +262,9 @@ void OwnCloudService::slotReplyFinished(QNetworkReply *reply) {
                 settingsDialog->setOKLabelData(2, "not detected",
                                                SettingsDialog::Failure);
             }
-
-            return;
         } else if (urlPath.endsWith(restoreTrashedNotePath)) {
             qDebug() << "Reply from ownCloud restore trashed note page";
             // qDebug() << data;
-
-            return;
         } else if (!todoCalendarServerUrlPath.isEmpty() &&
                 urlPath.endsWith(todoCalendarServerUrlPath)) {
             qDebug() << "Reply from ownCloud calendar page" << data;
@@ -289,8 +281,6 @@ void OwnCloudService::slotReplyFinished(QNetworkReply *reply) {
             if (settingsDialog != Q_NULLPTR) {
                 settingsDialog->refreshTodoCalendarList(calendarDataList);
             }
-
-            return;
         } else if (!todoCalendarServerUrlPath.isEmpty() &&
                 urlPath.startsWith(todoCalendarServerUrlPath)) {
             // check if we have a reply from a calendar item request
@@ -331,10 +321,7 @@ void OwnCloudService::slotReplyFinished(QNetworkReply *reply) {
                     // VTODO item) we will remove it
                     if (!wasUpdated) {
                         calItem.remove();
-                        return;
-                    }
-
-                    if (todoDialog != Q_NULLPTR) {
+                    } else if (todoDialog != Q_NULLPTR) {
                         // reload the task list items
                         todoDialog->reloadTodoListItems();
                     }
@@ -355,20 +342,20 @@ void OwnCloudService::slotReplyFinished(QNetworkReply *reply) {
 
             // load the directories
             loadDirectory(data);
-
-            return;
         } else if (urlPath.endsWith(sharePath)) {
             qDebug() << "Reply from share api";
 
             // update the share status of the notes
             handleNoteShareReply(data);
-            return;
         } else if (urlPath.startsWith(sharePath)) {
             qDebug() << "Reply from delete share api";
 
             // update the share status of the notes
             handleDeleteNoteShareReply(urlPath, data);
-            return;
+        } else if (urlPath.startsWith(bookmarkPath)) {
+            qDebug() << "Reply from bookmark api";
+
+            handleImportBookmarksReply(data);
         } else if (url.toString() == serverUrl) {
             qDebug() << "Reply from main server url";
 
@@ -378,13 +365,11 @@ void OwnCloudService::slotReplyFinished(QNetworkReply *reply) {
                 settingsDialog->setOKLabelData(1, "not found",
                                                SettingsDialog::Failure);
             }
-
-            return;
         }
     }
-#else
-    Q_UNUSED(reply);
 #endif
+
+    reply->deleteLater();
 }
 
 void OwnCloudService::checkAppInfo(QNetworkReply *reply) {
@@ -469,6 +454,8 @@ void OwnCloudService::checkAppInfo(QNetworkReply *reply) {
             appIsValid, appVersion, serverVersion, notesPathExistsText,
             reply->errorString());
 #endif
+
+    reply->deleteLater();
 }
 
 /**
@@ -512,6 +499,8 @@ void OwnCloudService::checkAppVersion(QNetworkReply *reply) {
                            "cause troubles in QOwnNotes.").arg(appVersion));
     }
 #endif
+
+    reply->deleteLater();
 }
 
 /**
@@ -623,11 +612,11 @@ void OwnCloudService::settingsGetCalendarList(SettingsDialog *dialog) {
             </d:prop> \
           </d:propfind>";
 
-    QByteArray *dataToSend = new QByteArray(body.toUtf8());
+    auto *dataToSend = new QByteArray(body.toUtf8());
     r.setHeader(QNetworkRequest::ContentLengthHeader, dataToSend->size());
     r.setHeader(QNetworkRequest::ContentTypeHeader,
                 "application/x-www-form-urlencoded");
-    QBuffer *buffer = new QBuffer(dataToSend);
+    auto *buffer = new QBuffer(dataToSend);
 
     QNetworkReply *reply = calendarNetworkManager->sendCustomRequest(
             r, "PROPFIND", buffer);
@@ -684,11 +673,11 @@ void OwnCloudService::todoGetTodoList(const QString &calendarName,
             </c:filter> \
         </c:calendar-query>";
 
-    QByteArray *dataToSend = new QByteArray(body.toUtf8());
+    auto *dataToSend = new QByteArray(body.toUtf8());
     r.setHeader(QNetworkRequest::ContentLengthHeader, dataToSend->size());
     r.setHeader(QNetworkRequest::ContentTypeHeader,
                 "application/x-www-form-urlencoded");
-    QBuffer *buffer = new QBuffer(dataToSend);
+    auto *buffer = new QBuffer(dataToSend);
 
     QNetworkReply *reply = calendarNetworkManager->sendCustomRequest(
             r, "REPORT", buffer);
@@ -698,8 +687,8 @@ void OwnCloudService::todoGetTodoList(const QString &calendarName,
 /**
  * Shares a note on ownCloud
  */
-void OwnCloudService::shareNote(const Note &note, ShareDialog *shareDialog) {
-    this->shareDialog = shareDialog;
+void OwnCloudService::shareNote(Note note, ShareDialog *dialog) {
+    this->shareDialog = dialog;
     qDebug() << __func__ << " - 'note': " << note;
 
     // return if no settings are set
@@ -736,8 +725,8 @@ void OwnCloudService::shareNote(const Note &note, ShareDialog *shareDialog) {
 /**
  * Removes a note shares on ownCloud
  */
-void OwnCloudService::removeNoteShare(const Note &note, ShareDialog *shareDialog) {
-    this->shareDialog = shareDialog;
+void OwnCloudService::removeNoteShare(Note note, ShareDialog *dialog) {
+    this->shareDialog = dialog;
     qDebug() << __func__ << " - 'note': " << note;
 
     // return if no settings are set
@@ -767,7 +756,7 @@ void OwnCloudService::removeNoteShare(const Note &note, ShareDialog *shareDialog
  * To fetch the shares of all notes we have to fetch all shares from the
  * account and search for our note folder
  */
-void OwnCloudService::fetchShares(const QString &path) {
+void OwnCloudService::fetchShares(const QString& path) {
     // return if no settings are set
     if (!hasOwnCloudSettings()) {
         return;
@@ -780,6 +769,29 @@ void OwnCloudService::fetchShares(const QString &path) {
         q.addQueryItem("path", path);
         url.setQuery(q);
     }
+
+    qDebug() << __func__ << " - 'url': " << url;
+
+    QNetworkRequest r(url);
+    addAuthHeader(&r);
+
+    // try to ensure the network is accessible
+    networkManager->setNetworkAccessible(QNetworkAccessManager::Accessible);
+
+    QNetworkReply *reply = networkManager->get(r);
+    ignoreSslErrorsIfAllowed(reply);
+}
+
+/**
+ * Fetches the bookmarks from Nextcloud Bookmarks
+ */
+void OwnCloudService::fetchBookmarks() {
+    // return if no settings are set
+    if (!hasOwnCloudSettings()) {
+        return;
+    }
+
+    QUrl url(serverUrl + bookmarkPath + "?page=-1");
 
     qDebug() << __func__ << " - 'url': " << url;
 
@@ -812,7 +824,7 @@ void OwnCloudService::removeCalendarItem(CalendarItem calItem,
 /**
  * @brief Restores a note on the server
  */
-void OwnCloudService::restoreTrashedNoteOnServer(const QString &fileName,
+void OwnCloudService::restoreTrashedNoteOnServer(const QString& fileName,
                                                  int timestamp,
                                                  MainWindow *mainWindow) {
     this->mainWindow = mainWindow;
@@ -846,7 +858,7 @@ void OwnCloudService::restoreTrashedNoteOnServer(const QString &fileName,
 /**
  * @brief OwnCloudService::loadVersions
  */
-void OwnCloudService::loadVersions(const QString &fileName, MainWindow *mainWindow) {
+void OwnCloudService::loadVersions(const QString& fileName, MainWindow *mainWindow) {
     this->mainWindow = mainWindow;
 
     QUrl url(serverUrl + versionListPath);
@@ -967,7 +979,7 @@ bool OwnCloudService::hasOwnCloudSettings(bool withEnabledCheck) {
  * Shows a message dialog with a ownCloud server error
  */
 void OwnCloudService::showOwnCloudServerErrorMessage(
-        const QString &message, bool withSettingsButton) {
+        const QString& message, bool withSettingsButton) {
     QString headline = Utils::Misc::replaceOwnCloudText(
             tr("ownCloud server connection error"));
     QString text = message.isEmpty() ?
@@ -988,12 +1000,13 @@ void OwnCloudService::showOwnCloudMessage(
         const QString &headline_, const QString &message_, bool withSettingsButton) {
     auto headline = headline_;
     if (headline.isEmpty()) {
-        headline = "ownCloud";
+        headline = Utils::Misc::replaceOwnCloudText("ownCloud");
     }
 
     auto message = message_;
     if (message.isEmpty()) {
-        message = tr("You need to setup your ownCloud server!");
+        message = Utils::Misc::replaceOwnCloudText(
+                tr("You need to setup your ownCloud server!"));
     }
 
     // don't show an actual message box if there already is one present on
@@ -1005,7 +1018,7 @@ void OwnCloudService::showOwnCloudMessage(
 
     if (withSettingsButton) {
         if (QMessageBox::warning(
-                0, headline, message,
+                nullptr, headline, message,
                 tr("Open &settings"), tr("&Cancel"),
                 QString::null, 0, 1) == 0) {
 #ifndef INTEGRATION_TESTS
@@ -1276,7 +1289,7 @@ QList<CalDAVCalendarData> OwnCloudService::parseCalendarData(QString &data) {
                         }
                     }
 
-                    CalDAVCalendarData calendarData;
+                    CalDAVCalendarData calendarData = CalDAVCalendarData();
                     // add the href to our result list
                     QDomNodeList hrefNodes = elem.elementsByTagNameNS(
                             NS_DAV, "href");
@@ -1745,11 +1758,11 @@ void OwnCloudService::postCalendarItemToServer(CalendarItem calendarItem,
 
     qDebug() << __func__ << " - 'body': " << body;
 
-    QByteArray *dataToSend = new QByteArray(body.toUtf8());
+    auto dataToSend = new QByteArray(body.toUtf8());
     r.setHeader(QNetworkRequest::ContentLengthHeader, dataToSend->size());
     r.setHeader(QNetworkRequest::ContentTypeHeader,
                 "application/x-www-form-urlencoded");
-    QBuffer *buffer = new QBuffer(dataToSend);
+    auto *buffer = new QBuffer(dataToSend);
 
     QNetworkReply *reply =
             calendarNetworkManager->sendCustomRequest(r, "PUT", buffer);
@@ -1763,7 +1776,7 @@ void OwnCloudService::postCalendarItemToServer(CalendarItem calendarItem,
  * @return
  */
 bool OwnCloudService::updateICSDataOfCalendarItem(CalendarItem *calItem) {
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    auto *manager = new QNetworkAccessManager(this);
 
     QUrl url(calItem->getUrl());
     QNetworkRequest r;
@@ -1790,6 +1803,7 @@ bool OwnCloudService::updateICSDataOfCalendarItem(CalendarItem *calItem) {
     ignoreSslErrorsIfAllowed(reply);
 
     loop.exec();
+    bool result = false;
 
     if (timer.isActive()) {
         // get the text from the network reply
@@ -1798,11 +1812,14 @@ bool OwnCloudService::updateICSDataOfCalendarItem(CalendarItem *calItem) {
         // set the new ics data
         calItem->setICSData(icsData);
 
-        return true;
+        result = true;
     }
 
-    // timer elapsed, no reply from network request
-    return false;
+    reply->deleteLater();
+    delete(manager);
+
+    // if false: timer elapsed, no reply from network request
+    return result;
 }
 
 /**
@@ -1810,7 +1827,7 @@ bool OwnCloudService::updateICSDataOfCalendarItem(CalendarItem *calItem) {
  * for the settings dialog
  */
 void OwnCloudService::settingsGetFileList(
-        SettingsDialog *dialog, const QString &path) {
+        SettingsDialog *dialog, const QString& path) {
     settingsDialog = dialog;
 
     QUrl url(serverUrl + webdavPath + "/" + path);
@@ -1824,11 +1841,11 @@ void OwnCloudService::settingsGetFileList(
                 "</a:prop>"
             "</a:propfind>";
 
-    QByteArray *dataToSend = new QByteArray(body.toUtf8());
+    auto dataToSend = new QByteArray(body.toUtf8());
     r.setHeader(QNetworkRequest::ContentLengthHeader, dataToSend->size());
     r.setHeader(QNetworkRequest::ContentTypeHeader,
                 "application/x-www-form-urlencoded");
-    QBuffer *buffer = new QBuffer(dataToSend);
+    auto *buffer = new QBuffer(dataToSend);
 
     // try to ensure the network is accessible
     networkManager->setNetworkAccessible(QNetworkAccessManager::Accessible);
@@ -1836,4 +1853,115 @@ void OwnCloudService::settingsGetFileList(
     QNetworkReply *reply = networkManager->sendCustomRequest(
             r, "PROPFIND", buffer);
     ignoreSslErrorsIfAllowed(reply);
+}
+
+void OwnCloudService::handleImportBookmarksReply(QString &data) {
+    qDebug() << __func__ << " - 'data': " << data;
+
+    // we have to add [], so the string can be parsed as JSON
+    data = QString("[") + data + QString("]");
+
+    QJSEngine engine;
+    QJSValue result = engine.evaluate(data);
+
+    QJSValue bookmarks = result.property(0).property("data");
+
+
+    // check if we got no useful data
+    if (bookmarks.toString() == "") {
+        QMessageBox::information(0, tr("No bookmarks"),
+                                 tr("No bookmarks were found on the server."));
+        return;
+    }
+
+#ifndef INTEGRATION_TESTS
+    auto *dialog = new ServerBookmarksImportDialog(bookmarks);
+    dialog->exec();
+#endif
+}
+
+/**
+ * Downloads an image from a Nextcloud preview path and returns the data
+ *
+ * @param url
+ * @return {QByteArray} the content of the downloaded url
+ */
+QByteArray OwnCloudService::downloadNextcloudPreviewImage(const QString& path) {
+    auto *manager = new QNetworkAccessManager(this);
+    QEventLoop loop;
+    QTimer timer;
+
+    timer.setSingleShot(true);
+    QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
+    QObject::connect(manager, SIGNAL(finished(QNetworkReply *)),
+                     &loop, SLOT(quit()));
+
+    // 10 sec timeout for the request
+    timer.start(10000);
+
+    QUrl url(serverUrl + path);
+    qDebug() << __func__ << " - 'url': " << url;
+
+    QNetworkRequest networkRequest = QNetworkRequest(url);
+    addAuthHeader(&networkRequest);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
+    networkRequest.setAttribute(QNetworkRequest::FollowRedirectsAttribute,
+                                true);
+#endif
+
+    QByteArray data;
+    QNetworkReply *reply = manager->get(networkRequest);
+    ignoreSslErrorsIfAllowed(reply);
+    loop.exec();
+
+    // if we didn't get a timeout let us return the content
+    if (timer.isActive()) {
+        int statusCode = reply->attribute(
+                QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // only get the data if the status code was "success"
+        // see: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+        if (statusCode >= 200 && statusCode < 300) {
+            // get the data from the network reply
+            data = reply->readAll();
+        }
+    }
+
+    reply->deleteLater();
+    delete(manager);
+
+    return data;
+}
+
+/**
+ * Transforms a Nextcloud preview image tag to an inline image tag
+ *
+ * @param data
+ * @param imageSuffix
+ * @return
+ */
+QString OwnCloudService::nextcloudPreviewImageTagToInlineImageTag(QString imageTag) {
+    imageTag.replace("&amp;", "&");
+//    qDebug() << __func__ << " - 'imageTag': " << imageTag;
+
+    QRegularExpression re(R"(<img src=\"(\/core\/preview\?fileId=(\d+)&x=(\d+)&y=(\d+)&a=(\w+)#mimetype=([\w\d%]+)&.+)\" alt=\"(.+)\"\/?>)",
+            QRegularExpression::CaseInsensitiveOption);
+
+    QRegularExpressionMatch match = re.match(imageTag);
+    if (!match.hasMatch()) {
+        return imageTag;
+    }
+
+    QString path = match.captured(1);
+    QString mimeType = QUrl::fromPercentEncoding(match.captured(6).toLatin1());
+    QString alt = match.captured(7);
+
+    QByteArray data = downloadNextcloudPreviewImage(path);
+
+    // for now we do no caching, because we don't know when to invalidate the cache
+    QString inlineImageTag = QString("<img src=\"data:" + mimeType + ";base64,") +
+            data.toBase64() + "\" alt=\"" + alt + "\"/>";
+
+    return inlineImageTag;
 }

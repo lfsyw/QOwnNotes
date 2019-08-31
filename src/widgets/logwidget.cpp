@@ -28,15 +28,16 @@ LogWidget::LogWidget(QWidget *parent) :
             this, SLOT(onDestroyed(QObject*)));
 
     ui->buttonFrame->hide();
+    QSettings settings;
 
     // init the log text edit search frame
-    ui->logTextEdit->initSearchFrame(ui->logTextEditSearchFrame);
+    bool darkMode = settings.value("darkMode").toBool();
+    ui->logTextEdit->initSearchFrame(ui->logTextEditSearchFrame, darkMode);
 
     // turn off markdown highlighting
     ui->logTextEdit->setHighlightingEnabled(false);
 
     // load the dialog settings
-    QSettings settings;
     ui->debugCheckBox->setChecked(
             settings.value("LogWidget/debugLog", false).toBool());
     ui->infoCheckBox->setChecked(
@@ -220,7 +221,7 @@ void LogWidget::log(LogWidget::LogType logType, const QString &text) {
     }
 
     const QSignalBlocker blocker(ui->logTextEdit);
-    Q_UNUSED(blocker);
+    Q_UNUSED(blocker)
 
     // insert the text at the end
     ui->logTextEdit->appendHtml(html.trimmed());
@@ -286,7 +287,7 @@ LogWidget * LogWidget::instance() {
 #endif
 
     if (logWidget == Q_NULLPTR) {
-        logWidget = createInstance(NULL);
+        logWidget = createInstance(nullptr);
     }
 
     return logWidget;
@@ -296,7 +297,7 @@ LogWidget * LogWidget::instance() {
  * Creates a global instance of the class
  */
 LogWidget * LogWidget::createInstance(QWidget *parent) {
-    LogWidget *logWidget = new LogWidget(parent);
+    auto *logWidget = new LogWidget(parent);
 
 #ifndef INTEGRATION_TESTS
     qApp->setProperty(
@@ -372,7 +373,7 @@ void LogWidget::logMessageOutput(
  * @param logType
  * @param msg
  */
-void LogWidget::logToFileIfAllowed(LogType logType, const QString &msg) {
+void LogWidget::logToFileIfAllowed(LogType logType, const QString& msg) {
     QSettings settings;
     if (settings.value("Debug/fileLogging").toBool()) {
         QFile logFile(Utils::Misc::logFilePath());
@@ -452,7 +453,7 @@ void LogWidget::onDestroyed(QObject *obj) {
  */
 bool LogWidget::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        auto *keyEvent = static_cast<QKeyEvent *>(event);
 
         // hide the option frame on Escape key
         if (keyEvent->key() == Qt::Key_Escape) {

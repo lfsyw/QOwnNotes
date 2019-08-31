@@ -23,7 +23,7 @@
 
 class ScriptInfoJson {
 public:
-    explicit ScriptInfoJson(QJsonObject jsonObject);
+    explicit ScriptInfoJson(const QJsonObject& jsonObject);
 
     QString name;
     QString identifier;
@@ -49,21 +49,21 @@ public:
     explicit Script();
 
     int getId();
-    static bool create(const QString &name, const QString &scriptPath);
+    static bool create(const QString& name, const QString& scriptPath);
     static Script fetch(int id);
-    static Script scriptFromQuery(QSqlQuery query);
+    static Script scriptFromQuery(const QSqlQuery& query);
     bool store();
     friend QDebug operator<<(QDebug dbg, const Script &script);
     bool exists();
-    bool fillFromQuery(QSqlQuery query);
+    bool fillFromQuery(const QSqlQuery& query);
     bool remove();
     bool isFetched();
     static QList<Script> fetchAll(bool enabledOnly = false);
     QString getName();
     QString getScriptPath();
     int getPriority();
-    void setName(const QString &text);
-    void setScriptPath(const QString &text);
+    void setName(const QString& text);
+    void setScriptPath(const QString& text);
     void setPriority(int value);
     static int countAll();
     bool scriptPathExists();
@@ -71,24 +71,24 @@ public:
     bool getEnabled();
     bool isEnabled();
     static int countEnabled();
-    void setIdentifier(const QString &identifier);
-    void setInfoJson(const QString &infoJson);
+    void setIdentifier(const QString& identifier);
+    void setInfoJson(const QString& infoJson);
     QString getIdentifier();
     QJsonObject getInfoJsonObject();
     static QString globalScriptRepositoryPath();
     QString scriptRepositoryPath(bool removeRecursively = false);
     bool isScriptFromRepository();
     QUrl remoteScriptUrl();
-    QUrl remoteFileUrl(const QString &fileName);
-    static bool scriptFromRepositoryExists(const QString &identifier);
-    void setSettingsVariablesJson(const QString &json);
+    QUrl remoteFileUrl(const QString& fileName);
+    static bool scriptFromRepositoryExists(const QString& identifier);
+    void setSettingsVariablesJson(const QString& json);
     QString getSettingsVariablesJson();
     QJsonObject getSettingsVariablesJsonObject();
-    void setSettingsVariablesJson(QJsonObject jsonObject);
+    void setSettingsVariablesJson(const QJsonObject& jsonObject);
     QString getScriptDirPath();
     QList<QUrl> remoteFileUrls();
     ScriptInfoJson getScriptInfoJson();
-    static Script fetchByIdentifier(const QString &identifier);
+    static Script fetchByIdentifier(const QString& identifier);
     bool refetch();
     bool fillFromId(int id);
     QUrl repositoryInfoJsonUrl();

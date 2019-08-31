@@ -1,3 +1,4 @@
+#include <utility>
 #include <entities/tag.h>
 #include <entities/notefolder.h>
 #include "noteapi.h"
@@ -21,7 +22,7 @@ NoteApi* NoteApi::fetch(int id) {
 }
 
 NoteApi* NoteApi::fromNote(const Note &note) {
-    NoteApi *noteApi = new NoteApi();
+    auto *noteApi = new NoteApi();
     noteApi->fetch(note.getId());
     return noteApi;
 }
@@ -44,7 +45,7 @@ QQmlListProperty<TagApi> NoteApi::tags() {
     while (itr.hasNext()) {
         Tag tag = itr.next();
 
-        TagApi* tagApi = new TagApi();
+        auto* tagApi = new TagApi();
         tagApi->fetch(tag.getId());
         _tags.append(tagApi);
     }
@@ -74,7 +75,7 @@ QStringList NoteApi::tagNames() const {
  * @param tagName
  * @return true if the note was tagged
  */
-bool NoteApi::addTag(const QString &tagName) {
+bool NoteApi::addTag(const QString& tagName) {
     if (tagName.isEmpty()) {
         return false;
     }

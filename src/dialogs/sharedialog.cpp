@@ -26,9 +26,9 @@ void ShareDialog::updateDialog() {
     qDebug() << __func__ << " - 'note': " << note;
 
     const QSignalBlocker blocker(ui->linkCheckBox);
-    Q_UNUSED(blocker);
+    Q_UNUSED(blocker)
     const QSignalBlocker blocker2(ui->linkUrlLineEdit);
-    Q_UNUSED(blocker2);
+    Q_UNUSED(blocker2)
 
     ui->linkCheckBox->setChecked(note.isShared());
     ui->linkUrlLineEdit->setVisible(note.isShared());
@@ -41,10 +41,10 @@ void ShareDialog::updateDialog() {
  * Shares or removes the share from the current note
  */
 void ShareDialog::on_linkCheckBox_toggled(bool checked) {
-    auto *ownCloud = new OwnCloudService(this);
+    auto *ownCloud = OwnCloudService::instance();
 
     const QSignalBlocker blocker(ui->linkCheckBox);
-    Q_UNUSED(blocker);
+    Q_UNUSED(blocker)
 
     // the checked status will be set by the callback function updateDialog()
     ui->linkCheckBox->setChecked(!checked);

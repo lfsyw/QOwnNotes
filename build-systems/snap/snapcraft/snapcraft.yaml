@@ -1,12 +1,12 @@
 name: qownnotes
 version: "VERSION-STRING"
-summary: Plain-text file notepad with markdown support and ownCloud integration
+summary: Plain-text file markdown note taking with Nextcloud/ownCloud integration
 grade: stable
 confinement: strict
 description: |
-  QOwnNotes is the open source (GPL) plain-text file notepad with markdown support
-  and todo list manager for GNU/Linux, Mac OS X and Windows, that (optionally) works
-  together with the notes application of ownCloud.
+  QOwnNotes is the open source (GPL) plain-text file markdown note taking app
+  for GNU/Linux, Mac OS X and Windows, that (optionally) works together with the
+  notes application of Nextcloud/ownCloud.
   https://www.qownnotes.org/
 
 apps:
@@ -30,6 +30,7 @@ apps:
 parts:
   qownnotes:
     source: https://download.tuxfamily.org/qownnotes/src/qownnotes-VERSION-STRING.tar.xz
+    source-checksum: sha256/ARCHIVE-SHA256
     # see https://docs.snapcraft.io/reference/plugins/qmake
     plugin: qmake
     qt-version: qt5
@@ -52,9 +53,30 @@ parts:
       - libqt5xml5
       - libqt5xmlpatterns5
       - libqt5printsupport5
-      - libqt5declarative5
       - libqt5websockets5
       - qtwayland5
     stage:
       - -usr/share/pkgconfig
     after: [desktop-qt5]
+
+  desktop-qt5:
+      source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+      source-subdir: qt
+      plugin: make
+      make-parameters: ["FLAVOR=qt5"]
+      build-packages:
+        - qtbase5-dev
+        - dpkg-dev
+      stage-packages:
+        - libxkbcommon0
+        - ttf-ubuntu-font-family
+        - dmz-cursor-theme
+        - light-themes
+        - adwaita-icon-theme
+        - gnome-themes-standard
+        - shared-mime-info
+        - libqt5gui5
+        - libgdk-pixbuf2.0-0
+        - libqt5svg5 # for loading icon themes which are svg
+        - try: [appmenu-qt5] # not available on core18
+        - locales-all

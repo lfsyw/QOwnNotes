@@ -38,6 +38,10 @@ WebSocketServerService::WebSocketServerService(quint16 port, QObject *parent) :
         m_pWebSocketServer(new QWebSocketServer(
                 QStringLiteral("QOwnNotes Server"),
                 QWebSocketServer::NonSecureMode, this)) {
+#ifndef INTEGRATION_TESTS
+    _webSocketTokenDialog = nullptr;
+#endif
+
     if (Utils::Misc::isSocketServerEnabled()) {
         listen(port);
     }
@@ -120,6 +124,26 @@ void WebSocketServerService::processMessage(const QString &message) {
     QString type = jsonObject.value("type").toString();
     auto *pSender = qobject_cast<QWebSocket *>(sender());
     MetricsService::instance()->sendVisitIfEnabled("websocket/message/" + type);
+    const QString token = jsonObject.value("token").toString();
+    QSettings settings;
+    QString storedToken = settings.value("webSocketServerService/token").toString();
+
+    // request the token if not set
+    if (token.isEmpty() || storedToken.isEmpty() || token != storedToken) {
+        pSender->sendTextMessage(getTokenQueryJsonText());
+
+#ifndef INTEGRATION_TESTS
+        if (_webSocketTokenDialog == nullptr) {
+            _webSocketTokenDialog = new WebSocketTokenDialog();
+        }
+
+        if (!_webSocketTokenDialog->isVisible()) {
+            _webSocketTokenDialog->open();
+        }
+#endif
+
+        return;
+    }
 
     if (type == "newNote") {
 #ifndef INTEGRATION_TESTS
@@ -158,50 +182,83 @@ void WebSocketServerService::processMessage(const QString &message) {
         pSender->sendTextMessage(jsonText);
 #endif
     } else if (type == "newBookmarks") {
-        const QString bookmarksNoteName = getBookmarksNoteName();
-        Note bookmarksNote = Note::fetchByName(bookmarksNoteName);
-        bool applyTag = false;
-
-        // create new bookmarks note if it doesn't exist
-        if (!bookmarksNote.isFetched()) {
-            bookmarksNote.setName(bookmarksNoteName);
-            bookmarksNote.setNoteText(Note::createNoteHeader(bookmarksNoteName));
-            applyTag = true;
-        }
-
-        QString noteText = bookmarksNote.getNoteText().trimmed();
-        const QJsonArray bookmarkList = jsonObject.value("data").toArray();
-
-        Q_FOREACH(QJsonValue bookmarkObject, bookmarkList) {
-                const QJsonObject data = bookmarkObject.toObject();
-                const QString name = data.value("name").toString().trimmed().remove("[").remove("]");
-                const QString url = data.value("url").toString().trimmed();
-                const QString description = data.value("description").toString().trimmed();
-
-                noteText += "\n- [" + name +"](" + url + ")";
-
-                if (!description.isEmpty()) {
-                    noteText += " " + description;
-                }
-            }
-
-        noteText += "\n";
-        bookmarksNote.setNoteText(noteText);
-        bookmarksNote.store();
-        bookmarksNote.storeNoteTextFileToDisk();
-
-        if (applyTag) {
-            auto tag = Tag::fetchByName(getBookmarksTag());
-            if (tag.isFetched()) {
-                tag.linkToNote(bookmarksNote);
-            }
-        }
+        QJsonArray bookmarkList = createBookmarks(jsonObject);
 
         pSender->sendTextMessage(flashMessageJsonText(
                 tr("%n bookmark(s) created", "", bookmarkList.count())));
+    } else if (type == "switchNoteFolder") {
+#ifndef INTEGRATION_TESTS
+        MainWindow *mainWindow = MainWindow::instance();
+
+        if (mainWindow == Q_NULLPTR) {
+            pSender->sendTextMessage(getNoteFolderSwitchedJsonText(false));
+
+            return;
+        }
+
+        const int noteFolderId = jsonObject.value("data").toInt();
+
+        if (noteFolderId == NoteFolder::currentNoteFolderId()) {
+            pSender->sendTextMessage(getNoteFolderSwitchedJsonText(false));
+
+            return;
+        }
+
+        mainWindow->changeNoteFolder(noteFolderId);
+
+        pSender->sendTextMessage(getNoteFolderSwitchedJsonText(true));
+
+        QString jsonText = getBookmarksJsonText();
+        pSender->sendTextMessage(jsonText);
+#endif
     } else {
         pSender->sendTextMessage("Received: " + message);
     }
+}
+
+QJsonArray WebSocketServerService::createBookmarks(const QJsonObject &jsonObject) {
+    const QString bookmarksNoteName = getBookmarksNoteName();
+    Note bookmarksNote = Note::fetchByName(bookmarksNoteName);
+    bool applyTag = false;
+
+    // create new bookmarks note if it doesn't exist
+    if (!bookmarksNote.isFetched()) {
+        bookmarksNote.setName(bookmarksNoteName);
+        bookmarksNote.setNoteText(Note::createNoteHeader(bookmarksNoteName));
+        applyTag = true;
+    }
+
+    QString noteText = bookmarksNote.getNoteText().trimmed();
+    const QJsonArray bookmarkList = jsonObject.value("data").toArray();
+
+    Q_FOREACH(QJsonValue bookmarkObject, bookmarkList) {
+            const QJsonObject data = bookmarkObject.toObject();
+            const QString name = data.value("name").toString().trimmed().remove(
+                    "[").remove("]");
+            const QString url = data.value("url").toString().trimmed();
+            const QString description = data.value(
+                    "description").toString().trimmed();
+
+            noteText += "\n- [" + name + "](" + url + ")";
+
+            if (!description.isEmpty()) {
+                noteText += " " + description;
+            }
+        }
+
+    noteText += "\n";
+    bookmarksNote.setNoteText(noteText);
+    bookmarksNote.store();
+    bookmarksNote.storeNoteTextFileToDisk();
+
+    if (applyTag) {
+        auto tag = Tag::fetchByName(getBookmarksTag());
+        if (tag.isFetched()) {
+            tag.linkToNote(bookmarksNote);
+        }
+    }
+
+    return bookmarkList;
 }
 
 QString WebSocketServerService::getBookmarksJsonText() const {
@@ -215,7 +272,7 @@ QString WebSocketServerService::getBookmarksJsonText() const {
     QList<Bookmark> bookmarks;
 
     // get all bookmark links from notes tagged with the bookmarks tag
-    Q_FOREACH(const Note &note, noteList) {
+    Q_FOREACH(Note note, noteList) {
             QList<Bookmark> noteBookmarks = note.getParsedBookmarks();
 
             // merge bookmark lists
@@ -232,6 +289,34 @@ QString WebSocketServerService::getBookmarksJsonText() const {
     QString jsonText = Bookmark::bookmarksWebServiceJsonText(bookmarks);
 
     return jsonText;
+}
+
+/**
+ * Returns the json text after switching note folders
+ *
+ * @param switched
+ * @return
+ */
+QString WebSocketServerService::getNoteFolderSwitchedJsonText(bool switched) const {
+    QJsonObject object;
+    object.insert("type", QJsonValue::fromVariant("switchedNoteFolder"));
+    object.insert("data", QJsonValue::fromVariant(switched));
+    QJsonDocument doc(object);
+
+    return doc.toJson(QJsonDocument::Compact);
+}
+
+/**
+ * Returns the json text for the token request
+ *
+ * @return
+ */
+QString WebSocketServerService::getTokenQueryJsonText() const {
+    QJsonObject object;
+    object.insert("type", QJsonValue::fromVariant("tokenQuery"));
+    QJsonDocument doc(object);
+
+    return doc.toJson(QJsonDocument::Compact);
 }
 
 void WebSocketServerService::socketDisconnected() {
@@ -261,7 +346,7 @@ QString WebSocketServerService::getBookmarksNoteName() {
     return bookmarksNoteName;
 }
 
-QString WebSocketServerService::flashMessageJsonText(const QString &message) {
+QString WebSocketServerService::flashMessageJsonText(const QString& message) {
     QJsonObject resultObject;
     resultObject.insert("type", QJsonValue::fromVariant("flashMessage"));
     resultObject.insert("message", message);

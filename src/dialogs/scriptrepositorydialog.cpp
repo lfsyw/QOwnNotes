@@ -25,7 +25,7 @@ ScriptRepositoryDialog::ScriptRepositoryDialog(QWidget *parent,
     ui->setupUi(this);
     setupMainSplitter();
 
-    _networkManager = new QNetworkAccessManager();
+    _networkManager = new QNetworkAccessManager(this);
     QObject::connect(_networkManager, SIGNAL(finished(QNetworkReply *)),
                      this, SLOT(slotReplyFinished(QNetworkReply *)));
 
@@ -183,6 +183,8 @@ void ScriptRepositoryDialog::slotReplyFinished(QNetworkReply *reply) {
 
         parseInfoQMLReply(arr);
     }
+
+    reply->deleteLater();
 }
 
 /**
@@ -281,7 +283,7 @@ void ScriptRepositoryDialog::parseInfoQMLReply(const QByteArray &arr) const {
 
     QString name = infoJson.name;
 
-    QTreeWidgetItem *item = new QTreeWidgetItem();
+    auto *item = new QTreeWidgetItem();
     item->setText(0, name);
     item->setData(0, Qt::UserRole, jsonData);
 
@@ -302,7 +304,7 @@ void ScriptRepositoryDialog::parseInfoQMLReply(const QByteArray &arr) const {
  * Sets up the main splitter
  */
 void ScriptRepositoryDialog::setupMainSplitter() {
-    _mainSplitter = new QSplitter;
+    _mainSplitter = new QSplitter(this);
 
     _mainSplitter->addWidget(ui->selectFrame);
     _mainSplitter->addWidget(ui->infoFrame);
@@ -494,7 +496,7 @@ void ScriptRepositoryDialog::on_installButton_clicked() {
 
     // download the script
     if (!url.isEmpty()) {
-        QFile *file = new QFile(scriptPath);
+        auto *file = new QFile(scriptPath);
         qDebug() << "Downloading: " << url;
         filesWereDownloaded = Utils::Misc::downloadUrlToFile(url, file);
         file->close();

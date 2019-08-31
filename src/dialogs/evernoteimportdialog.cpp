@@ -73,7 +73,7 @@ void EvernoteImportDialog::on_fileButton_clicked() {
  *
  * @param data
  */
-int EvernoteImportDialog::countNotes(const QString &data) {
+int EvernoteImportDialog::countNotes(const QString& data) {
     QXmlQuery query;
     query.setFocus(data);
     query.setQuery("en-export/note");
@@ -447,7 +447,7 @@ QString EvernoteImportDialog::getMarkdownForAttachmentFileData(
  *
  * @param data
  */
-void EvernoteImportDialog::importNotes(const QString &data) {
+void EvernoteImportDialog::importNotes(const QString& data) {
     QXmlQuery query;
     query.setFocus(data);
     query.setQuery("en-export/note");
@@ -543,12 +543,13 @@ void EvernoteImportDialog::importNotes(const QString &data) {
             Note note = Note();
 //            note.setName(title);
             note.setNoteText(noteText);
+            note.setNoteSubFolderId(noteSubFolder.getId());
 
             // in case the user enabled that the filename can be different
             // from the note name
+            // Attention: may already store the note
             note.handleNoteTextFileName();
 
-            note.setNoteSubFolderId(noteSubFolder.getId());
             note.store();
             note.storeNoteTextFileToDisk();
 
@@ -608,8 +609,8 @@ void EvernoteImportDialog::tagNote(QXmlQuery &query, Note &note) {
  * @return
  */
 QTreeWidgetItem *EvernoteImportDialog::addMetaDataTreeWidgetItem(
-        const QString &name,
-        const QString &attributeName,
+        const QString& name,
+        const QString& attributeName,
         QTreeWidgetItem *parentItem) {
     auto *item = new QTreeWidgetItem();
     item->setText(0, name);

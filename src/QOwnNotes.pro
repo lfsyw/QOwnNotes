@@ -47,7 +47,16 @@ TRANSLATIONS = languages/QOwnNotes_en.ts \
     languages/QOwnNotes_hil.ts \
     languages/QOwnNotes_ur.ts \
     languages/QOwnNotes_fi.ts \
-    languages/QOwnNotes_el.ts
+    languages/QOwnNotes_el.ts \
+    languages/QOwnNotes_gl.ts \
+    languages/QOwnNotes_no.ts \
+    languages/QOwnNotes_da.ts \
+    languages/QOwnNotes_ro.ts \
+    languages/QOwnNotes_sl.ts \
+    languages/QOwnNotes_sk.ts \
+    languages/QOwnNotes_eu.ts \
+    languages/QOwnNotes_sr.ts \
+    languages/QOwnNotes_fa.ts
 
 CODECFORTR = UTF-8
 CONFIG += c++11
@@ -131,8 +140,11 @@ SOURCES += main.cpp\
     widgets/lineedit.cpp \
     widgets/qtexteditsearchwidget.cpp \
     widgets/scriptlistwidget.cpp \
+    widgets/notefolderlistwidget.cpp \
     widgets/notetreewidgetitem.cpp \
-    widgets/layoutwidget.cpp
+    widgets/layoutwidget.cpp \
+    dialogs/serverbookmarksimportdialog.cpp \
+    dialogs/websockettokendialog.cpp
 
 HEADERS  += mainwindow.h \
     build_number.h \
@@ -216,8 +228,11 @@ HEADERS  += mainwindow.h \
     widgets/lineedit.h \
     widgets/qtexteditsearchwidget.h \
     widgets/scriptlistwidget.h \
+    widgets/notefolderlistwidget.h \
     widgets/notetreewidgetitem.h \
-    widgets/layoutwidget.h
+    widgets/layoutwidget.h \
+    dialogs/serverbookmarksimportdialog.h \
+    dialogs/websockettokendialog.h
 
 FORMS    += mainwindow.ui \
     dialogs/notediffdialog.ui \
@@ -246,7 +261,9 @@ FORMS    += mainwindow.ui \
     widgets/qtexteditsearchwidget.ui \
     widgets/scriptsettingwidget.ui \
     widgets/notetreewidgetitem.ui \
-    widgets/layoutwidget.ui
+    widgets/layoutwidget.ui \
+    dialogs/serverbookmarksimportdialog.ui \
+    dialogs/websockettokendialog.ui
 
 RESOURCES += \
     images.qrc \
@@ -307,3 +324,7 @@ CONFIG(debug, debug|release) {
 }
 
 DEFINES += QAPPLICATION_CLASS=QApplication
+
+DISTFILES += \
+    ../README.md \
+    ../CHANGELOG.md

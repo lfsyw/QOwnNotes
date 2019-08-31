@@ -81,7 +81,7 @@ Tag Tag::fetch(int id) {
  * @param startsWith if true the tag only has to start with name
  * @return
  */
-Tag Tag::fetchByName(const QString &name, bool startsWith) {
+Tag Tag::fetchByName(const QString &name_, bool startsWith) {
     QSqlDatabase db = DatabaseService::getNoteFolderDatabase();
     QSqlQuery query(db);
     Tag tag;
@@ -89,7 +89,12 @@ Tag Tag::fetchByName(const QString &name, bool startsWith) {
             QString(startsWith ? "LIKE" : "=") + " :name ORDER BY name";
     query.prepare(sql);
 
-    query.bindValue(":name", startsWith ? name + "%" : name);
+    auto name = name_;
+    if (startsWith) {
+        name += "%";
+    }
+
+    query.bindValue(":name", name);
 
     if (!query.exec()) {
         qWarning() << __func__ << ": " << query.lastError();
@@ -183,13 +188,13 @@ bool Tag::remove() {
     }
 }
 
-Tag Tag::tagFromQuery(QSqlQuery query) {
+Tag Tag::tagFromQuery(const QSqlQuery& query) {
     Tag tag;
     tag.fillFromQuery(query);
     return tag;
 }
 
-bool Tag::fillFromQuery(QSqlQuery query) {
+bool Tag::fillFromQuery(const QSqlQuery& query) {
     this->id = query.value("id").toInt();
     this->name = query.value("name").toString();
     this->priority = query.value("priority").toInt();
@@ -246,7 +251,7 @@ QList<Tag> Tag::fetchAll() {
     return tagList;
 }
 
-QList<Tag> Tag::fetchAllByParentId(int parentId, const QString &sortBy) {
+QList<Tag> Tag::fetchAllByParentId(int parentId, const QString& sortBy) {
     QSqlDatabase db = DatabaseService::getNoteFolderDatabase();
     QSqlQuery query(db);
     QList<Tag> tagList;
@@ -430,7 +435,7 @@ QStringList Tag::fetchAllNamesOfNote(const Note &note) {
 /**
  * Fetches the names by substring searching for the name
  */
-QStringList Tag::searchAllNamesByName(const QString &name) {
+QStringList Tag::searchAllNamesByName(const QString& name) {
     QSqlDatabase db = DatabaseService::getNoteFolderDatabase();
     QSqlQuery query(db);
     QStringList tagNameList;
@@ -456,7 +461,7 @@ QStringList Tag::searchAllNamesByName(const QString &name) {
 /**
  * Fetches one Tag of a note that has a color
  */
-Tag Tag::fetchOneOfNoteWithColor(const Note &note) {
+Tag Tag::fetchOneOfNoteWithColor(const Note& note) {
     Q_FOREACH(Tag tag, fetchAllOfNote(note)) {
             if (tag.getColor().isValid()) {
                 return tag;
@@ -527,7 +532,7 @@ bool Tag::isLinkedToNote(const Note &note) {
 /**
  * Returns all tags that are linked to certain note names
  */
-QList<Tag> Tag::fetchAllWithLinkToNoteNames(const QStringList &noteNameList) {
+QList<Tag> Tag::fetchAllWithLinkToNoteNames(const QStringList& noteNameList) {
     QSqlDatabase db = DatabaseService::getNoteFolderDatabase();
     QSqlQuery query(db);
     QList<Tag> tagList;
@@ -943,7 +948,7 @@ bool Tag::removeNoteLinkById(int id) {
 /**
  * Renames the note file name of note links
  */
-bool Tag::renameNoteFileNamesOfLinks(const QString &oldFileName, const QString &newFileName) {
+bool Tag::renameNoteFileNamesOfLinks(const QString& oldFileName, const QString& newFileName) {
     QSqlDatabase db = DatabaseService::getNoteFolderDatabase();
     QSqlQuery query(db);
     query.prepare("UPDATE noteTagLink SET note_file_name = :newFileName WHERE "
@@ -954,6 +959,33 @@ bool Tag::renameNoteFileNamesOfLinks(const QString &oldFileName, const QString &
     query.bindValue(":newFileName", newFileName);
     query.bindValue(":noteSubFolderPath",
                     NoteSubFolder::activeNoteSubFolder().relativePath());
+
+    if (!query.exec()) {
+        // on error
+        qWarning() << __func__ << ": " << query.lastError();
+
+        DatabaseService::closeDatabaseConnection(db, query);
+        return false;
+    }
+
+    DatabaseService::closeDatabaseConnection(db, query);
+
+    return true;
+}
+
+/**
+ * Renames the note sub folder paths of note links
+ */
+bool Tag::renameNoteSubFolderPathsOfLinks(const QString& oldPath, const QString& newPath) {
+    QSqlDatabase db = DatabaseService::getNoteFolderDatabase();
+    QSqlQuery query(db);
+    query.prepare("UPDATE noteTagLink SET note_sub_folder_path = "
+                  "replace(note_sub_folder_path, :oldPath, :newPath) WHERE "
+                          "note_sub_folder_path LIKE :oldPathLike");
+
+    query.bindValue(":oldPath", oldPath);
+    query.bindValue(":oldPathLike", oldPath + "%");
+    query.bindValue(":newPath", newPath);
 
     if (!query.exec()) {
         // on error

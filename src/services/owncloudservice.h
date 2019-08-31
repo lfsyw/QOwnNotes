@@ -43,16 +43,16 @@ public:
 
     void settingsConnectionTest(SettingsDialog *dialog);
 
-    void loadVersions(const QString &fileName, MainWindow *mainWindow);
+    void loadVersions(const QString& fileName, MainWindow *mainWindow);
 
     void loadTrash(MainWindow *mainWindow);
 
-    void restoreTrashedNoteOnServer(const QString &fileName,
+    void restoreTrashedNoteOnServer(const QString& fileName,
                                     int timestamp, MainWindow *mainWindow);
 
     void settingsGetCalendarList(SettingsDialog *dialog);
 
-    void todoGetTodoList(const QString &calendarName, TodoDialog *dialog);
+    void todoGetTodoList(const QString& calendarName, TodoDialog *dialog);
 
     void postCalendarItemToServer(CalendarItem calendarItem,
                                   TodoDialog *dialog);
@@ -65,11 +65,13 @@ public:
 
     static bool hasOwnCloudSettings(bool withEnabledCheck = true);
 
-    void shareNote(const Note &note, ShareDialog *shareDialog);
+    void shareNote(Note note, ShareDialog *dialog);
 
-    void fetchShares(const QString &path = "");
+    void fetchShares(const QString& path = "");
 
-    void removeNoteShare(const Note &note, ShareDialog *shareDialog);
+    void fetchBookmarks();
+
+    void removeNoteShare(Note note, ShareDialog *dialog);
 
     static OwnCloudService *instance();
 
@@ -78,6 +80,8 @@ public:
     static bool isTodoSupportEnabled();
 
     void startAppVersionTest();
+
+    QString nextcloudPreviewImageTagToInlineImageTag(QString imageTag);
 
 private:
     QString serverUrl;
@@ -104,6 +108,7 @@ private:
     QString restoreTrashedNotePath;
     QString webdavPath;
     QString sharePath;
+    QString bookmarkPath;
     SettingsDialog *settingsDialog;
     TodoDialog *todoDialog;
     QString calendarName;
@@ -124,12 +129,12 @@ private:
 
     void loadTodoItems(QString &data);
 
-    void ignoreSslErrorsIfAllowed(QNetworkReply *reply);
+    static void ignoreSslErrorsIfAllowed(QNetworkReply *reply);
 
     void loadDirectory(QString &data);
 
     void showOwnCloudServerErrorMessage(
-            const QString &message = QString(""), bool withSettingsButton = true);
+            const QString& message = QString(""), bool withSettingsButton = true);
 
     void showOwnCloudMessage(
             const QString &headline = QString(""), const QString &message = QString(""),
@@ -146,7 +151,11 @@ private:
 
     void handleDeleteNoteShareReply(const QString &urlPart, QString &data);
 
-    void checkAppVersion(QNetworkReply *reply);
+    static void checkAppVersion(QNetworkReply *reply);
+
+    void handleImportBookmarksReply(QString &data);
+
+    QByteArray downloadNextcloudPreviewImage(const QString &path);
 
 signals:
 

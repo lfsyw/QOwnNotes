@@ -98,46 +98,47 @@
              <string/>
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QFrame" name="noteSubFolderFrame">
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Raised</enum>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_4">
-                <property name="spacing">
-                 <number>3</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="LineEdit" name="noteSubFolderLineEdit">
-                  <property name="styleSheet">
-                   <string notr="true">QLineEdit {
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QFrame" name="noteSubFolderFrame">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <property name="spacing">
+             <number>3</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="LineEdit" name="noteSubFolderLineEdit">
+              <property name="styleSheet">
+               <string notr="true">QLineEdit {
+	border: none;
 	padding: 2px 5px 2px 27px;
 	background-image: url(:/images/search-notes.svg);
 	background-repeat: no-repeat;
@@ -145,47 +146,47 @@
 	margin-right: 0px;
 }
 </string>
-                  </property>
-                  <property name="placeholderText">
-                   <string>Find or create note sub folder</string>
-                  </property>
-                  <property name="clearButtonEnabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QTreeWidget" name="noteSubFolderTreeWidget">
-                  <property name="contextMenuPolicy">
-                   <enum>Qt::CustomContextMenu</enum>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::NoFrame</enum>
-                  </property>
-                  <property name="editTriggers">
-                   <set>QAbstractItemView::EditKeyPressed</set>
-                  </property>
-                  <property name="selectionMode">
-                   <enum>QAbstractItemView::ExtendedSelection</enum>
-                  </property>
-                  <property name="headerHidden">
-                   <bool>true</bool>
-                  </property>
-                  <column>
-                   <property name="text">
-                    <string notr="true">Name</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string notr="true">Note count</string>
-                   </property>
-                  </column>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
+              </property>
+              <property name="placeholderText">
+               <string>Find or create note sub folder</string>
+              </property>
+              <property name="clearButtonEnabled">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTreeWidget" name="noteSubFolderTreeWidget">
+              <property name="contextMenuPolicy">
+               <enum>Qt::CustomContextMenu</enum>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::EditKeyPressed</set>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::ExtendedSelection</enum>
+              </property>
+              <property name="headerHidden">
+               <bool>true</bool>
+              </property>
+              <column>
+               <property name="text">
+                <string notr="true">Name</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string notr="true">Note count</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
             </layout>
            </widget>
            <widget class="QWidget" name="tab_tags">
@@ -209,34 +210,35 @@
              <property name="bottomMargin">
               <number>0</number>
              </property>
-             <item>
-              <widget class="QFrame" name="tagSubFrame">
-               <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
-               </property>
-               <property name="frameShadow">
-                <enum>QFrame::Raised</enum>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_3">
-                <property name="spacing">
-                 <number>3</number>
-                </property>
-                <property name="leftMargin">
-                 <number>0</number>
-                </property>
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <property name="rightMargin">
-                 <number>0</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="LineEdit" name="tagLineEdit">
-                  <property name="styleSheet">
-                   <string notr="true">QLineEdit {
+         <item>
+          <widget class="QFrame" name="tagSubFrame">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="spacing">
+             <number>3</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="LineEdit" name="tagLineEdit">
+              <property name="styleSheet">
+               <string notr="true">QLineEdit {
+	border: none;
 	padding: 2px 5px 2px 27px;
 	background-image: url(:/images/search-notes.svg);
 	background-repeat: no-repeat;
@@ -244,49 +246,49 @@
 	margin-right: 0px;
 }
 </string>
-                  </property>
-                  <property name="placeholderText">
-                   <string>Find or create tag</string>
-                  </property>
-                  <property name="clearButtonEnabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QTreeWidget" name="tagTreeWidget">
-                  <property name="contextMenuPolicy">
-                   <enum>Qt::CustomContextMenu</enum>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::NoFrame</enum>
-                  </property>
-                  <property name="editTriggers">
-                   <set>QAbstractItemView::EditKeyPressed</set>
-                  </property>
-                  <property name="selectionMode">
-                   <enum>QAbstractItemView::ExtendedSelection</enum>
-                  </property>
-                  <property name="headerHidden">
-                   <bool>true</bool>
-                  </property>
-                  <column>
-                   <property name="text">
-                    <string notr="true">Name</string>
-                   </property>
-                  </column>
-                  <column>
-                   <property name="text">
-                    <string notr="true">Note count</string>
-                   </property>
-                  </column>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-             </item>
-            </layout>
-           </widget>
+              </property>
+              <property name="placeholderText">
+               <string>Find or create tag</string>
+              </property>
+              <property name="clearButtonEnabled">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QTreeWidget" name="tagTreeWidget">
+              <property name="contextMenuPolicy">
+               <enum>Qt::CustomContextMenu</enum>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::EditKeyPressed</set>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::ExtendedSelection</enum>
+              </property>
+              <property name="headerHidden">
+               <bool>true</bool>
+              </property>
+              <column>
+               <property name="text">
+                <string notr="true">Name</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string notr="true">Note count</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
           </widget>
          </item>
         </layout>
@@ -350,6 +352,7 @@
               </property>
               <property name="styleSheet">
                <string notr="true">QLineEdit {
+	border: none;
 	padding: 2px 5px 2px 27px;
 	background-image: url(:/images/search-notes.svg);
 	background-repeat: no-repeat;
@@ -441,6 +444,7 @@
              <widget class="LineEdit" name="navigationLineEdit">
               <property name="styleSheet">
                <string notr="true">QLineEdit {
+	border: none;
 	padding: 2px 5px 2px 27px;
 	background-image: url(:/images/search-notes.svg);
 	background-repeat: no-repeat;
@@ -815,8 +819,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>292</width>
-              <height>23</height>
+              <width>294</width>
+              <height>28</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="scriptingScrollAreaLayout">
@@ -854,9 +858,6 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
-           <property name="contextMenuPolicy">
-            <enum>Qt::CustomContextMenu</enum>
-           </property>
            <property name="styleSheet">
             <string notr="true"/>
            </property>
@@ -870,11 +871,14 @@
             <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif';&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="acceptRichText">
             <bool>false</bool>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
            </property>
            <property name="openExternalLinks">
             <bool>true</bool>
@@ -904,7 +908,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>1383</width>
-     <height>26</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuQOwnNotes">
@@ -949,6 +953,7 @@ p, li { white-space: pre-wrap; }
      </property>
      <addaction name="actionImport_notes_from_Evernote"/>
      <addaction name="actionImport_notes_from_text_files"/>
+     <addaction name="actionImport_bookmarks_from_server"/>
     </widget>
     <widget class="QMenu" name="menuNavigation">
      <property name="title">
@@ -1035,6 +1040,7 @@ p, li { white-space: pre-wrap; }
        <normaloff>:/icons/breeze-qownnotes/16x16/im-user-online.svg</normaloff>:/icons/breeze-qownnotes/16x16/im-user-online.svg</iconset>
      </property>
      <addaction name="actionTelegram"/>
+     <addaction name="actionRiot"/>
      <addaction name="actionGitter"/>
      <addaction name="actionOpen_IRC_Channel"/>
     </widget>
@@ -1100,6 +1106,7 @@ p, li { white-space: pre-wrap; }
      <addaction name="actionDelete_orphaned_images"/>
      <addaction name="actionManage_orphaned_attachments"/>
      <addaction name="actionSplit_note_at_cursor_position"/>
+     <addaction name="actionActivate_context_menu"/>
     </widget>
     <widget class="QMenu" name="menuEditNote">
      <property name="title">
@@ -1212,8 +1219,17 @@ p, li { white-space: pre-wrap; }
      <addaction name="actionRename_current_workspace"/>
      <addaction name="actionSwitch_to_previous_workspace"/>
     </widget>
+    <widget class="QMenu" name="menuJumpTo">
+     <property name="title">
+      <string>Jump to</string>
+     </property>
+     <addaction name="actionJump_to_note_text_edit"/>
+     <addaction name="actionJump_to_note_list_panel"/>
+     <addaction name="actionJump_to_note_subfolder_panel"/>
+     <addaction name="actionJump_to_tags_panel"/>
+    </widget>
     <addaction name="menuShow"/>
-    <addaction name="actionJump_to_note_text_edit"/>
+    <addaction name="menuJumpTo"/>
     <addaction name="menuToolbars"/>
     <addaction name="menuPanels"/>
     <addaction name="menuWorkspaces"/>
@@ -1225,6 +1241,8 @@ p, li { white-space: pre-wrap; }
     <addaction name="separator"/>
     <addaction name="actionToggle_distraction_free_mode"/>
     <addaction name="menuEditor_width"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggle_fullscreen"/>
     <addaction name="separator"/>
     <addaction name="action_Increase_note_text_size"/>
     <addaction name="action_Decrease_note_text_size"/>
@@ -2134,7 +2152,7 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show note list under tag pane</string>
+    <string>Show note list under tag panel</string>
    </property>
   </action>
   <action name="actionDonate">
@@ -2198,6 +2216,21 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="statusTip">
     <string>Open the Telegram group</string>
+   </property>
+  </action>
+  <action name="actionRiot">
+   <property name="icon">
+    <iconset theme="im-user-online" resource="breeze-qownnotes.qrc">
+     <normaloff>:/icons/breeze-qownnotes/16x16/im-user-online.svg</normaloff>:/icons/breeze-qownnotes/16x16/im-user-online.svg</iconset>
+   </property>
+   <property name="text">
+    <string notr="true">Riot</string>
+   </property>
+   <property name="toolTip">
+    <string extracomment="&quot;Riot&quot; as in the chat service">Open the Riot room</string>
+   </property>
+   <property name="statusTip">
+    <string extracomment="&quot;Riot&quot; as in the chat service">Open the Riot room</string>
    </property>
   </action>
   <action name="actionGitter">
@@ -2483,6 +2516,54 @@ p, li { white-space: pre-wrap; }
     <string>Manage orphaned attachments</string>
    </property>
   </action>
+  <action name="actionJump_to_note_subfolder_panel">
+   <property name="text">
+    <string>Jump to note subfolder panel</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">F6</string>
+   </property>
+  </action>
+  <action name="actionJump_to_tags_panel">
+   <property name="text">
+    <string>Jump to tags panel</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">F7</string>
+   </property>
+  </action>
+  <action name="actionJump_to_note_list_panel">
+   <property name="text">
+    <string>Jump to note list panel</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">F5</string>
+   </property>
+  </action>
+  <action name="actionActivate_context_menu">
+   <property name="text">
+    <string>Activate context menu</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">F10</string>
+   </property>
+  </action>
+  <action name="actionImport_bookmarks_from_server">
+   <property name="text">
+    <string>Import bookmarks from server</string>
+   </property>
+  </action>
+  <action name="actionToggle_fullscreen">
+   <property name="text">
+    <string>Toggle full-screen mode</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle full-screen mode</string>
+   </property>
+   <property name="shortcut">
+    <string notr="true">F11</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -2512,6 +2593,24 @@ p, li { white-space: pre-wrap; }
    <header location="global">widgets/lineedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>noteSubFolderLineEdit</tabstop>
+  <tabstop>noteSubFolderTreeWidget</tabstop>
+  <tabstop>tagLineEdit</tabstop>
+  <tabstop>tagTreeWidget</tabstop>
+  <tabstop>noteFolderComboBox</tabstop>
+  <tabstop>searchLineEdit</tabstop>
+  <tabstop>noteTreeWidget</tabstop>
+  <tabstop>navigationLineEdit</tabstop>
+  <tabstop>navigationWidget</tabstop>
+  <tabstop>noteOperationsButton</tabstop>
+  <tabstop>noteTextEdit</tabstop>
+  <tabstop>encryptedNoteTextEdit</tabstop>
+  <tabstop>newNoteTagButton</tabstop>
+  <tabstop>newNoteTagLineEdit</tabstop>
+  <tabstop>scriptingScrollArea</tabstop>
+  <tabstop>noteTextView</tabstop>
+ </tabstops>
  <resources>
   <include location="breeze-qownnotes.qrc"/>
   <include location="breeze-dark-qownnotes.qrc"/>

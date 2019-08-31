@@ -34,6 +34,6 @@ public:
 
 protected:
     void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
-    void highlightMarkdown(const QString &text);
-    void highlightBrokenNotesLink(const QString &text);
+    void highlightMarkdown(const QString& text);
+    void highlightBrokenNotesLink(const QString& text);
 };

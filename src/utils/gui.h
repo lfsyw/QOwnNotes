@@ -48,7 +48,7 @@ namespace Utils {
         bool isOneTreeWidgetItemChildVisible(QTreeWidgetItem *item);
 
         void searchForTextInTreeWidget(
-                QTreeWidget *treeWidget, const QString &text,
+                QTreeWidget *treeWidget, const QString& text,
                 TreeWidgetSearchFlags searchFlags = None);
 
         QMessageBox::StandardButton showMessageBox(
@@ -62,7 +62,7 @@ namespace Utils {
                 QWidget *parent, const QString &title, const QString &text,
                 const QString &identifier = "default",
                 QMessageBox::StandardButtons buttons = QMessageBox::Ok,
-                QMessageBox::StandardButton defaultButton = QMessageBox::NoButton);
+                QMessageBox::StandardButton defaultButton = QMessageBox::Ok);
 
         QMessageBox::StandardButton question(
                 QWidget *parent, const QString &title, const QString &text,
@@ -71,13 +71,23 @@ namespace Utils {
                 QMessageBox::StandardButtons(QMessageBox::Yes | QMessageBox::No),
                 QMessageBox::StandardButton defaultButton = QMessageBox::NoButton);
 
+        QMessageBox::StandardButton warning(
+                QWidget *parent, const QString &title, const QString &text,
+                const QString &identifier = "default",
+                QMessageBox::StandardButtons buttons =
+                QMessageBox::StandardButtons(QMessageBox::Ok),
+                QMessageBox::StandardButton defaultButton = QMessageBox::Ok);
+
         bool userDataInTreeWidgetExists(QTreeWidget *treeWidget,
-                                        QVariant userData,
+                                        const QVariant& userData,
                                         int column = 0);
 
         QTreeWidgetItem *getTreeWidgetItemWithUserData(
                 QTreeWidget *treeWidget, const QVariant &userData,
                 int column = 0);
+
+        void resetBoldStateOfAllTreeWidgetItems(
+                QTreeWidget *treeWidget, int column = 0);
 
         bool isMessageBoxPresent();
 
@@ -87,7 +97,7 @@ namespace Utils {
                 QFontDialog::FontDialogOptions options =
                         QFontDialog::FontDialogOptions());
 
-        void copyCodeBlockText(QTextBlock initialBlock);
+        void copyCodeBlockText(const QTextBlock& initialBlock);
 
         bool autoFormatTableAtCursor(QPlainTextEdit *textEdit);
 

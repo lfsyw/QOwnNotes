@@ -13,11 +13,11 @@ public:
     static bool create(const QString &name, const QString &localPath,
                        int ownCloudServerId, const QString &remotePath);
     static NoteFolder fetch(int id);
-    static NoteFolder noteFolderFromQuery(QSqlQuery query);
+    static NoteFolder noteFolderFromQuery(const QSqlQuery& query);
     bool store();
     friend QDebug operator<<(QDebug dbg, const NoteFolder &noteFolder);
     bool exists();
-    bool fillFromQuery(QSqlQuery query);
+    bool fillFromQuery(const QSqlQuery& query);
     bool remove();
     bool isFetched();
     static QList<NoteFolder> fetchAll();
@@ -56,7 +56,7 @@ public:
     static QString currentAttachmentsPath();
     bool isUseGit();
     void setUseGit(bool value);
-    QJsonObject jsonObject();
+    QJsonObject jsonObject() const;
     static QString noteFoldersWebServiceJsonText();
 
 private:

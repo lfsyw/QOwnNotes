@@ -17,9 +17,9 @@ public:
     explicit Bookmark(const QString &url, const QString &name = "",
             const QStringList &tagList = QStringList(), const QString &description = "");
     friend QDebug operator<<(QDebug dbg, const Bookmark &bookmark);
-    QJsonObject jsonObject();
+    QJsonObject jsonObject() const;
     static QList<Bookmark> parseBookmarks(const QString &text, bool withBasicUrls = false);
-    static QString bookmarksWebServiceJsonText(QList<Bookmark> bookmarks);
+    static QString bookmarksWebServiceJsonText(const QList<Bookmark>& bookmarks);
     static QString parsedBookmarksWebServiceJsonText(const QString &text, bool withBasicUrls = false);
     bool operator==(const Bookmark &bookmark) const;
     static void mergeInList(QList<Bookmark> &bookmarks, Bookmark &bookmark);

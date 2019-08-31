@@ -90,7 +90,7 @@ UpdateDialog::UpdateDialog(QWidget *parent, const QString &changesHtml,
                                   "window-close.svg")));
     ui->buttonBox->addButton(button, QDialogButtonBox::ActionRole);
 
-    button = new QPushButton(tr("&Cancel"));
+    button = new QPushButton(tr("&Cancel"), this);
     button->setProperty("ActionRole", Cancel);
     button->setIcon(
             QIcon::fromTheme(
@@ -102,7 +102,7 @@ UpdateDialog::UpdateDialog(QWidget *parent, const QString &changesHtml,
     connect(this->ui->buttonBox, SIGNAL(clicked(QAbstractButton *)),
             SLOT(dialogButtonClicked(QAbstractButton *)));
 
-    _networkManager = new QNetworkAccessManager();
+    _networkManager = new QNetworkAccessManager(this);
     QObject::connect(_networkManager, SIGNAL(finished(QNetworkReply *)),
                      this, SLOT(slotReplyFinished(QNetworkReply *)));
 }
@@ -231,10 +231,11 @@ void UpdateDialog::releaseDownloadProgress(
  * @param reply
  */
 void UpdateDialog::slotReplyFinished(QNetworkReply *reply) {
-    if (reply == NULL) {
+    if (reply == nullptr) {
         return;
     }
 
+    reply->deleteLater();
     ui->downloadProgressBar->hide();
 
     qDebug() << "Reply from " << reply->url().path();
@@ -316,7 +317,7 @@ void UpdateDialog::slotReplyFinished(QNetworkReply *reply) {
 /**
  * Initializes the update process
  */
-bool UpdateDialog::initializeUpdateProcess(const QString &filePath) {
+bool UpdateDialog::initializeUpdateProcess(const QString& filePath) {
 #if defined(Q_OS_MAC)
     // the OS X updater initializeMacOSUpdateProcess will be started
     // from dialogButtonClicked
@@ -434,7 +435,7 @@ bool UpdateDialog::initializeMacOSUpdateProcess(const QString &releaseUrl) {
 /**
  * Initializes the Windows update process
  */
-bool UpdateDialog::initializeWindowsUpdateProcess(const QString &filePath) {
+bool UpdateDialog::initializeWindowsUpdateProcess(const QString& filePath) {
     // get the folder path from the file path
     int lastPoint = filePath.lastIndexOf(".");
     QString pathPrefix = filePath.left(lastPoint);

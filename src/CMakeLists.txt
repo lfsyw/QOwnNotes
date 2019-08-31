@@ -20,6 +20,14 @@ find_package( Qt5PrintSupport REQUIRED )
 find_package( Qt5WebSockets REQUIRED )
 find_package( Qt5Qml REQUIRED )
 
+find_program(CCACHE_FOUND ccache)
+
+if(CCACHE_FOUND)
+    message(STATUS "ccache found")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
+
 qt5_wrap_ui(dialogs/ui_settingsdialog.h settingsdialog.ui)
 qt5_wrap_ui(dialogs/ui_tododialog.h tododialog.ui)
 qt5_wrap_ui(dialogs/ui_aboutdialog.h aboutdialog.ui)
@@ -35,12 +43,14 @@ qt5_wrap_ui(dialogs/ui_issueassistantdialog.h issueassistantdialog.ui)
 qt5_wrap_ui(dialogs/ui_tagadddialog.h tagadddialog.ui)
 qt5_wrap_ui(widgets/ui_fontcolorwidget.h fontcolorwidget.ui)
 qt5_wrap_ui(widgets/ui_evernoteimportdialog.h ui_evernoteimportdialog.ui)
+qt5_wrap_ui(widgets/ui_serverbookmarksimportdialog.h ui_serverbookmarksimportdialog.ui)
 qt5_wrap_ui(widgets/ui_layoutwidget.ui ui_layoutwidget.ui)
 qt5_wrap_ui(dialogs/ui_orphanedimagesdialog.h orphanedimagesdialog.ui)
 qt5_wrap_ui(dialogs/ui_orphanedattachmentsdialog.h orphanedattachmentsdialog.ui)
 qt5_wrap_ui(dialogs/ui_actiondialog.h actiondialog.ui)
 qt5_wrap_ui(dialogs/ui_tabledialog.h tabledialog.ui)
 qt5_wrap_ui(dialogs/ui_notedialog.h notedialog.ui)
+qt5_wrap_ui(dialogs/ui_websockettokendialog.h websockettokendialog.ui)
 qt5_wrap_ui(libraries/qmarkdowntextedit/ui_qplaintexteditsearchwidget.h
         libraries/qmarkdowntextedit/qplaintexteditsearchwidget.ui)
 qt5_wrap_ui(libraries/qttoolbareditor/src/toolbar_editor.hpp
@@ -109,6 +119,9 @@ set(SOURCE_FILES
     dialogs/evernoteimportdialog.cpp
     dialogs/evernoteimportdialog.h
     dialogs/evernoteimportdialog.ui
+    dialogs/serverbookmarksimportdialog.cpp
+    dialogs/serverbookmarksimportdialog.h
+    dialogs/serverbookmarksimportdialog.ui
     dialogs/orphanedimagesdialog.cpp
     dialogs/orphanedimagesdialog.h
     dialogs/orphanedimagesdialog.ui
@@ -127,6 +140,9 @@ set(SOURCE_FILES
     dialogs/notedialog.cpp
     dialogs/notedialog.h
     dialogs/notedialog.ui
+    dialogs/websockettokendialog.cpp
+    dialogs/websockettokendialog.h
+    dialogs/websockettokendialog.ui
     dialogs/filedialog.cpp
     dialogs/filedialog.h
     entities/calendaritem.cpp
@@ -238,6 +254,8 @@ set(SOURCE_FILES
     widgets/combobox.h
     widgets/scriptlistwidget.cpp
     widgets/scriptlistwidget.h
+    widgets/notefolderlistwidget.cpp
+    widgets/notefolderlistwidget.h
     widgets/fontcolorwidget.ui
     widgets/fontcolorwidget.cpp
     widgets/fontcolorwidget.h
@@ -314,6 +332,15 @@ SET(QON_TS_FILES
     languages/QOwnNotes_ur.ts
     languages/QOwnNotes_fi.ts
     languages/QOwnNotes_el.ts
+    languages/QOwnNotes_gl.ts
+    languages/QOwnNotes_no.ts
+    languages/QOwnNotes_da.ts
+    languages/QOwnNotes_ro.ts
+    languages/QOwnNotes_sl.ts
+    languages/QOwnNotes_sk.ts
+    languages/QOwnNotes_eu.ts
+    languages/QOwnNotes_sr.ts
+    languages/QOwnNotes_fa.ts
 )
 
 qt5_add_translation(QON_QM_FILES ${QON_TS_FILES})

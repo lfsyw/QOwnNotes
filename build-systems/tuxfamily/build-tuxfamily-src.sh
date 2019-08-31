@@ -38,7 +38,7 @@ cd $PROJECT_PATH
 echo "Project path: $PROJECT_PATH"
 
 # checkout the source code
-git clone --depth=50 git@github.com:pbek/QOwnNotes.git QOwnNotes -b $BRANCH
+git clone --depth=1 git@github.com:pbek/QOwnNotes.git QOwnNotes -b $BRANCH
 cd QOwnNotes
 
 # checkout submodules
@@ -77,9 +77,26 @@ archiveFile="$qownnotesSrcDir.tar.xz"
 echo "Creating archive $archiveFile..."
 tar -cJf $archiveFile $qownnotesSrcDir
 
-md5sum $archiveFile > $archiveFile.md5
-sha256sum $archiveFile | awk '{ print $1 }' > $archiveFile.sha256
-sha512sum $archiveFile | awk '{ print $1 }' > $archiveFile.sha512
+QOWNNOTES_ARCHIVE_MD5=`md5sum ${archiveFile} | awk '{ print $1 }' | tee ${archiveFile}.md5`
+QOWNNOTES_ARCHIVE_SHA256=`sha256sum ${archiveFile} | awk '{ print $1 }' | tee ${archiveFile}.sha256`
+QOWNNOTES_ARCHIVE_SHA512=`sha512sum ${archiveFile} | awk '{ print $1 }' | tee ${archiveFile}.sha512`
+QOWNNOTES_ARCHIVE_SIZE=`stat -c "%s" ${archiveFile}`
+
+echo ""
+echo "Sums:"
+echo $QOWNNOTES_ARCHIVE_MD5
+echo $QOWNNOTES_ARCHIVE_SHA256
+echo $QOWNNOTES_ARCHIVE_SHA512
+echo ""
+echo "Size:"
+echo $QOWNNOTES_ARCHIVE_SIZE
+
+# write temporary checksum variable file for the deployment scripts
+_QQwnNotesCheckSumVarFile="/tmp/QOwnNotes.checksum.vars"
+echo "QOWNNOTES_ARCHIVE_MD5=$QOWNNOTES_ARCHIVE_MD5" > ${_QQwnNotesCheckSumVarFile}
+echo "QOWNNOTES_ARCHIVE_SHA256=$QOWNNOTES_ARCHIVE_SHA256" >> ${_QQwnNotesCheckSumVarFile}
+echo "QOWNNOTES_ARCHIVE_SHA512=$QOWNNOTES_ARCHIVE_SHA512" >> ${_QQwnNotesCheckSumVarFile}
+echo "QOWNNOTES_ARCHIVE_SIZE=$QOWNNOTES_ARCHIVE_SIZE" >> ${_QQwnNotesCheckSumVarFile}
 
 remotePath="pbek@ssh.tuxfamily.org:/home/qownnotes/qownnotes-repository/src"
 tuxFamilyReadme="tuxfamily-readme.md"

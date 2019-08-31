@@ -21,7 +21,12 @@
 #include <QRegExp>
 #include <QMovie>
 #include <QtConcurrent>
+#include <QAction>
+#include <QApplication>
+#include <QMenu>
+#include <QClipboard>
 #include <QProxyStyle>
+#include <dialogs/filedialog.h>
 
 class NoDottedOutlineForLinksStyle: public QProxyStyle {
 public:
@@ -50,7 +55,7 @@ NotePreviewWidget::NotePreviewWidget(QWidget *parent) : QTextBrowser(parent) {
     _searchWidget->setReplaceEnabled(false);
 
     // add a layout to the widget
-    QVBoxLayout *layout = new QVBoxLayout;
+    auto *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setMargin(0);
     layout->addStretch();
@@ -79,7 +84,7 @@ void NotePreviewWidget::resizeEvent(QResizeEvent* event) {
 bool NotePreviewWidget::eventFilter(QObject *obj, QEvent *event) {
 //    qDebug() << event->type();
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        auto *keyEvent = static_cast<QKeyEvent *>(event);
 
         // disallow keys if widget hasn't focus
         if (!this->hasFocus()) {
@@ -170,7 +175,7 @@ void NotePreviewWidget::mouseDoubleClickEvent(QMouseEvent *event) {
         }
         return;
     }
-    
+
     auto selStart = cursor.selectionStart();
     auto selEnd = cursor.selectionEnd();
 
@@ -193,7 +198,7 @@ void NotePreviewWidget::mouseDoubleClickEvent(QMouseEvent *event) {
 
     auto text = cursor.selectedText();
     oldPos -= selStart;
-    
+
     QRegExp re("[" + chineasePunctuations + "]+");
     auto index = text.lastIndexOf(re, oldPos);
     bool punctuationUnderCursor = false;
@@ -211,7 +216,7 @@ void NotePreviewWidget::mouseDoubleClickEvent(QMouseEvent *event) {
         else
             selEnd -= text.length() - (index + re.matchedLength());
     }
-    
+
     if (selEnd - selStart == text.length())
         return;
 
@@ -387,8 +392,8 @@ void NotePreviewWidget::initSearchFrame(QWidget *searchFrame, bool darkMode) {
     QLayout *layout = _searchFrame->layout();
 
     // create a grid layout for the frame and add the search widget to it
-    if (layout == NULL) {
-        layout = new QVBoxLayout();
+    if (layout == nullptr) {
+        layout = new QVBoxLayout(_searchFrame);
         layout->setSpacing(0);
         layout->setContentsMargins(0, 0, 0, 0);
     }
@@ -421,7 +426,7 @@ void NotePreviewWidget::downloadOnlineMedia() {
             connect(watcher, SIGNAL(finished()), watcher, SLOT(deleteLater()));
 
             MainWindow::instance()->showStatusBarMessage(tr("Downloading %1").arg(url), 5000);
-            
+
             auto future = QtConcurrent::run(
                 [url]{
                 return qMakePair(url, Note::downloadUrlToMedia(url, true));
@@ -473,4 +478,100 @@ void NotePreviewWidget::updateOnlineMediaFromFutureWatcher()
     }
 
     updateOnlineMedia();
+}
+
+/**
+ * Shows a context menu for the note preview
+ *
+ * @param event
+ */
+void NotePreviewWidget::contextMenuEvent(QContextMenuEvent *event) {
+    QPoint pos = event->pos();
+    QPoint globalPos = event->globalPos();
+    QMenu *menu = this->createStandardContextMenu();
+
+    QTextCursor c = this->cursorForPosition(pos);
+    QTextFormat format = c.charFormat();
+    const QString &anchorHref = format.toCharFormat().anchorHref();
+    bool isImageFormat = format.isImageFormat();
+    bool isAnchor = !anchorHref.isEmpty();
+
+    if (isImageFormat || isAnchor) {
+        menu->addSeparator();
+    }
+
+    auto *copyImageAction = new QAction(this);
+    auto *copyLinkLocationAction = new QAction(this);
+
+    // check if clicked object was an image
+    if (isImageFormat) {
+        copyImageAction = menu->addAction(tr("Copy image file path"));
+    }
+
+    if (isAnchor) {
+        copyLinkLocationAction = menu->addAction(tr("Copy link location"));
+    }
+
+    auto *htmlFileExportAction = menu->addAction(tr("Export generated raw HTML"));
+
+    QAction *selectedItem = menu->exec(globalPos);
+
+    if (selectedItem) {
+        // copy the image file path to the clipboard
+        if (selectedItem == copyImageAction) {
+            QString imagePath = format.toImageFormat().name();
+            QUrl imageUrl = QUrl(imagePath);
+
+            if (imageUrl.isLocalFile()) {
+                imagePath = imageUrl.toLocalFile();
+            }
+
+            QClipboard *clipboard = QApplication::clipboard();
+            clipboard->setText(imagePath);
+        }
+        // copy link location to the clipboard
+        else if (selectedItem == copyLinkLocationAction) {
+            QClipboard *clipboard = QApplication::clipboard();
+            clipboard->setText(anchorHref);
+        }
+        // export the generated html as html file
+        else if (selectedItem == htmlFileExportAction) {
+            exportAsHTMLFile();
+        }
+    }
+}
+
+void NotePreviewWidget::exportAsHTMLFile() {
+    FileDialog dialog("PreviewHTMLFileExport");
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setNameFilter(tr("HTML files") + " (*.html)");
+    dialog.setWindowTitle(tr("Export preview as raw HTML file"));
+    dialog.selectFile("preview.html");
+    int ret = dialog.exec();
+
+    if (ret == QDialog::Accepted) {
+        QString fileName = dialog.selectedFile();
+
+        if (!fileName.isEmpty()) {
+            if (QFileInfo(fileName).suffix().isEmpty()) {
+                fileName.append(".html");
+            }
+
+            QFile file(fileName);
+
+            qDebug() << "exporting raw preview html file: " << fileName;
+
+            if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+                qCritical() << file.errorString();
+                return;
+            }
+            QTextStream out(&file);
+            out.setCodec("UTF-8");
+            out << toHtml();
+            file.flush();
+            file.close();
+            Utils::Misc::openFolderSelect(fileName);
+        }
+    }
 }

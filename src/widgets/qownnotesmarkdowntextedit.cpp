@@ -369,7 +369,7 @@ void QOwnNotesMarkdownTextEdit::highlightCurrentLine()
     // check if current line is really visible!
     if (!isReadOnly() && !textCursor().hasSelection()) {
         ensureCursorVisible();
-        QTextEdit::ExtraSelection selection;
+        QTextEdit::ExtraSelection selection = QTextEdit::ExtraSelection();
 
         QColor lineColor = Utils::Schema::schemaSettings->getBackgroundColor(
                 MarkdownHighlighter::HighlighterState::
@@ -396,20 +396,43 @@ void QOwnNotesMarkdownTextEdit::highlightCurrentLine()
 
 bool QOwnNotesMarkdownTextEdit::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        auto *keyEvent = static_cast<QKeyEvent *>(event);
 
-        // show notification if user tries to edit a note while note editing
-        // is turned off
-        if ((objectName() == "encryptedNoteTextEdit" ||
-             objectName() == "noteTextEdit") && isReadOnly() &&
-             (keyEvent->key() < 128) &&
-            keyEvent->modifiers().testFlag(Qt::NoModifier) &&
-                !Utils::Misc::isNoteEditingAllowed()) {
-            Utils::Gui::information(this, tr("Note editing disabled"),
-                                    tr("Note editing is currently disabled, "
-                                       "please allow it again in the "
-                                       "<i>Note-menu</i>."),
-                                    "readonly-mode");
+        if (objectName() == "encryptedNoteTextEdit" || objectName() == "noteTextEdit") {
+            if (!Utils::Misc::isNoteEditingAllowed()) {
+                auto keys = QList<int>() << Qt::Key_Return << Qt::Key_Enter <<
+                        Qt::Key_Space << Qt::Key_Backspace << Qt::Key_Delete <<
+                        Qt::Key_Tab << Qt::Key_Backtab << Qt::Key_Minus <<
+                        Qt::Key_ParenLeft << Qt::Key_BraceLeft <<
+                        Qt::Key_BracketLeft << Qt::Key_Plus << Qt::Key_Comma <<
+                        Qt::Key_Period;
+
+                // show notification if user tries to edit a note while
+                // note editing is turned off
+                if ((keyEvent->key() < 128 || keys.contains(keyEvent->key())) &&
+                        keyEvent->modifiers().testFlag(Qt::NoModifier) &&
+                        isReadOnly()) {
+                    if (Utils::Gui::question(
+                            this,
+                            tr("Note editing disabled"),
+                            tr("Note editing is currently disabled, do you want to "
+                               "allow again?"), "readonly-mode-allow") ==
+                        QMessageBox::Yes) {
+                        if (mainWindow != Q_NULLPTR) {
+                            mainWindow->allowNoteEditing();
+                        }
+                    }
+
+                    return true;
+                }
+            } else {
+                // disable note editing if escape key was pressed
+                if (keyEvent->key() == Qt::Key_Escape && mainWindow != Q_NULLPTR) {
+                    mainWindow->disallowNoteEditing();
+
+                    return true;
+                }
+            }
         }
     }
 

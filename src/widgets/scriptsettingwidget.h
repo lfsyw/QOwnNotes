@@ -33,12 +33,14 @@ private slots:
 
     void on_booleanCheckBox_toggled(bool checked);
 
+    void on_selectionComboBox_currentIndexChanged(int index);
+
 private:
     Ui::ScriptSettingWidget *ui;
     QMap<QString, QVariant> _variableMap;
     Script _script;
 
-    void storeSettingsVariable(QJsonValue value);
+    void storeSettingsVariable(const QJsonValue& value);
 };
 
 #endif // SCRIPTSETTINGWIDGET_H

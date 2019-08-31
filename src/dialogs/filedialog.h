@@ -17,8 +17,8 @@ private:
     QString _generalSettingsKey;
 
 protected slots:
-    void storeDirectory(const QString &path);
-    void storeDirectory(const QStringList &files);
+    void storeDirectory(QString path);
+    void storeDirectory(const QStringList& files);
 };
 
 #endif // FILEDIALOG_H

@@ -84,28 +84,28 @@ bool Script::isEnabled() {
     return getEnabled();
 }
 
-void Script::setName(const QString &text) {
+void Script::setName(const QString& text) {
     this->name = text;
 }
 
-void Script::setIdentifier(const QString &identifier) {
+void Script::setIdentifier(const QString& identifier) {
     this->identifier = identifier;
 }
 
-void Script::setInfoJson(const QString &infoJson) {
+void Script::setInfoJson(const QString& infoJson) {
     this->infoJson = infoJson;
 }
 
-void Script::setSettingsVariablesJson(const QString &json) {
+void Script::setSettingsVariablesJson(const QString& json) {
     this->settingsVariablesJson = json;
 }
 
-void Script::setSettingsVariablesJson(QJsonObject jsonObject) {
+void Script::setSettingsVariablesJson(const QJsonObject& jsonObject) {
     QJsonDocument document(jsonObject);
     this->settingsVariablesJson = document.toJson();
 }
 
-void Script::setScriptPath(const QString &text) {
+void Script::setScriptPath(const QString& text) {
     this->scriptPath = text;
 }
 
@@ -117,7 +117,7 @@ void Script::setEnabled(bool value) {
     this->enabled = value;
 }
 
-bool Script::create(const QString &name, const QString &scriptPath) {
+bool Script::create(const QString& name, const QString& scriptPath) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -195,7 +195,7 @@ int Script::countEnabled() {
  * @param identifier
  * @return
  */
-bool Script::scriptFromRepositoryExists(const QString &identifier) {
+bool Script::scriptFromRepositoryExists(const QString& identifier) {
     Script script = fetchByIdentifier(identifier);
     return script.isFetched();
 }
@@ -206,7 +206,7 @@ bool Script::scriptFromRepositoryExists(const QString &identifier) {
  * @param identifier
  * @return
  */
-Script Script::fetchByIdentifier(const QString &identifier) {
+Script Script::fetchByIdentifier(const QString& identifier) {
     QSqlDatabase db = QSqlDatabase::database("disk");
     QSqlQuery query(db);
 
@@ -276,13 +276,13 @@ bool Script::remove() {
     }
 }
 
-Script Script::scriptFromQuery(QSqlQuery query) {
+Script Script::scriptFromQuery(const QSqlQuery& query) {
     Script script;
     script.fillFromQuery(query);
     return script;
 }
 
-bool Script::fillFromQuery(QSqlQuery query) {
+bool Script::fillFromQuery(const QSqlQuery& query) {
     this->id = query.value("id").toInt();
     this->name = query.value("name").toString();
     this->identifier = query.value("identifier").toString();
@@ -488,7 +488,7 @@ QUrl Script::remoteScriptUrl() {
  *
  * @return
  */
-QUrl Script::remoteFileUrl(const QString &fileName) {
+QUrl Script::remoteFileUrl(const QString& fileName) {
     if (fileName.isEmpty()) {
         return QUrl();
     }
@@ -512,7 +512,7 @@ QList<QUrl> Script::remoteFileUrls() {
         urlList << remoteFileUrl(scriptName);
     }
 
-    foreach( const QString &fileName, infoJson.resources ) {
+    foreach( QString fileName, infoJson.resources ) {
             if (!fileName.isEmpty()) {
                 urlList << remoteFileUrl(fileName);
             }
@@ -536,7 +536,7 @@ QDebug operator<<(QDebug dbg, const Script &script) {
  *
  * @param jsonObject
  */
-ScriptInfoJson::ScriptInfoJson(QJsonObject jsonObject) {
+ScriptInfoJson::ScriptInfoJson(const QJsonObject& jsonObject) {
     if (jsonObject.isEmpty()) {
         return;
     }
@@ -581,7 +581,7 @@ ScriptInfoJson::ScriptInfoJson(QJsonObject jsonObject) {
     platformHash["linux"] = "Linux";
     platformHash["macos"] = "macOS";
     platformHash["windows"] = "Windows";
-    foreach(const QString &platform, platformList) {
+    foreach(QString platform, platformList) {
             if (platformHash.contains(platform)) {
                 richPlatformList << platformHash[platform];
             }

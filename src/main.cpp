@@ -114,15 +114,24 @@ bool mainStartupMisc(const QStringList &arguments) {
         QApplication::setStyle(interfaceStyle);
     }
 
-    bool internalIconTheme = settings.value("internalIconTheme").toBool();
+    bool systemIconTheme = settings.value("systemIconTheme").toBool();
 
-    if (QIcon::themeName() == "" || internalIconTheme) {
-        QIcon::setThemeName("breeze-qownnotes");
-    }
+    if (!systemIconTheme) {
+        bool internalIconTheme = settings.value("internalIconTheme").toBool();
 
-    bool darkMode = settings.value("darkMode").toBool();
-    if (darkMode) {
-        QIcon::setThemeName("breeze-dark-qownnotes");
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+        if (!internalIconTheme && QIcon::themeName() == "") {
+            QIcon::setThemeName(QIcon::fallbackThemeName());
+        }
+#endif
+
+        if (QIcon::themeName() == "" || internalIconTheme) {
+            QIcon::setThemeName("breeze-qownnotes");
+        }
+
+        if (Utils::Misc::isDarkModeIconTheme()) {
+            QIcon::setThemeName("breeze-dark-qownnotes");
+        }
     }
 
     MetricsService *metricsService = MetricsService::createInstance();

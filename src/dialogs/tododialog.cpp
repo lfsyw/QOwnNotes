@@ -94,7 +94,7 @@ void TodoDialog::setupUi() {
     /*
      * setup the note button menu
      */
-    QMenu *noteMenu = new QMenu();
+    auto *noteMenu = new QMenu(this);
 
     QAction *insertAction = noteMenu->addAction(
             tr("Save and insert into note"));
@@ -119,7 +119,7 @@ void TodoDialog::setupUi() {
     /*
      * setup the reload button menu
      */
-    QMenu *reloadMenu = new QMenu();
+    auto *reloadMenu = new QMenu(this);
 
     QAction *reloadAction = reloadMenu->addAction(tr("Reload from server"));
     reloadAction->setIcon(QIcon::fromTheme(
@@ -154,7 +154,7 @@ void TodoDialog::refreshUi() {
 
     {
         const QSignalBlocker blocker(ui->showCompletedItemsCheckBox);
-        Q_UNUSED(blocker);
+        Q_UNUSED(blocker)
 
         bool showCompletedItems =
                 settings.value("TodoDialog/showCompletedItems").toBool();
@@ -165,7 +165,7 @@ void TodoDialog::refreshUi() {
 
     if (index >= 0) {
         const QSignalBlocker blocker(ui->todoListSelector);
-        Q_UNUSED(blocker);
+        Q_UNUSED(blocker)
 
         // set the index of the task list selector if we found it
         ui->todoListSelector->setCurrentIndex(index);
@@ -183,7 +183,7 @@ void TodoDialog::refreshUi() {
 }
 
 void TodoDialog::setupMainSplitter() {
-    this->mainSplitter = new QSplitter;
+    this->mainSplitter = new QSplitter(this);
 
     this->mainSplitter->addWidget(ui->selectFrame);
     this->mainSplitter->addWidget(ui->editFrame);
@@ -202,7 +202,7 @@ void TodoDialog::setupMainSplitter() {
  */
 void TodoDialog::loadTodoListData() {
     const QSignalBlocker blocker(ui->todoListSelector);
-    Q_UNUSED(blocker);
+    Q_UNUSED(blocker)
 
     QSettings settings;
     ui->todoListSelector->clear();
@@ -245,7 +245,7 @@ void TodoDialog::reloadTodoListItems() {
 
     {
         const QSignalBlocker blocker(ui->todoList);
-        Q_UNUSED(blocker);
+        Q_UNUSED(blocker)
 
         ui->todoList->clear();
 
@@ -334,7 +334,7 @@ void TodoDialog::jumpToTodoListItem() {
 
 void TodoDialog::clearTodoList() {
     const QSignalBlocker blocker(ui->todoList);
-    Q_UNUSED(blocker);
+    Q_UNUSED(blocker)
     ui->todoList->clear();
     resetEditFrameControls();
 }
@@ -356,7 +356,7 @@ void TodoDialog::resetEditFrameControls() {
  * @param uid
  * @return Returns the row of the task item in the task list, returns -1 if not found
  */
-int TodoDialog::findTodoItemRowByUID(const QString &uid) {
+int TodoDialog::findTodoItemRowByUID(const QString& uid) {
     int count = ui->todoList->count();
     if (count == 0) {
         return -1;
@@ -425,7 +425,7 @@ void TodoDialog::on_todoList_currentItemChanged(
     Q_UNUSED(previous);
 
     // in case all items were removed
-    if (current == NULL) {
+    if (current == nullptr) {
         resetEditFrameControls();
         return;
     }
@@ -693,7 +693,7 @@ void TodoDialog::searchInDescriptionTextEdit(QString &str) {
         QColor color = QColor(0, 180, 0, 100);
 
         while (ui->descriptionEdit->find(str)) {
-            QTextEdit::ExtraSelection extra;
+            QTextEdit::ExtraSelection extra = QTextEdit::ExtraSelection();
             extra.format.setBackground(color);
             extra.cursor = ui->descriptionEdit->textCursor();
             extraSelections.append(extra);
@@ -708,7 +708,7 @@ void TodoDialog::searchInDescriptionTextEdit(QString &str) {
  */
 bool TodoDialog::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        auto *keyEvent = static_cast<QKeyEvent *>(event);
 
         if (obj == ui->newItemEdit) {
             // set focus to the task list if Key_Down or Key_Tab
@@ -717,7 +717,7 @@ bool TodoDialog::eventFilter(QObject *obj, QEvent *event) {
                     (keyEvent->key() == Qt::Key_Tab)) {
                 // choose an other selected item if current item is invisible
                 QListWidgetItem *item = ui->todoList->currentItem();
-                if ((item != NULL) && ui->todoList->currentItem()->isHidden() &&
+                if ((item != nullptr) && ui->todoList->currentItem()->isHidden() &&
                     (firstVisibleTodoListRow >= 0)) {
                     ui->todoList->setCurrentRow(firstVisibleTodoListRow);
                 }
@@ -753,7 +753,7 @@ bool TodoDialog::eventFilter(QObject *obj, QEvent *event) {
         }
     }
 
-    return QDialog::eventFilter(obj, event);
+    return MasterDialog::eventFilter(obj, event);
 }
 
 /**

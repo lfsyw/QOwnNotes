@@ -496,7 +496,7 @@ Parameters
     /**
      * Selects all text in the note text edit
      */
-    void ScriptingService::noteTextEditSelectAll() {
+    void ScriptingService::noteTextEditSelectAll();
 
 Usage in QML
 ^^^^^^^^^^^^
@@ -507,6 +507,92 @@ Usage in QML
 
 You can use this together with ``noteTextEditWrite`` to overwrite the whole
 text of the current note.
+
+Select the current line in the note text edit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Parameters
+^^^^^^^^^^
+
+.. code:: cpp
+
+    /**
+     * Selects the current line in the note text edit
+     */
+    void ScriptingService::noteTextEditSelectCurrentLine();
+
+Usage in QML
+^^^^^^^^^^^^
+
+.. code:: javascript
+
+    script.noteTextEditSelectCurrentLine();
+
+Set the currently selected text in the note text edit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Parameters
+^^^^^^^^^^
+
+.. code:: cpp
+
+    /**
+     * Sets the currently selected text in the note text edit
+     *
+     * @param start
+     * @param end
+     */
+    void ScriptingService::noteTextEditSetSelection(int start, int end);
+
+Usage in QML
+^^^^^^^^^^^^
+
+.. code:: javascript
+
+    // expands the current selection by one character
+    script.noteTextEditSetSelection(
+        script.noteTextEditSelectionStart() - 1,
+        script.noteTextEditSelectionEnd() + 1);
+
+Get the start position of the current selection in the note text edit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Parameters
+^^^^^^^^^^
+
+.. code:: cpp
+
+    /**
+     * Returns the start position of the current selection in the note text edit
+     */
+    int ScriptingService::noteTextEditSelectionStart();
+
+Usage in QML
+^^^^^^^^^^^^
+
+.. code:: javascript
+
+    script.log(script.noteTextEditSelectionStart());
+
+Get the end position of the current selection in the note text edit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Parameters
+^^^^^^^^^^
+
+.. code:: cpp
+
+    /**
+     * Returns the end position of the current selection in the note text edit
+     */
+    int ScriptingService::noteTextEditSelectionEnd();
+
+Usage in QML
+^^^^^^^^^^^^
+
+.. code:: javascript
+
+    script.log(script.noteTextEditSelectionEnd());
 
 Read the current word from the note text edit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -746,7 +832,7 @@ Parameters
      * @param id int the id of the note
      * @return NoteApi*
      */
-    NoteApi* ScriptingService::fetchNoteById(int id) {
+    NoteApi* ScriptingService::fetchNoteById(int id);
 
 Usage in QML
 ^^^^^^^^^^^^
@@ -973,8 +1059,8 @@ Usage in QML
     var fileName = script.getOpenFileName("Please select an image", "/home/user/images", "Images (*.png *.xpm *.jpg)");
 
 
-Showing an save file dialog
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Showing a save file dialog
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Properties
 ^^^^^^^^^^
@@ -982,7 +1068,7 @@ Properties
 .. code:: cpp
 
     /**
-     * Shows an save file dialog
+     * Shows a save file dialog
      *
      * @param caption (optional)
      * @param dir (optional)
@@ -1020,6 +1106,7 @@ The user can then set these properties in the script settings.
     property string myText;
     property int myInt;
     property string myFile;
+    property string mySelection;
 
     // register your settings variables so the user can set them in the script settings
     // use this property if you don't need
@@ -1063,6 +1150,14 @@ The user can then set these properties in the script settings.
             "description": "Please select the file:",
             "type": "file",
             "default": "pandoc",
+        },
+        {
+            "identifier": "mySelection",
+            "name": "I am an item selector",
+            "description": "Please select an item:",
+            "type": "selection",
+            "default": "option2",
+            "items": {"option1": "Text for option 1", "option2": "Text for option 2", "option3": "Text for option 3"},
         }
     ];
 
