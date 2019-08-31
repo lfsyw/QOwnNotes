@@ -2554,31 +2554,38 @@ QString Note::getInsertMediaMarkdown(QFile *file, const QString &identifier_, bo
             mediaDir.mkpath(mediaDir.path());
         }
 
+        QString mediaUrlString;
+
         QFileInfo fileInfo(file->fileName());
-        QString suffix = fileInfo.suffix();
-        QMimeDatabase db;
-        QMimeType type = db.mimeTypeForFile(file->fileName());
-
-        // try to detect the mime type of the file and use a proper file suffix
-        if (type.isValid()) {
-            QStringList suffixes = type.suffixes();
-            if (suffixes.count() > 0) {
-                suffix = suffixes[0];
-            }
+        if (fileInfo.absoluteDir() == mediaDir) {
+            mediaUrlString = "file://media/" + fileInfo.fileName();
         }
+        else {
+            QString suffix = fileInfo.suffix();
+            QMimeDatabase db;
+            QMimeType type = db.mimeTypeForFile(file->fileName());
 
-        // find a determinant name for the new file
-        QString hash = getHashForString(identifier_.isEmpty() ? file->fileName() : identifier_);
-        QString newFileName = hash + "." + suffix;
-        QString newFilePath = mediaDir.path() + QDir::separator() + newFileName;
+            // try to detect the mime type of the file and use a proper file suffix
+            if (type.isValid()) {
+                QStringList suffixes = type.suffixes();
+                if (suffixes.count() > 0) {
+                    suffix = suffixes[0];
+                }
+            }
 
-        // copy the file to the media folder
-        file->copy(newFilePath);
+            // find a determinant name for the new file
+            QString hash = getHashForString(identifier_.isEmpty() ? file->fileName() : identifier_);
+            QString newFileName = hash + "." + suffix;
+            QString newFilePath = mediaDir.path() + QDir::separator() + newFileName;
 
-        QFile newFile(newFilePath);
-        scaleDownImageFileIfNeeded(newFile);
+            // copy the file to the media folder
+            file->copy(newFilePath);
 
-        QString mediaUrlString = "file://media/" + newFileName;
+            QFile newFile(newFilePath);
+            scaleDownImageFileIfNeeded(newFile);
+
+            mediaUrlString = "file://media/" + newFileName;
+        }
 
         // check if we only want to return the media url string
         if (returnUrlOnly) {
@@ -2614,18 +2621,25 @@ QString Note::getInsertAttachmentMarkdown(QFile *file, const QString &fileName,
             dir.mkpath(dir.path());
         }
 
+        QString attachmentUrlString;
+
         QFileInfo fileInfo(file->fileName());
+        if (fileInfo.absoluteDir() == dir) {
+            attachmentUrlString = "file://attachments/" + fileInfo.fileName();
+        }
+        else {
+            QFileInfo fileInfo(file->fileName());
 
-        // find a determinant name for the new file
-        QString hash = getHashForString(fileName);
-        QString newFileName = hash + "." + fileInfo.suffix();
-        QString newFilePath = dir.path() + QDir::separator() + newFileName;
+            // find a determinant name for the new file
+            QString hash = getHashForString(fileName);
+            QString newFileName = hash + "." + fileInfo.suffix();
+            QString newFilePath = dir.path() + QDir::separator() + newFileName;
 
-        // copy the file to the attachments folder
-        file->copy(newFilePath);
+            // copy the file to the attachments folder
+            file->copy(newFilePath);
 
-        QFile newFile(newFilePath);
-        QString attachmentUrlString = "file://attachments/" + newFileName;
+            attachmentUrlString = "file://attachments/" + newFileName;
+        }
 
         // check if we only want to return the attachment url string
         if (returnUrlOnly) {
