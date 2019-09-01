@@ -1387,7 +1387,7 @@ void MainWindow::initStyling() {
         }
 
         // QTextEdit background color of qdarkstyle
-        noteTagFrameColorName = "#201F1F";
+        noteTagFrameColorName = "#21252b";
     } else {
         QPalette palette;
         const QColor& color = palette.color(QPalette::Base);
