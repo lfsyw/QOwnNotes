@@ -1,5 +1,28 @@
 # QOwnNotes Changelog
 
+## 19.9.1
+- fixed a problem with **updating the current note even if it didn't change** after the
+  settings of the note text edit were updated (for [#1275](https://github.com/pbek/QOwnNotes/issues/1275))
+  - this happened for example after the settings dialog was closed and could have
+    led to overwriting of notes
+- fixed a problem with **un-selecting the current note in the note list** after the
+  note list was reloaded (for [#1275](https://github.com/pbek/QOwnNotes/issues/1275))
+  - this happened for example after the settings dialog was closed
+- when inserting a markdown table with the table dialog now two newline characters
+  will be added in front of the table to make sure that a proper table is inserted
+  (for [#78](https://github.com/pbek/QOwnNotes/issues/78))
+
+## 19.9.0
+- added support for **relative image tags** like `![photo](path/to/my/photo.jpg)`
+  in the preview and the PDF export (for [#266](https://github.com/pbek/QOwnNotes/issues/266))
+    - if the note is in a sub-folder the path counts as relative path in relation
+      to the sub-folder
+- pressing <kbd>Escape</kbd> twice in the note text edit will now first disable the
+  search widget and then enable the read-only mode instead of the other way around
+- added more Croatian, Cebuano, Polish, Persian, Spanish, Serbian (Cyrillic),
+  Swedish, Czech, Hungarian, Dutch, Danish, Finnish, Galician, Greek, Norwegian,
+  Basque, Romanian, Slovak, Slovenian translation (thank you Fabijenna, ericjeppesen)
+
 ## 19.8.8
 - there now is a **full-screen mode** that can be toggled with <kbd>F11</kbd>
   (for [#1271](https://github.com/pbek/QOwnNotes/issues/1271))
