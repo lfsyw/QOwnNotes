@@ -1948,10 +1948,6 @@ void MainWindow::loadNoteDirectoryList() {
             addNoteToNoteTreeWidget(note);
         }
 
-    if (QTreeWidgetItem *item = findNoteInNoteTreeWidget(currentNote)) {
-        ui->noteTreeWidget->setCurrentItem(item);
-    }
-
     int itemCount = noteList.count();
     MetricsService::instance()->sendEventIfEnabled(
             "note/list/loaded",

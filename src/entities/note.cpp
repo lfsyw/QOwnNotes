@@ -1875,11 +1875,11 @@ QString Note::textToMarkdownHtml(const QString &str_, const QString &notesPath,
     Utils::Misc::transformNextcloudPreviewImages(result);
 
     // transform images without "file://" urls to file-urls
-    const QString subFolderPath = getNoteSubFolder().relativePath("/");
-    const QString notePath = notesPath + (subFolderPath.isEmpty() ? "" : "/" + subFolderPath);
-    result.replace(
-            QRegularExpression(R"((<img src=\")((?!file:\/\/).+)\")"),
-            "\\1file://" + windowsSlash + notePath + "/\\2\"");
+    //const QString subFolderPath = getNoteSubFolder().relativePath("/");
+    //const QString notePath = notesPath + (subFolderPath.isEmpty() ? "" : "/" + subFolderPath);
+    //result.replace(
+    //        QRegularExpression(R"((<img src=\")((?!file:\/\/).+)\")"),
+    //        "\\1file://" + windowsSlash + notePath + "/\\2\"");
 
     QString fontString = settings.value("MainWindow/noteTextView.code.font")
             .toString();
