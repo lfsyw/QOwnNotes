@@ -1904,8 +1904,8 @@ QString Note::textToMarkdownHtml(const QString &str_, const QString &notesPath,
     bool darkModeColors = !forExport ?
             settings.value("darkModeColors").toBool() : false;
 
-    QString codeForegroundColor = darkModeColors ? "#282c34" : "#000000";
-    QString codeBackgroundColor = darkModeColors ? "#9da5b4" : "#f1f1f1";
+    QString codeForegroundColor = darkModeColors ? "#9da5b4" : "#000000";
+    QString codeBackgroundColor = darkModeColors ? "#282c34" : "#f1f1f1";
 
     // do some more code formatting
     codeStyleSheet += QString(
