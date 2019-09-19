@@ -70,6 +70,8 @@ NotePreviewWidget::NotePreviewWidget(QWidget *parent) : QTextBrowser(parent) {
     proxyStyle->setParent(this);
     setStyle(proxyStyle);
 
+    setCursorWidth(0);
+
     QFont font;
     font.fromString(QSettings().value("MainWindow/noteTextView.code.font").toString());
     setTabStopWidth(4 * QFontMetrics(font).width(' '));
