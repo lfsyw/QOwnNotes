@@ -519,7 +519,7 @@ void NotePreviewWidget::contextMenuEvent(QContextMenuEvent *event) {
         }
 
         menu->addAction(tr("Copy image file path"), this, [imagePath] {
-            QApplication::clipboard()->setText(imagePath);
+            QApplication::clipboard()->setText(QFileInfo(imagePath).canonicalFilePath());
         });
 
         menu->addSeparator();
