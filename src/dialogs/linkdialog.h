@@ -1,7 +1,7 @@
-#ifndef NOTESEARCHDIALOG_H
-#define NOTESEARCHDIALOG_H
+#pragma once
 
 #include <QDialog>
+#include <entities/note.h>
 #include "masterdialog.h"
 
 namespace Ui {
@@ -13,25 +13,27 @@ class LinkDialog : public MasterDialog
     Q_OBJECT
 
 public:
-    explicit LinkDialog( const QString &dialogTitle = "", QWidget *parent = 0);
+    explicit LinkDialog(const QString &dialogTitle = QString(), QWidget *parent = nullptr);
     ~LinkDialog();
 
-    QString getSelectedNoteName();
-    QString getURL();
-    QString getLinkName();
-    QString getLinkDescription();
+    QString getSelectedNoteName() const;
+    Note getSelectedNote() const;
+    QString getURL() const;
+    QString getLinkName() const;
+    void setLinkName(const QString &text);
+    QString getLinkDescription() const;
     QString getTitleForUrl(const QUrl& url);
 
 private slots:
     void on_searchLineEdit_textChanged(const QString &arg1);
     void on_notesListWidget_doubleClicked(const QModelIndex &index);
-    void on_fileUrlButton_clicked();
-
+    void on_urlEdit_textChanged(const QString &arg1);
+    void addFileUrl();
+    void addDirectoryUrl();
 private:
     Ui::LinkDialog *ui;
     int firstVisibleNoteListRow;
     bool eventFilter(QObject *obj, QEvent *event);
     QString selectedNoteText;
+    void setupFileUrlMenu();
 };
-
-#endif // NOTESEARCHDIALOG_H

@@ -397,7 +397,7 @@
          <item>
           <widget class="QStackedWidget" name="settingsStackedWidget">
            <property name="currentIndex">
-            <number>4</number>
+            <number>14</number>
            </property>
            <widget class="QWidget" name="noteFoldersPage">
             <layout class="QGridLayout" name="gridLayout_19">
@@ -751,14 +751,14 @@
                     </widget>
                    </item>
                    <item row="7" column="0" colspan="2">
-                    <widget class="QLabel" name="noteFolderOwnCloudServerLabel">
+                    <widget class="QLabel" name="noteFolderCloudConnectionLabel">
                      <property name="text">
-                      <string>ownCloud server:</string>
+                      <string>Cloud connection:</string>
                      </property>
                     </widget>
                    </item>
                    <item row="8" column="0" colspan="2">
-                    <widget class="QComboBox" name="noteFolderOwnCloudServerComboBox"/>
+                    <widget class="QComboBox" name="noteFolderCloudConnectionComboBox"/>
                    </item>
                    <item row="9" column="0" colspan="2">
                     <widget class="QLabel" name="noteFolderRemotePathLabel">
@@ -889,7 +889,7 @@
                   <item>
                    <widget class="Label" name="installInfoTextLabel3">
                     <property name="text">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You will still need the &lt;a href=&quot;https://owncloud.org/&quot;&gt;&lt;span style=&quot; font-weight:600&quot;&gt;ownCloud sync client&lt;/span&gt;&lt;/a&gt; (or an other desktop sync client) to sync your notes!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You will still need the &lt;a href=&quot;https://owncloud.org/&quot;&gt;&lt;span style=&quot; font-weight:600&quot;&gt;ownCloud sync client&lt;/span&gt;&lt;/a&gt; (or another desktop sync client) to sync your notes!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="wordWrap">
                      <bool>true</bool>
@@ -970,45 +970,60 @@
                 </item>
                 <item row="1" column="0">
                  <layout class="QFormLayout" name="formLayout">
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="ownCloudServerUrlLabel">
-                    <property name="text">
-                     <string>ownCloud server url:</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                    </property>
+                  <item row="1" column="0" colspan="2">
+                   <widget class="QFrame" name="cloudConnectionSelectionFrame">
+                    <layout class="QHBoxLayout" name="horizontalLayout_13">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QComboBox" name="cloudConnectionComboBox">
+                       <property name="toolTip">
+                        <string>Select a connection to edit</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="cloudConnectionAddButton">
+                       <property name="toolTip">
+                        <string>Add connection</string>
+                       </property>
+                       <property name="text">
+                        <string>Add connection</string>
+                       </property>
+                       <property name="icon">
+                        <iconset theme="list-add" resource="../breeze-qownnotes.qrc">
+                         <normaloff>:/icons/breeze-qownnotes/16x16/list-add.svg</normaloff>:/icons/breeze-qownnotes/16x16/list-add.svg</iconset>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QToolButton" name="cloudConnectionRemoveButton">
+                       <property name="toolTip">
+                        <string>Remove connection</string>
+                       </property>
+                       <property name="text">
+                        <string>Remove connection</string>
+                       </property>
+                       <property name="icon">
+                        <iconset theme="list-remove" resource="../breeze-qownnotes.qrc">
+                         <normaloff>:/icons/breeze-qownnotes/16x16/list-remove.svg</normaloff>:/icons/breeze-qownnotes/16x16/list-remove.svg</iconset>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="QLineEdit" name="serverUrlEdit">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>300</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="toolTip">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enter the URL of your ownCloud server, for example: &lt;span style=&quot; font-style:italic;&quot;&gt;https://cloud.yourserver.com&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="placeholderText">
-                     <string notr="true">https://your.owncloud.server</string>
-                    </property>
-                    <property name="clearButtonEnabled">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
+                  <item row="5" column="0">
                    <widget class="QLabel" name="label_3">
                     <property name="text">
                      <string>Username:</string>
@@ -1018,7 +1033,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="1">
+                  <item row="5" column="1">
                    <widget class="QLineEdit" name="userNameEdit">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1043,7 +1058,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="0">
+                  <item row="6" column="0">
                    <widget class="QLabel" name="label_5">
                     <property name="text">
                      <string>Password:</string>
@@ -1053,7 +1068,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="1">
+                  <item row="6" column="1">
                    <widget class="QLineEdit" name="passwordEdit">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1081,7 +1096,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="1">
+                  <item row="7" column="1">
                    <widget class="QPushButton" name="connectButton">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1110,7 +1125,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="5" column="1">
+                  <item row="8" column="1">
                    <spacer name="verticalSpacer_2">
                     <property name="orientation">
                      <enum>Qt::Vertical</enum>
@@ -1123,7 +1138,7 @@
                     </property>
                    </spacer>
                   </item>
-                  <item row="6" column="1">
+                  <item row="9" column="1">
                    <widget class="QLabel" name="okLabelStatus">
                     <property name="styleSheet">
                      <string notr="true">font-weight: bold;</string>
@@ -1133,7 +1148,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="7" column="0">
+                  <item row="10" column="0">
                    <widget class="QLabel" name="ok1Label">
                     <property name="text">
                      <string>unknown</string>
@@ -1143,14 +1158,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="7" column="1">
+                  <item row="10" column="1">
                    <widget class="QLabel" name="check1Label">
                     <property name="text">
                      <string>connection to web server</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="8" column="0">
+                  <item row="11" column="0">
                    <widget class="QLabel" name="ok2Label">
                     <property name="text">
                      <string>unknown</string>
@@ -1160,14 +1175,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="8" column="1">
+                  <item row="11" column="1">
                    <widget class="QLabel" name="check2Label">
                     <property name="text">
                      <string>ownCloud server detected</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="9" column="0">
+                  <item row="12" column="0">
                    <widget class="QLabel" name="ok3Label">
                     <property name="text">
                      <string>unknown</string>
@@ -1177,14 +1192,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="9" column="1">
+                  <item row="12" column="1">
                    <widget class="QLabel" name="check3Label">
                     <property name="text">
                      <string>username and password correct</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="10" column="0">
+                  <item row="13" column="0">
                    <widget class="QLabel" name="ok4Label">
                     <property name="text">
                      <string>unknown</string>
@@ -1194,14 +1209,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="10" column="1">
+                  <item row="13" column="1">
                    <widget class="QLabel" name="check4Label">
                     <property name="text">
                      <string>connection to QOwnNotesAPI</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="11" column="0">
+                  <item row="14" column="0">
                    <widget class="QLabel" name="ok6Label">
                     <property name="text">
                      <string>unknown</string>
@@ -1211,14 +1226,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="11" column="1">
+                  <item row="14" column="1">
                    <widget class="QLabel" name="check6Label">
                     <property name="text">
                      <string>versions app enabled on server</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="12" column="0">
+                  <item row="15" column="0">
                    <widget class="QLabel" name="ok7Label">
                     <property name="text">
                      <string>unknown</string>
@@ -1228,14 +1243,14 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="12" column="1">
+                  <item row="15" column="1">
                    <widget class="QLabel" name="check7Label">
                     <property name="text">
                      <string>trash app enabled on server</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="13" column="0">
+                  <item row="16" column="0">
                    <widget class="QLabel" name="ok8Label">
                     <property name="text">
                      <string>unknown</string>
@@ -1245,10 +1260,77 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="13" column="1">
+                  <item row="16" column="1">
                    <widget class="QLabel" name="check8Label">
                     <property name="text">
                      <string>notes path found on server</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="ownCloudServerUrlLabel">
+                    <property name="text">
+                     <string>ownCloud server url:</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QLineEdit" name="serverUrlEdit">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>300</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enter the URL of your ownCloud server, for example: &lt;span style=&quot; font-style:italic;&quot;&gt;https://cloud.yourserver.com&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="placeholderText">
+                     <string notr="true">https://your.owncloud.server</string>
+                    </property>
+                    <property name="clearButtonEnabled">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="ownCloudServerUrlLabel_2">
+                    <property name="text">
+                     <string>Connection name:</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLineEdit" name="cloudServerConnectionNameLineEdit">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>300</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="clearButtonEnabled">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -1636,6 +1718,22 @@
               <number>0</number>
              </property>
              <item>
+              <widget class="QGroupBox" name="groupBox_35">
+               <property name="title">
+                <string>Todo settings</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_28">
+                <item>
+                 <widget class="QCheckBox" name="todoCalendarSupportCheckBox">
+                  <property name="text">
+                   <string>Enable todo calendar support</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
               <widget class="QGroupBox" name="calendarBackendGroupBox">
                <property name="minimumSize">
                 <size>
@@ -1654,26 +1752,6 @@
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="0">
-                 <widget class="QRadioButton" name="defaultOwnCloudCalendarRadioButton">
-                  <property name="toolTip">
-                   <string>For most current ownCloud and Nextcloud installations</string>
-                  </property>
-                  <property name="text">
-                   <string>Default ownCloud calendar</string>
-                  </property>
-                  <property name="checked">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
-                 <widget class="QRadioButton" name="calendarPlusRadioButton">
-                  <property name="text">
-                   <string notr="true">Calendar Plus</string>
-                  </property>
-                 </widget>
-                </item>
                 <item row="1" column="0">
                  <widget class="QRadioButton" name="legacyOwnCloudCalendarRadioButton">
                   <property name="toolTip">
@@ -1684,6 +1762,26 @@
                   </property>
                   <property name="checked">
                    <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QRadioButton" name="calendarPlusRadioButton">
+                  <property name="text">
+                   <string notr="true">Calendar Plus</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QRadioButton" name="defaultOwnCloudCalendarRadioButton">
+                  <property name="toolTip">
+                   <string>For most current ownCloud and Nextcloud installations</string>
+                  </property>
+                  <property name="text">
+                   <string>Default ownCloud calendar</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
@@ -1811,6 +1909,18 @@
               </widget>
              </item>
              <item>
+              <widget class="QGroupBox" name="calendarCloudConnectionGroupBox">
+               <property name="title">
+                <string>Which cloud connection do you want to use?</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_27">
+                <item>
+                 <widget class="QComboBox" name="calendarCloudConnectionComboBox"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
               <widget class="QGroupBox" name="todoCalendarGroupBox">
                <property name="title">
                 <string>Select the calendars you want to use for the Todo list</string>
@@ -1886,7 +1996,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QGroupBox" name="groupBox_26">
+              <widget class="QGroupBox" name="todoListSettingsGroupBox">
                <property name="title">
                 <string>Todo list settings</string>
                </property>
@@ -1984,6 +2094,9 @@
                         <property name="text">
                          <string>Automatic</string>
                         </property>
+                        <property name="toolTip">
+                         <string notr="true">Automatic</string>
+                        </property>
                         <property name="whatsThis">
                          <string notr="true"/>
                         </property>
@@ -2008,6 +2121,28 @@
                         </property>
                         <property name="whatsThis">
                          <string notr="true">bn</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">босански</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Bosnian</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">bs</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">български</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Bulgarian</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">bg</string>
                         </property>
                        </item>
                        <item>
@@ -2100,6 +2235,17 @@
                        </item>
                        <item>
                         <property name="text">
+                         <string notr="true">Eesti keel</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Estonian</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">et</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
                          <string notr="true">Filipino</string>
                         </property>
                         <property name="toolTip">
@@ -2133,6 +2279,17 @@
                        </item>
                        <item>
                         <property name="text">
+                         <string notr="true">Gaeilge</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Irish</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">ga</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
                          <string notr="true">Galego</string>
                         </property>
                         <property name="toolTip">
@@ -2151,6 +2308,28 @@
                         </property>
                         <property name="whatsThis">
                          <string notr="true">el</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">Halshen Hausa</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Hausa</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">ha</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">עברית</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Hebrew</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">he</string>
                         </property>
                        </item>
                        <item>
@@ -2188,6 +2367,17 @@
                        </item>
                        <item>
                         <property name="text">
+                         <string notr="true">Islenska</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Icelandic</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">is</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
                          <string notr="true">Italiano</string>
                         </property>
                         <property name="toolTip">
@@ -2195,6 +2385,61 @@
                         </property>
                         <property name="whatsThis">
                          <string notr="true">it</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">한국어</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Korean</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">ko</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">Kurdî</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Kurdish</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">ku</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">latviešu valoda</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Latvian</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">lv</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">lietuvių kalba</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Lithuanian</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">lt</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">македонски јазик</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Macedonian</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">mk</string>
                         </property>
                        </item>
                        <item>
@@ -2254,6 +2499,17 @@
                        </item>
                        <item>
                         <property name="text">
+                         <string notr="true">ózbekça</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Uzbek</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">uz</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
                          <string notr="true">Polski</string>
                         </property>
                         <property name="toolTip">
@@ -2287,6 +2543,17 @@
                        </item>
                        <item>
                         <property name="text">
+                         <string notr="true">ਪੰਜਾਬੀ پن٘جابی</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Punjabi</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">pa</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
                          <string notr="true">Limba română</string>
                         </property>
                         <property name="toolTip">
@@ -2316,6 +2583,17 @@
                         </property>
                         <property name="whatsThis">
                          <string notr="true">sr</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">Shqip</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Albanian</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">sq</string>
                         </property>
                        </item>
                        <item>
@@ -2360,6 +2638,17 @@
                         </property>
                         <property name="whatsThis">
                          <string notr="true">tl</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string notr="true">Tiếng Việt</string>
+                        </property>
+                        <property name="toolTip">
+                         <string>Vietnamese</string>
+                        </property>
+                        <property name="whatsThis">
+                         <string notr="true">vi</string>
                         </property>
                        </item>
                        <item>
@@ -2486,7 +2775,7 @@
                      <item row="4" column="0">
                       <widget class="QLabel" name="darkModeInfoLabel">
                        <property name="text">
-                        <string>You might also want to choose an other editor color schema in the editor settings in dark mode.</string>
+                        <string>You might also want to choose another editor color schema in the editor settings in dark mode.</string>
                        </property>
                        <property name="wordWrap">
                         <bool>true</bool>
@@ -2997,8 +3286,8 @@
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>360</width>
-                           <height>476</height>
+                           <width>430</width>
+                           <height>538</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_55">
@@ -3373,31 +3662,10 @@
                      <property name="bottomMargin">
                       <number>0</number>
                      </property>
-                     <item row="0" column="1">
-                      <widget class="QSpinBox" name="maximumImageWidthSpinBox">
-                       <property name="maximum">
-                        <number>100000</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="3">
-                      <widget class="QLabel" name="label_21">
-                       <property name="text">
-                        <string>Maximum height:</string>
-                       </property>
-                      </widget>
-                     </item>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_20">
                        <property name="text">
                         <string>Maximum width:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="4">
-                      <widget class="QSpinBox" name="maximumImageHeightSpinBox">
-                       <property name="maximum">
-                        <number>100000</number>
                        </property>
                       </widget>
                      </item>
@@ -3414,36 +3682,48 @@
                        </property>
                       </spacer>
                      </item>
+                     <item row="0" column="4">
+                      <widget class="QSpinBox" name="maximumImageHeightSpinBox">
+                       <property name="maximum">
+                        <number>100000</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="3">
+                      <widget class="QLabel" name="label_21">
+                       <property name="text">
+                        <string>Maximum height:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QSpinBox" name="maximumImageWidthSpinBox">
+                       <property name="maximum">
+                        <number>100000</number>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </widget>
                   </item>
-                  <item row="9" column="0" colspan="2">
-                   <widget class="QCheckBox" name="restoreCursorPositionCheckBox">
+                  <item row="4" column="1">
+                   <widget class="QLabel" name="noteSaveIntervalTimeLabel">
                     <property name="toolTip">
-                     <string>When opening notes the cursor position inside the note will now be restored to the position when the note was last visited in the current session</string>
+                     <string>You might run into sync troubles with older versions of ownCloud sync when going far below 10 sec.
+Just test yourself if you get sync conflicts and set a higher value if so.</string>
                     </property>
                     <property name="text">
-                     <string>Restore cursor position when opening a note</string>
+                     <string>note save interval time [sec]</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="7" column="0" colspan="2">
-                   <widget class="QCheckBox" name="newNoteAskHeadlineCheckBox">
+                  <item row="3" column="0" colspan="2">
+                   <widget class="QCheckBox" name="ignoreAllExternalNoteFolderChangesCheckBox">
                     <property name="toolTip">
-                     <string>By default the headline will generated automatically</string>
+                     <string>Do this at your own risk!</string>
                     </property>
                     <property name="text">
-                     <string>The shortcut to create a new note asks for a headline</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0" colspan="2">
-                   <widget class="QCheckBox" name="acceptAllExternalModificationsCheckBox">
-                    <property name="toolTip">
-                     <string>Check this if you want to accept all external modifications while you are editing the current note.</string>
-                    </property>
-                    <property name="text">
-                     <string>Accept all external modifications of the current note</string>
+                     <string>Ignore all external note folder changes</string>
                     </property>
                    </widget>
                   </item>
@@ -3454,16 +3734,6 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="0" colspan="2">
-                   <widget class="QCheckBox" name="notifyAllExternalModificationsCheckBox">
-                    <property name="toolTip">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked you will always be notified about external modifications, even if current note wasn't edited in the last minute. Recommended is &lt;span style=&quot; font-style:italic;&quot;&gt;unchecked&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                    <property name="text">
-                     <string>Notify about all external modifications of the current note</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="1" column="0" colspan="2">
                    <widget class="QCheckBox" name="ignoreAllExternalModificationsCheckBox">
                     <property name="toolTip">
@@ -3471,6 +3741,26 @@
                     </property>
                     <property name="text">
                      <string>Ignore all external modifications of the current note</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0" colspan="2">
+                   <widget class="QCheckBox" name="allowDifferentNoteFileNameCheckBox">
+                    <property name="toolTip">
+                     <string>Allow the note file name to be different from the headline.&lt;br&gt;Beware that ownCloud Notes needs the file name to be the same as the headline!</string>
+                    </property>
+                    <property name="text">
+                     <string>Allow note file name to be different from headline</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0" colspan="2">
+                   <widget class="QCheckBox" name="acceptAllExternalModificationsCheckBox">
+                    <property name="toolTip">
+                     <string>Check this if you want to accept all external modifications while you are editing the current note.</string>
+                    </property>
+                    <property name="text">
+                     <string>Accept all external modifications of the current note</string>
                     </property>
                    </widget>
                   </item>
@@ -3493,44 +3783,13 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="8" column="0" colspan="2">
-                   <widget class="QCheckBox" name="useUNIXNewlineCheckBox">
+                  <item row="9" column="0" colspan="2">
+                   <widget class="QCheckBox" name="restoreCursorPositionCheckBox">
                     <property name="toolTip">
-                     <string>You can use this for example under Windows if you have troubles with newlines in the ownCloud / Nextcloud notes app</string>
+                     <string>When opening notes the cursor position inside the note will now be restored to the position when the note was last visited in the current session</string>
                     </property>
                     <property name="text">
-                     <string>Use UNIX newline instead of native newline characters</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0" colspan="2">
-                   <widget class="QCheckBox" name="ignoreAllExternalNoteFolderChangesCheckBox">
-                    <property name="toolTip">
-                     <string>Do this at your own risk!</string>
-                    </property>
-                    <property name="text">
-                     <string>Ignore all external note folder changes</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="6" column="0" colspan="2">
-                   <widget class="QCheckBox" name="allowDifferentNoteFileNameCheckBox">
-                    <property name="toolTip">
-                     <string>Allow the note file name to be different from the headline.&lt;br&gt;Beware that ownCloud Notes needs the file name to be the same as the headline!</string>
-                    </property>
-                    <property name="text">
-                     <string>Allow note file name to be different from headline</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
-                   <widget class="QLabel" name="noteSaveIntervalTimeLabel">
-                    <property name="toolTip">
-                     <string>You might run into sync troubles with older versions of ownCloud sync when going far below 10 sec.
-Just test yourself if you get sync conflicts and set a higher value if so.</string>
-                    </property>
-                    <property name="text">
-                     <string>note save interval time [sec]</string>
+                     <string>Restore cursor position when opening a note</string>
                     </property>
                    </widget>
                   </item>
@@ -3541,6 +3800,46 @@ Just test yourself if you get sync conflicts and set a higher value if so.</stri
                     </property>
                     <property name="text">
                      <string>Automatically close the note folder database</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0" colspan="2">
+                   <widget class="QCheckBox" name="newNoteAskHeadlineCheckBox">
+                    <property name="toolTip">
+                     <string>By default the headline will generated automatically</string>
+                    </property>
+                    <property name="text">
+                     <string>The shortcut to create a new note asks for a headline</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="8" column="0" colspan="2">
+                   <widget class="QCheckBox" name="useUNIXNewlineCheckBox">
+                    <property name="toolTip">
+                     <string>You can use this for example under Windows if you have troubles with newlines in the ownCloud / Nextcloud notes app</string>
+                    </property>
+                    <property name="text">
+                     <string>Use UNIX newline instead of native newline characters</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0" colspan="2">
+                   <widget class="QCheckBox" name="notifyAllExternalModificationsCheckBox">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked you will always be notified about external modifications, even if current note wasn't edited in the last minute. Recommended is &lt;span style=&quot; font-style:italic;&quot;&gt;unchecked&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="text">
+                     <string>Notify about all external modifications of the current note</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="13" column="0" colspan="2">
+                   <widget class="QCheckBox" name="legacyLinkingCheckBox">
+                    <property name="toolTip">
+                     <string notr="true">note://, file://media, file://attachments</string>
+                    </property>
+                    <property name="text">
+                     <string>Use legacy way to link to notes, images and attachments</string>
                     </property>
                    </widget>
                   </item>
@@ -3892,44 +4191,7 @@ Just test yourself if you get sync conflicts and set a higher value if so.</stri
                 <string>Debug information</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_8">
-                <item row="6" column="2">
-                 <spacer name="horizontalSpacer_14">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item row="6" column="0">
-                 <widget class="QPushButton" name="saveDebugInfoButton">
-                  <property name="text">
-                   <string>&amp;Save debug information</string>
-                  </property>
-                  <property name="icon">
-                   <iconset theme="document-save" resource="../breeze-qownnotes.qrc">
-                    <normaloff>:/icons/breeze-qownnotes/16x16/document-save.svg</normaloff>:/icons/breeze-qownnotes/16x16/document-save.svg</iconset>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="0" colspan="3">
-                 <widget class="QCheckBox" name="gitHubLineBreaksCheckBox">
-                  <property name="toolTip">
-                   <string>No two spaces to do a line break are added here if checked</string>
-                  </property>
-                  <property name="text">
-                   <string>Use GitHub line breaks</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0" colspan="3">
+                <item row="0" column="0" colspan="7">
                  <widget class="Label" name="label">
                   <property name="text">
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can &lt;span style=&quot; font-weight:600;&quot;&gt;copy and paste&lt;/span&gt; this text (or parts of this text) in an &lt;span style=&quot; font-weight:600;&quot;&gt;issue&lt;/span&gt; on the &lt;a href=&quot;https://github.com/pbek/QOwnNotes/issues&quot;&gt;QOwnNotes issues page&lt;/a&gt; if you have &lt;span style=&quot; font-weight:600;&quot;&gt;questions or troubles&lt;/span&gt; with QOwnNotes. Data that is too sensitive is hidden in this information.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -3942,7 +4204,7 @@ Just test yourself if you get sync conflicts and set a higher value if so.</stri
                   </property>
                  </widget>
                 </item>
-                <item row="2" column="0" colspan="3">
+                <item row="2" column="0" colspan="7">
                  <widget class="QOwnNotesMarkdownTextEdit" name="debugInfoTextEdit">
                   <property name="readOnly">
                    <bool>true</bool>
@@ -3952,8 +4214,41 @@ Just test yourself if you get sync conflicts and set a higher value if so.</stri
                   </property>
                  </widget>
                 </item>
-                <item row="6" column="1">
+                <item row="1" column="0" colspan="7">
+                 <widget class="QLabel" name="label_9">
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The best way to post issues is to use the issue assistant by pressing the &lt;span style=&quot; font-weight:600;&quot;&gt;Open issue assistant&lt;/span&gt; button on the bottom.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="0" colspan="7">
+                 <widget class="QCheckBox" name="gitHubLineBreaksCheckBox">
+                  <property name="toolTip">
+                   <string>No two spaces to do a line break are added here if checked</string>
+                  </property>
+                  <property name="text">
+                   <string>Use GitHub line breaks</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0" colspan="7">
+                 <widget class="QFrame" name="debugInfoTextEditSearchFrame">
+                  <property name="frameShape">
+                   <enum>QFrame::NoFrame</enum>
+                  </property>
+                  <property name="lineWidth">
+                   <number>0</number>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="0">
                  <widget class="QPushButton" name="issueAssistantPushButton">
+                  <property name="toolTip">
+                   <string>This is the best way to open an issue</string>
+                  </property>
                   <property name="text">
                    <string>Open issue assistant</string>
                   </property>
@@ -3963,22 +4258,46 @@ Just test yourself if you get sync conflicts and set a higher value if so.</stri
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="0" colspan="3">
-                 <widget class="QLabel" name="label_9">
+                <item row="6" column="1">
+                 <widget class="QPushButton" name="copyDebugInfoButton">
+                  <property name="toolTip">
+                   <string>Please use this in the issue tracker</string>
+                  </property>
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The best way to post issues is to use the issue assistant by pressing the &lt;span style=&quot; font-weight:600;&quot;&gt;Open issue assistant&lt;/span&gt; button on the bottom.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&amp;Copy debug information to clipboard</string>
+                  </property>
+                  <property name="icon">
+                   <iconset theme="edit-copy" resource="../breeze-qownnotes.qrc">
+                    <normaloff>:/icons/breeze-qownnotes/16x16/edit-copy.svg</normaloff>:/icons/breeze-qownnotes/16x16/edit-copy.svg</iconset>
                   </property>
                  </widget>
                 </item>
-                <item row="4" column="0" colspan="3">
-                 <widget class="QFrame" name="debugInfoTextEditSearchFrame">
-                  <property name="frameShape">
-                   <enum>QFrame::NoFrame</enum>
+                <item row="6" column="2">
+                 <widget class="QPushButton" name="saveDebugInfoButton">
+                  <property name="toolTip">
+                   <string>Please don't use this in the issue tracker</string>
                   </property>
-                  <property name="lineWidth">
-                   <number>0</number>
+                  <property name="text">
+                   <string>&amp;Save debug information</string>
+                  </property>
+                  <property name="icon">
+                   <iconset theme="document-save" resource="../breeze-qownnotes.qrc">
+                    <normaloff>:/icons/breeze-qownnotes/16x16/document-save.svg</normaloff>:/icons/breeze-qownnotes/16x16/document-save.svg</iconset>
                   </property>
                  </widget>
+                </item>
+                <item row="6" column="3" colspan="4">
+                 <spacer name="horizontalSpacer_14">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </widget>
@@ -4124,7 +4443,7 @@ Just test yourself if you get sync conflicts and set a higher value if so.</stri
                 <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:11pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:14pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;portable mode information will be loaded here&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="openExternalLinks">
@@ -4148,6 +4467,19 @@ p, li { white-space: pre-wrap; }
              <property name="bottomMargin">
               <number>0</number>
              </property>
+             <item row="3" column="0">
+              <spacer name="verticalSpacer_10">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
              <item row="0" column="0">
               <widget class="QGroupBox" name="groupBox_2">
                <property name="sizePolicy">
@@ -4267,19 +4599,6 @@ p, li { white-space: pre-wrap; }
                </layout>
               </widget>
              </item>
-             <item row="2" column="0">
-              <spacer name="verticalSpacer_10">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
              <item row="1" column="0">
               <widget class="QGroupBox" name="groupBox_34">
                <property name="sizePolicy">
@@ -4296,6 +4615,29 @@ p, li { white-space: pre-wrap; }
                  <widget class="QCheckBox" name="noteTextViewUnderlineCheckBox">
                   <property name="text">
                    <string>Enable underline rendering</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0" colspan="2">
+                 <widget class="QCheckBox" name="noteTextViewUseEditorStylesCheckBox">
+                  <property name="text">
+                   <string>Use editor highlighting styles also for the preview</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QGroupBox" name="groupBox_26">
+               <property name="title">
+                <string>Exporting</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_29">
+                <item>
+                 <widget class="QCheckBox" name="useInternalExportStylingCheckBox">
+                  <property name="text">
+                   <string>Use internal export styling for the PDF export and printing of the preview</string>
                   </property>
                  </widget>
                 </item>
@@ -4469,7 +4811,7 @@ p, li { white-space: pre-wrap; }
              <property name="bottomMargin">
               <number>0</number>
              </property>
-             <item row="2" column="0">
+             <item row="3" column="0">
               <widget class="QGroupBox" name="groupBox_21">
                <property name="toolTip">
                 <string>Here you can set your own time format for inserting the current time into a note.</string>
@@ -4507,6 +4849,19 @@ p, li { white-space: pre-wrap; }
                 </item>
                </layout>
               </widget>
+             </item>
+             <item row="4" column="0">
+              <spacer name="verticalSpacer_12">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>561</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item row="0" column="0">
               <widget class="QGroupBox" name="groupBox_17">
@@ -4662,18 +5017,52 @@ p, li { white-space: pre-wrap; }
                </layout>
               </widget>
              </item>
-             <item row="3" column="0">
-              <spacer name="verticalSpacer_12">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
+             <item row="2" column="0">
+              <widget class="QGroupBox" name="groupBox_36">
+               <property name="title">
+                <string>Tabs and Indents</string>
                </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>561</height>
-                </size>
-               </property>
-              </spacer>
+               <layout class="QGridLayout" name="gridLayout_74">
+                <item row="0" column="0">
+                 <layout class="QGridLayout" name="gridLayout_73">
+                  <item row="0" column="0" colspan="3">
+                   <widget class="QCheckBox" name="useTabIndentCheckBox">
+                    <property name="text">
+                     <string>Use tab character instead of spaces</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_32">
+                    <property name="text">
+                     <string>Indent:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QSpinBox" name="indentSizeSpinBox">
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <spacer name="horizontalSpacer_16">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -4879,10 +5268,17 @@ git config --global user.name &quot;Your name&quot;</string>
                 <string>Note search panel</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_69">
-                <item row="0" column="1" colspan="2">
+                <item row="0" column="1">
                  <widget class="QCheckBox" name="disableSavedSearchesAutoCompletionCheckBox">
                   <property name="text">
                    <string>Disable auto-completion of previous searches</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QCheckBox" name="showMatchesCheckBox">
+                  <property name="text">
+                   <string>Show the number of matches in each note</string>
                   </property>
                  </widget>
                 </item>
@@ -5076,7 +5472,51 @@ git config --global user.name &quot;Your name&quot;</string>
                 <string>Note list panel</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_61">
-                <item row="3" column="2">
+                <item row="2" column="1" colspan="2">
+                 <widget class="QCheckBox" name="noteListPreviewCheckBox">
+                  <property name="text">
+                   <string>Show notes in the note list with preview</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1" colspan="2">
+                 <widget class="QCheckBox" name="noteSubfoldersPanelShowNotesRecursivelyCheckBox">
+                  <property name="text">
+                   <string>Show all notes in a folder including their subfolders (only works if subfolders are turned on)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1" colspan="2">
+                 <widget class="QCheckBox" name="taggingShowNotesRecursivelyCheckBox">
+                  <property name="text">
+                   <string>Show all notes of a tag including the notes of their children-tags</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="1">
+                 <widget class="QGroupBox" name="notesPanelSortGroupBox">
+                  <property name="title">
+                   <string>Sort</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_16">
+                   <item>
+                    <widget class="QRadioButton" name="notesPanelSortAlphabeticalRadioButton">
+                     <property name="text">
+                      <string>Alphabetical</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QRadioButton" name="notesPanelSortByLastChangeRadioButton">
+                     <property name="text">
+                      <string>By last change</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="4" column="2">
                  <widget class="QGroupBox" name="notesPanelOrderGroupBox">
                   <property name="enabled">
                    <bool>true</bool>
@@ -5105,47 +5545,10 @@ git config --global user.name &quot;Your name&quot;</string>
                   </layout>
                  </widget>
                 </item>
-                <item row="0" column="1" colspan="2">
-                 <widget class="QCheckBox" name="noteSubfoldersPanelShowNotesRecursivelyCheckBox">
+                <item row="3" column="1" colspan="2">
+                 <widget class="QCheckBox" name="enableNoteTreeCheckBox">
                   <property name="text">
-                   <string>Show all notes in a folder including their subfolders (only works if subfolders are turned on)</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="3" column="1">
-                 <widget class="QGroupBox" name="notesPanelSortGroupBox">
-                  <property name="title">
-                   <string>Sort</string>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_16">
-                   <item>
-                    <widget class="QRadioButton" name="notesPanelSortAlphabeticalRadioButton">
-                     <property name="text">
-                      <string>Alphabetical</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QRadioButton" name="notesPanelSortByLastChangeRadioButton">
-                     <property name="text">
-                      <string>By last change</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-                <item row="1" column="1" colspan="2">
-                 <widget class="QCheckBox" name="taggingShowNotesRecursivelyCheckBox">
-                  <property name="text">
-                   <string>Show all notes of a tag including the notes of their children-tags</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="1" colspan="2">
-                 <widget class="QCheckBox" name="noteListPreviewCheckBox">
-                  <property name="text">
-                   <string>Show notes in the note list with preview</string>
+                   <string>Instead of a note list use a note tree with all the subfolders (if they are turned on for the note folder)</string>
                   </property>
                  </widget>
                 </item>
@@ -5304,6 +5707,19 @@ Just test yourself if you get sync conflicts and set a higher value if so.</stri
                  <widget class="QLabel" name="label_17">
                   <property name="text">
                    <string>You can set a new layout here. Keep in mind that you always can modify the position of the panels with the &lt;i&gt;Unlock panels&lt;/i&gt; button.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_31">
+                  <property name="mouseTracking">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Panels can be turned on and off in the &lt;i&gt;Window / Panels&lt;/i&gt; main menu and you can also configure different &lt;i&gt;Workspaces&lt;/i&gt; for different panel configurations.</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -5587,6 +6003,184 @@ Just test yourself if you get sync conflicts and set a higher value if so.</stri
    <header>widgets/notefolderlistwidget.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>searchLineEdit</tabstop>
+  <tabstop>settingsTreeWidget</tabstop>
+  <tabstop>noteFolderListWidget</tabstop>
+  <tabstop>noteFolderAddButton</tabstop>
+  <tabstop>noteFolderRemoveButton</tabstop>
+  <tabstop>noteFolderLocalPathButton</tabstop>
+  <tabstop>noteFolderLocalPathLineEdit</tabstop>
+  <tabstop>noteFolderRemotePathLineEdit</tabstop>
+  <tabstop>noteFolderRemotePathButton</tabstop>
+  <tabstop>useOwnCloudPathButton</tabstop>
+  <tabstop>noteFolderRemotePathTreeWidget</tabstop>
+  <tabstop>noteFolderNameLineEdit</tabstop>
+  <tabstop>noteFolderActiveCheckBox</tabstop>
+  <tabstop>noteFolderCloudConnectionComboBox</tabstop>
+  <tabstop>noteFolderShowSubfoldersCheckBox</tabstop>
+  <tabstop>noteFolderGitCommitCheckBox</tabstop>
+  <tabstop>ownCloudSupportCheckBox</tabstop>
+  <tabstop>cloudConnectionComboBox</tabstop>
+  <tabstop>cloudConnectionAddButton</tabstop>
+  <tabstop>cloudConnectionRemoveButton</tabstop>
+  <tabstop>cloudServerConnectionNameLineEdit</tabstop>
+  <tabstop>serverUrlEdit</tabstop>
+  <tabstop>userNameEdit</tabstop>
+  <tabstop>passwordEdit</tabstop>
+  <tabstop>connectButton</tabstop>
+  <tabstop>ownCloudServerAppPageButton</tabstop>
+  <tabstop>noProxyRadioButton</tabstop>
+  <tabstop>systemProxyRadioButton</tabstop>
+  <tabstop>manualProxyRadioButton</tabstop>
+  <tabstop>typeComboBox</tabstop>
+  <tabstop>hostLineEdit</tabstop>
+  <tabstop>portSpinBox</tabstop>
+  <tabstop>authRequiredcheckBox</tabstop>
+  <tabstop>userLineEdit</tabstop>
+  <tabstop>passwordLineEdit</tabstop>
+  <tabstop>ignoreSSLErrorsCheckBox</tabstop>
+  <tabstop>appMetricsCheckBox</tabstop>
+  <tabstop>appHeartbeatCheckBox</tabstop>
+  <tabstop>calDavCalendarRadioButton</tabstop>
+  <tabstop>defaultOwnCloudCalendarRadioButton</tabstop>
+  <tabstop>calendarPlusRadioButton</tabstop>
+  <tabstop>legacyOwnCloudCalendarRadioButton</tabstop>
+  <tabstop>calDavServerUrlEdit</tabstop>
+  <tabstop>calDavUsernameEdit</tabstop>
+  <tabstop>calDavPasswordEdit</tabstop>
+  <tabstop>todoCalendarListWidget</tabstop>
+  <tabstop>emptyCalendarCachePushButton</tabstop>
+  <tabstop>reloadCalendarListButton</tabstop>
+  <tabstop>ignoreNonTodoCalendarsCheckBox</tabstop>
+  <tabstop>closeTodoListAfterSaveCheckBox</tabstop>
+  <tabstop>languageListWidget</tabstop>
+  <tabstop>darkModeTrayIconCheckBox</tabstop>
+  <tabstop>darkModeCheckBox</tabstop>
+  <tabstop>darkModeColorsCheckBox</tabstop>
+  <tabstop>showSystemTrayCheckBox</tabstop>
+  <tabstop>startHiddenCheckBox</tabstop>
+  <tabstop>interfaceStyleComboBox</tabstop>
+  <tabstop>internalIconThemeCheckBox</tabstop>
+  <tabstop>systemIconThemeCheckBox</tabstop>
+  <tabstop>darkModeIconThemeCheckBox</tabstop>
+  <tabstop>toolbarIconSizeResetButton</tabstop>
+  <tabstop>itemHeightResetButton</tabstop>
+  <tabstop>toolbarIconSizeSpinBox</tabstop>
+  <tabstop>itemHeightSpinBox</tabstop>
+  <tabstop>overrideInterfaceFontSizeGroupBox</tabstop>
+  <tabstop>interfaceFontSizeSpinBox</tabstop>
+  <tabstop>shortcutSearchLineEdit</tabstop>
+  <tabstop>shortcutTreeWidget</tabstop>
+  <tabstop>scriptListWidget</tabstop>
+  <tabstop>scriptAddButton</tabstop>
+  <tabstop>scriptRemoveButton</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>scriptNameLineEdit</tabstop>
+  <tabstop>scriptValidationButton</tabstop>
+  <tabstop>scriptReloadEngineButton</tabstop>
+  <tabstop>scriptPathButton</tabstop>
+  <tabstop>scriptPathLineEdit</tabstop>
+  <tabstop>maximumImageHeightSpinBox</tabstop>
+  <tabstop>maximumImageWidthSpinBox</tabstop>
+  <tabstop>ignoreAllExternalNoteFolderChangesCheckBox</tabstop>
+  <tabstop>imageScaleDownCheckBox</tabstop>
+  <tabstop>ignoreAllExternalModificationsCheckBox</tabstop>
+  <tabstop>allowDifferentNoteFileNameCheckBox</tabstop>
+  <tabstop>acceptAllExternalModificationsCheckBox</tabstop>
+  <tabstop>noteSaveIntervalTime</tabstop>
+  <tabstop>restoreCursorPositionCheckBox</tabstop>
+  <tabstop>automaticNoteFolderDatabaseClosingCheckBox</tabstop>
+  <tabstop>newNoteAskHeadlineCheckBox</tabstop>
+  <tabstop>useUNIXNewlineCheckBox</tabstop>
+  <tabstop>notifyAllExternalModificationsCheckBox</tabstop>
+  <tabstop>legacyLinkingCheckBox</tabstop>
+  <tabstop>allowOnlyOneAppInstanceCheckBox</tabstop>
+  <tabstop>disableAutomaticUpdateDialogCheckBox</tabstop>
+  <tabstop>searchEngineSelectionComboBox</tabstop>
+  <tabstop>resetMessageBoxesButton</tabstop>
+  <tabstop>addCustomNoteFileExtensionButton</tabstop>
+  <tabstop>removeCustomNoteFileExtensionButton</tabstop>
+  <tabstop>defaultNoteFileExtensionListWidget</tabstop>
+  <tabstop>externalEditorPathLineEdit</tabstop>
+  <tabstop>setExternalEditorPathToolButton</tabstop>
+  <tabstop>clearAppDataAndExitButton</tabstop>
+  <tabstop>importSettingsButton</tabstop>
+  <tabstop>exportSettingsButton</tabstop>
+  <tabstop>reinitializeDatabaseButton</tabstop>
+  <tabstop>gitHubLineBreaksCheckBox</tabstop>
+  <tabstop>debugInfoTextEdit</tabstop>
+  <tabstop>noteTextEditFontLabel</tabstop>
+  <tabstop>noteTextEditButton</tabstop>
+  <tabstop>noteTextEditResetButton</tabstop>
+  <tabstop>noteTextEditCodeFontLabel</tabstop>
+  <tabstop>noteTextEditCodeButton</tabstop>
+  <tabstop>noteTextEditCodeResetButton</tabstop>
+  <tabstop>portableModeInfoTextBrowser</tabstop>
+  <tabstop>noteTextViewCodeButton</tabstop>
+  <tabstop>noteTextViewResetButton</tabstop>
+  <tabstop>noteTextViewCodeResetButton</tabstop>
+  <tabstop>noteTextViewButton</tabstop>
+  <tabstop>noteTextViewCodeFontLabel</tabstop>
+  <tabstop>noteTextViewFontLabel</tabstop>
+  <tabstop>noteTextViewRTLCheckBox</tabstop>
+  <tabstop>noteTextViewIgnoreCodeFontSizeCheckBox</tabstop>
+  <tabstop>noteTextViewUnderlineCheckBox</tabstop>
+  <tabstop>applyToolbarButton</tabstop>
+  <tabstop>resetToolbarPushButton</tabstop>
+  <tabstop>fileLoggingCheckBox</tabstop>
+  <tabstop>clearLogFileButton</tabstop>
+  <tabstop>oldVersionNumberCheckBox</tabstop>
+  <tabstop>timeFormatLineEdit</tabstop>
+  <tabstop>markdownHighlightingCheckBox</tabstop>
+  <tabstop>fullyHighlightedBlockquotesCheckBox</tabstop>
+  <tabstop>vimModeCheckBox</tabstop>
+  <tabstop>autoBracketClosingCheckBox</tabstop>
+  <tabstop>cursorWidthResetButton</tabstop>
+  <tabstop>cursorWidthSpinBox</tabstop>
+  <tabstop>autoBracketRemovalCheckBox</tabstop>
+  <tabstop>editorWidthInDFMOnlyCheckBox</tabstop>
+  <tabstop>highlightCurrentLineCheckBox</tabstop>
+  <tabstop>disableCursorBlinkingCheckBox</tabstop>
+  <tabstop>gitCommitIntervalTime</tabstop>
+  <tabstop>gitLogCommandLineEdit</tabstop>
+  <tabstop>gitPathLineEdit</tabstop>
+  <tabstop>setGitPathToolButton</tabstop>
+  <tabstop>noteEditCentralWidgetCheckBox</tabstop>
+  <tabstop>disableSavedSearchesAutoCompletionCheckBox</tabstop>
+  <tabstop>tagsPanelSortAlphabeticalRadioButton</tabstop>
+  <tabstop>tagsPanelSortByLastChangeRadioButton</tabstop>
+  <tabstop>tagsPanelOrderAscendingRadioButton</tabstop>
+  <tabstop>tagsPanelOrderDescendingRadioButton</tabstop>
+  <tabstop>tagsPanelHideSearchCheckBox</tabstop>
+  <tabstop>noteSubfoldersPanelShowFullPathCheckBox</tabstop>
+  <tabstop>noteSubfoldersPanelSortAlphabeticalRadioButton</tabstop>
+  <tabstop>noteSubfoldersPanelSortByLastChangeRadioButton</tabstop>
+  <tabstop>noteSubfoldersPanelShowRootFolderNameCheckBox</tabstop>
+  <tabstop>noteSubfoldersPanelOrderAscendingRadioButton</tabstop>
+  <tabstop>noteSubfoldersPanelOrderDescendingRadioButton</tabstop>
+  <tabstop>noteSubfoldersPanelHideSearchCheckBox</tabstop>
+  <tabstop>noteSubfoldersPanelDisplayAsFullTreeCheckBox</tabstop>
+  <tabstop>ignoreNoteSubFoldersLineEdit</tabstop>
+  <tabstop>ignoreNoteSubFoldersResetButton</tabstop>
+  <tabstop>notesPanelOrderAscendingRadioButton</tabstop>
+  <tabstop>notesPanelOrderDescendingRadioButton</tabstop>
+  <tabstop>noteSubfoldersPanelShowNotesRecursivelyCheckBox</tabstop>
+  <tabstop>notesPanelSortAlphabeticalRadioButton</tabstop>
+  <tabstop>notesPanelSortByLastChangeRadioButton</tabstop>
+  <tabstop>taggingShowNotesRecursivelyCheckBox</tabstop>
+  <tabstop>noteListPreviewCheckBox</tabstop>
+  <tabstop>navigationPanelHideSearchCheckBox</tabstop>
+  <tabstop>localTrashClearTimeSpinBox</tabstop>
+  <tabstop>localTrashClearCheckBox</tabstop>
+  <tabstop>localTrashEnabledCheckBox</tabstop>
+  <tabstop>bookmarksTagLineEdit</tabstop>
+  <tabstop>bookmarksNoteNameLineEdit</tabstop>
+  <tabstop>webSocketServerServicePortSpinBox</tabstop>
+  <tabstop>webSocketServerServicePortResetButton</tabstop>
+  <tabstop>webSocketTokenButton</tabstop>
+  <tabstop>enableSocketServerCheckBox</tabstop>
+ </tabstops>
  <resources>
   <include location="../breeze-qownnotes.qrc"/>
   <include location="../breeze-dark-qownnotes.qrc"/>

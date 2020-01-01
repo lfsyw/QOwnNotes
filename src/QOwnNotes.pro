@@ -10,8 +10,7 @@ QT       += core gui widgets sql svg network xml xmlpatterns printsupport qml we
 # Windows and macOS seem to ignore that
 #QT       += quick
 
-# Sonnet support if we can get it to run in the future
-#QT += SonnetCore SonnetUi
+CONFIG += with_aspell
 
 TARGET = QOwnNotes
 TEMPLATE = app
@@ -56,7 +55,23 @@ TRANSLATIONS = languages/QOwnNotes_en.ts \
     languages/QOwnNotes_sk.ts \
     languages/QOwnNotes_eu.ts \
     languages/QOwnNotes_sr.ts \
-    languages/QOwnNotes_fa.ts
+    languages/QOwnNotes_fa.ts \
+    languages/QOwnNotes_ha.ts \
+    languages/QOwnNotes_bg.ts \
+    languages/QOwnNotes_is.ts \
+    languages/QOwnNotes_pa.ts \
+    languages/QOwnNotes_he.ts \
+    languages/QOwnNotes_ga.ts \
+    languages/QOwnNotes_uz.ts \
+    languages/QOwnNotes_vi.ts \
+    languages/QOwnNotes_lv.ts \
+    languages/QOwnNotes_ku.ts \
+    languages/QOwnNotes_lt.ts \
+    languages/QOwnNotes_bs.ts \
+    languages/QOwnNotes_mk.ts \
+    languages/QOwnNotes_ko.ts \
+    languages/QOwnNotes_et.ts \
+    languages/QOwnNotes_sq.ts
 
 CODECFORTR = UTF-8
 CONFIG += c++11
@@ -64,6 +79,10 @@ CONFIG += c++11
 INCLUDEPATH += $$PWD/libraries
 
 SOURCES += main.cpp\
+    dialogs/attachmentdialog.cpp \
+    entities/cloudconnection.cpp \
+    helpers/codetohtmlconverter.cpp \
+    helpers/qownspellchecker.cpp \
         mainwindow.cpp \
     libraries/diff_match_patch/diff_match_patch.cpp \
     libraries/hoedown/html.c \
@@ -103,6 +122,7 @@ SOURCES += main.cpp\
     helpers/qownnotesmarkdownhighlighter.cpp \
     helpers/fakevimproxy.cpp \
     services/databaseservice.cpp \
+    widgets/graphicsview.cpp \
     widgets/qownnotesmarkdowntextedit.cpp \
     dialogs/passworddialog.cpp \
     services/metricsservice.cpp \
@@ -134,6 +154,7 @@ SOURCES += main.cpp\
     dialogs/notedialog.cpp \
     dialogs/filedialog.cpp \
     dialogs/scriptrepositorydialog.cpp \
+    dialogs/dictionarymanagerdialog.cpp \
     widgets/scriptsettingwidget.cpp \
     api/scriptapi.cpp \
     widgets/label.cpp \
@@ -144,10 +165,16 @@ SOURCES += main.cpp\
     widgets/notetreewidgetitem.cpp \
     widgets/layoutwidget.cpp \
     dialogs/serverbookmarksimportdialog.cpp \
-    dialogs/websockettokendialog.cpp
+    dialogs/websockettokendialog.cpp \
+    dialogs/imagedialog.cpp
 
 HEADERS  += mainwindow.h \
     build_number.h \
+    dialogs/attachmentdialog.h \
+    entities/cloudconnection.h \
+    helpers/LanguageCache.h \
+    helpers/codetohtmlconverter.h \
+    helpers/qownspellchecker.h \
     version.h \
     libraries/diff_match_patch/diff_match_patch.h \
     libraries/hoedown/html.h \
@@ -189,6 +216,7 @@ HEADERS  += mainwindow.h \
     helpers/fakevimproxy.h \
     services/databaseservice.h \
     release.h \
+    widgets/graphicsview.h \
     widgets/qownnotesmarkdowntextedit.h \
     dialogs/passworddialog.h \
     services/metricsservice.h \
@@ -222,6 +250,7 @@ HEADERS  += mainwindow.h \
     dialogs/notedialog.h \
     dialogs/filedialog.h \
     dialogs/scriptrepositorydialog.h \
+    dialogs/dictionarymanagerdialog.h \
     widgets/scriptsettingwidget.h \
     api/scriptapi.h \
     widgets/label.h \
@@ -232,9 +261,12 @@ HEADERS  += mainwindow.h \
     widgets/notetreewidgetitem.h \
     widgets/layoutwidget.h \
     dialogs/serverbookmarksimportdialog.h \
-    dialogs/websockettokendialog.h
+    dialogs/websockettokendialog.h \
+    dialogs/imagedialog.h
 
 FORMS    += mainwindow.ui \
+    dialogs/attachmentdialog.ui \
+    dialogs/imagedialog.ui \
     dialogs/notediffdialog.ui \
     dialogs/aboutdialog.ui \
     dialogs/updatedialog.ui \
@@ -258,6 +290,7 @@ FORMS    += mainwindow.ui \
     dialogs/tabledialog.ui \
     dialogs/notedialog.ui \
     dialogs/scriptrepositorydialog.ui \
+    dialogs/dictionarymanagerdialog.ui \
     widgets/qtexteditsearchwidget.ui \
     widgets/scriptsettingwidget.ui \
     widgets/notetreewidgetitem.ui \
@@ -282,6 +315,7 @@ include(libraries/qkeysequencewidget/qkeysequencewidget/qkeysequencewidget.pri)
 include(libraries/qttoolbareditor/toolbar_editor.pri)
 include(libraries/fakevim/fakevim/fakevim.pri)
 include(libraries/singleapplication/singleapplication.pri)
+include(libraries/sonnet/src/core/sonnet-core.pri)
 
 unix {
 

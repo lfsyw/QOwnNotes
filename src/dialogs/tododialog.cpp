@@ -264,7 +264,7 @@ void TodoDialog::reloadTodoListItems() {
             QString uid = calItem.getUid();
 
             // skip items that were not fully loaded yet
-            if (uid == "") {
+            if (uid.isEmpty()) {
                 continue;
             }
 
@@ -340,8 +340,8 @@ void TodoDialog::clearTodoList() {
 }
 
 void TodoDialog::resetEditFrameControls() {
-    ui->summaryEdit->setText("");
-    ui->descriptionEdit->setPlainText("");
+    ui->summaryEdit->setText(QString());
+    ui->descriptionEdit->setPlainText(QString());
     ui->prioritySlider->setValue(0);
     ui->reminderCheckBox->setChecked(false);
     ui->reminderDateTimeEdit->hide();
@@ -715,7 +715,7 @@ bool TodoDialog::eventFilter(QObject *obj, QEvent *event) {
             // were pressed in the new item edit
             if ((keyEvent->key() == Qt::Key_Down) ||
                     (keyEvent->key() == Qt::Key_Tab)) {
-                // choose an other selected item if current item is invisible
+                // choose another selected item if current item is invisible
                 QListWidgetItem *item = ui->todoList->currentItem();
                 if ((item != nullptr) && ui->todoList->currentItem()->isHidden() &&
                     (firstVisibleTodoListRow >= 0)) {

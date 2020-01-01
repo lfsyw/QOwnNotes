@@ -54,7 +54,7 @@ void LayoutWidget::updateCurrentLayout() {
     auto scene = new QGraphicsScene();
 
     // adapt layoutGraphicsView background color
-    QColor bg = ui->layoutGraphicsView->palette().background().color();
+    QColor bg = ui->layoutGraphicsView->palette().window().color();
     ui->layoutGraphicsView->setStyleSheet(QString("background-color:") +
                                           bg.name(QColor::HexArgb));
 
@@ -146,7 +146,7 @@ QString LayoutWidget::getLayoutName(const QString& layoutIdentifier) {
         return tr("Single column", "Layout name");
     }
 
-    return "";
+    return QString();
 }
 
 QString LayoutWidget::getLayoutDescription(const QString& layoutIdentifier) {
@@ -178,7 +178,7 @@ QString LayoutWidget::getLayoutDescription(const QString& layoutIdentifier) {
                centralWidgetAddText;
     }
 
-    return "";
+    return QString();
 }
 
 void LayoutWidget::resizeEvent(QResizeEvent* event) {

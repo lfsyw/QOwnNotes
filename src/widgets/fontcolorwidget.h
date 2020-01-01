@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 Patrizio Bekerle -- http://www.bekerle.com
+ * Copyright (c) 2014-2020 Patrizio Bekerle -- <patrizio@bekerle.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,15 @@ class FontColorWidget : public QFrame
     Q_OBJECT
 
 public:
-    explicit FontColorWidget(QWidget *parent = 0);
+    explicit FontColorWidget(QWidget *parent = nullptr);
     ~FontColorWidget();
 
     void updateAllTextItems();
+
+public slots:
+    bool selectFirstLightSchema();
+
+    bool selectFirstDarkSchema();
 
 private slots:
     void on_foregroundColorButton_clicked();
@@ -79,7 +84,7 @@ private:
 
     void updateSchemeEditFrame();
 
-    void setSchemaValue(const QString& key, const QVariant& value, QString schemaKey = "");
+    void setSchemaValue(const QString& key, const QVariant& value, QString schemaKey = QString());
 
     QString textSettingsKey(const QString& key, QTreeWidgetItem *item = Q_NULLPTR);
 

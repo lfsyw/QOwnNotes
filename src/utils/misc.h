@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 Patrizio Bekerle -- http://www.bekerle.com
+ * Copyright (c) 2014-2020 Patrizio Bekerle -- <patrizio@bekerle.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ namespace Utils {
         bool startDetachedProcess(const QString &executablePath,
                                   const QStringList &parameters = QStringList(),
                                   QString workingDirectory = "");
-        QString shorten(const QString &text, int length, const QString &sequence = "...");
+
+        QString shorten(const QString &text, int length, const QString &sequence = QStringLiteral("..."));
         QString cycleTextCase(const QString &text);
         QString toSentenceCase(const QString &text);
         QString toStartCase(const QString &text);
@@ -60,8 +61,8 @@ namespace Utils {
         QString htmlToMarkdown(const QString &text);
         QString parseTaskList(const QString &html, bool clickable);
         QByteArray startSynchronousProcess(
-                const QString &executablePath, const QStringList &parameters,
-                QByteArray data = QByteArray());
+                const QString& executablePath, const QStringList &parameters,
+                const QByteArray &data = QByteArray());
         bool renameFile(const QString &oldName,
                         const QString &newName);
         QList<QObject *> getParents(QObject *object);
@@ -83,17 +84,21 @@ namespace Utils {
         void storePrinterSettings(QPrinter *printer, const QString &settingsKey);
         void loadPrinterSettings(QPrinter *printer, const QString &settingsKey);
         bool isNoteEditingAllowed();
+        bool useInternalExportStylingForPreview();
         bool isSocketServerEnabled();
         QString unescapeHtml(const QString &html);
         QString htmlspecialchars(const QString &text);
         void printInfo(const QString &text);
         bool doAutomaticNoteFolderDatabaseClosing();
         bool isNoteListPreview();
+        bool isEnableNoteTree();
+        QString indentCharacters();
+        int indentSize();
         QString toHumanReadableByteSize(qint64 size);
         QString prepareDebugInformationLine(
             const QString &headline, QString data,
             bool withGitHubLineBreaks = true,
-            const QString& typeText = "");
+            const QString& typeText = QString());
         QString generateDebugInformation(bool withGitHubLineBreaks = true);
         bool regExpInListMatches(const QString& text, const QStringList& regExpList);
         void copyImage(const QString &path);
@@ -102,6 +107,8 @@ namespace Utils {
         void transformNextcloudPreviewImages(QString &html);
         void transformRemotePreviewImages(QString &html);
         QString remotePreviewImageTagToInlineImageTag(QString imageTag);
+        QString createUuidString();
+        QString localDictionariesPath();
     }  // namespace Misc
 }  // namespace Utils
 

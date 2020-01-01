@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 Patrizio Bekerle -- http://www.bekerle.com
+ * Copyright (c) 2014-2020 Patrizio Bekerle -- <patrizio@bekerle.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -384,7 +384,7 @@ QTextEditSearchWidget *NotePreviewWidget::searchWidget() {
 }
 
 /**
- * Uses an other widget as parent for the search widget
+ * Uses another widget as parent for the search widget
  */
 void NotePreviewWidget::initSearchFrame(QWidget *searchFrame, bool darkMode) {
     _searchFrame = searchFrame;

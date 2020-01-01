@@ -99,7 +99,7 @@ void OrphanedImagesDialog::on_fileTreeWidget_currentItemChanged(
  */
 QString OrphanedImagesDialog::getFilePath(QTreeWidgetItem *item) {
     if (item == Q_NULLPTR) {
-        return "";
+        return QString();
     }
 
     QString fileName = NoteFolder::currentMediaPath() + QDir::separator() +
@@ -120,7 +120,7 @@ void OrphanedImagesDialog::on_deleteButton_clicked() {
     if (Utils::Gui::question(
             this,
             tr("Delete selected files"),
-            tr("Delete <strong>%n</strong> selected files(s)?",
+            tr("Delete <strong>%n</strong> selected file(s)?",
                "", selectedItemsCount),
             "delete-files") != QMessageBox::Yes) {
         return;
@@ -179,12 +179,13 @@ void OrphanedImagesDialog::on_insertButton_clicked() {
     }
 
     QOwnNotesMarkdownTextEdit *textEdit = mainWindow->activeNoteTextEdit();
+    Note note = mainWindow->getCurrentNote();
 
     // insert all selected images
     Q_FOREACH(QTreeWidgetItem *item, ui->fileTreeWidget->selectedItems()) {
             QString filePath = getFilePath(item);
             QFileInfo fileInfo(filePath);
-            QString mediaUrlString = "file://media/" + fileInfo.fileName();
+            QString mediaUrlString = note.mediaUrlStringForFileName(fileInfo.fileName());
             QString imageLink = "![" + fileInfo.baseName() + "](" +
                              mediaUrlString + ")\n";
             textEdit->insertPlainText(imageLink);

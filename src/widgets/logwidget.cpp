@@ -84,7 +84,7 @@ QString LogWidget::getLogText() {
 #ifndef INTEGRATION_TESTS
     return ui->logTextEdit->toPlainText();
 #else
-    return "";
+    return QString();
 #endif
 }
 
@@ -115,10 +115,12 @@ void LogWidget::storeSettings() const {
  * Adds a log entry
  */
 void LogWidget::log(LogWidget::LogType logType, const QString &text) {
-    // ignore "libpng sRGB profile" and "QXcbConnection: XCB error: 8" warnings
+    // ignore "libpng sRGB profile", "QXcbConnection: XCB error: 8" and
+    // "QFileSystemWatcher::removePaths" warnings
     if (logType == WarningLogType &&
         (text.contains("libpng warning: iCCP: known incorrect sRGB profile") ||
-         text.contains("QXcbConnection: XCB error:"))) {
+         text.contains("QXcbConnection: XCB error:") ||
+         text.contains("QFileSystemWatcher::removePaths: list is empty"))) {
         return;
     }
 
@@ -232,8 +234,8 @@ void LogWidget::log(LogWidget::LogType logType, const QString &text) {
 //        scrollBar->setValue(scrollBar->maximum());
     }
 #else
-    Q_UNUSED(logType);
-    Q_UNUSED(text);
+    Q_UNUSED(logType)
+    Q_UNUSED(text)
 #endif
 }
 
@@ -244,7 +246,7 @@ void LogWidget::log(LogWidget::LogType logType, const QString &text) {
  * @return
  */
 QString LogWidget::logTypeText(LogType logType) {
-    QString type = "";
+    QString type = QString();
 
     switch (logType) {
         case DebugLogType:
@@ -358,7 +360,7 @@ void LogWidget::logMessageOutput(
         emit(mainWindow->log(logType, msg));
     }
 #else
-    Q_UNUSED(logType);
+    Q_UNUSED(logType)
 #endif
 
     // it's harder to debug a problem if we abort here
@@ -427,7 +429,7 @@ void LogWidget::on_logTextEdit_customContextMenuRequested(const QPoint &pos) {
         }
     }
 #else
-    Q_UNUSED(pos);
+    Q_UNUSED(pos)
 #endif
 }
 
@@ -438,7 +440,7 @@ void LogWidget::on_logTextEdit_customContextMenuRequested(const QPoint &pos) {
  * @param obj
  */
 void LogWidget::onDestroyed(QObject *obj) {
-    Q_UNUSED(obj);
+    Q_UNUSED(obj)
 #ifndef INTEGRATION_TESTS
     qApp->setProperty("loggingEnabled", false);
 #endif

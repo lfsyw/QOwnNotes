@@ -1,10 +1,12 @@
-#ifndef QOWNNOTESMARKDOWNTEXTEDIT_H
-#define QOWNNOTESMARKDOWNTEXTEDIT_H
+#pragma once
 
 #include <QObject>
 #include <helpers/qownnotesmarkdownhighlighter.h>
 #include "libraries/qmarkdowntextedit/qmarkdowntextedit.h"
 #include "mainwindow.h"
+
+#define QOWNNOTESMARKDOWNTEXTEDIT_OVERRIDE_FONT_SIZE_STYLESHEET_PRE_STRING "/* BEGIN FONT SIZE OVERRIDE STYLESHEET */"
+#define QOWNNOTESMARKDOWNTEXTEDIT_OVERRIDE_FONT_SIZE_STYLESHEET_POST_STRING "/* END FONT SIZE OVERRIDE STYLESHEET */"
 
 class QOwnNotesMarkdownTextEdit : public QMarkdownTextEdit {
 Q_OBJECT
@@ -25,7 +27,8 @@ public:
     };
     Q_ENUMS(FontModificationMode)
 
-    explicit QOwnNotesMarkdownTextEdit(QWidget *parent = 0);
+    explicit QOwnNotesMarkdownTextEdit(QWidget *parent = nullptr);
+    ~QOwnNotesMarkdownTextEdit();
 
     void setStyles();
     void openUrl(const QString &urlString);
@@ -35,6 +38,8 @@ public:
     int modifyFontSize(FontModificationMode mode);
     void updateSettings();
     QMargins viewportMargins();
+    void setText(const QString &text);
+    void enableSpellChecker(QOwnNotesMarkdownHighlighter *h = nullptr);
 
 protected:
     // we must not override _highlighter or Windows will create a QOwnNotesMarkdownHighlighter and MarkdownHighlighter instance
@@ -48,11 +53,13 @@ private slots:
 
 private:
     MainWindow *mainWindow;
+    QOwnSpellChecker *spellchecker;
 
     void setFormatStyle(MarkdownHighlighter::HighlighterState index);
 
+    bool onContextMenuEvent(QContextMenuEvent *event);
+
+    void overrideFontSizeStyle(int fontSize);
 Q_SIGNALS:
     void resize(QResizeEvent* event);
 };
-
-#endif // QOWNNOTESMARKDOWNTEXTEDIT_H

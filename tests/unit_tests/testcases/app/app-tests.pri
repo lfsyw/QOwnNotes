@@ -14,6 +14,7 @@ HEADERS  += \
     $$APP_SRC_DIR/services/scriptingservice.h \
     $$APP_SRC_DIR/utils/misc.h \
     $$APP_SRC_DIR/utils/gui.h \
+    $$APP_SRC_DIR/utils/schema.h \
     $$APP_SRC_DIR/libraries/piwiktracker/piwiktracker.h \
     $$APP_SRC_DIR/services/metricsservice.h \
     $$APP_SRC_DIR/services/cryptoservice.h \
@@ -21,6 +22,7 @@ HEADERS  += \
     $$APP_SRC_DIR/dialogs/masterdialog.h \
     $$APP_SRC_DIR/widgets/logwidget.h \
     $$APP_SRC_DIR/entities/notefolder.h \
+    $$APP_SRC_DIR/entities/cloudconnection.h \
     $$APP_SRC_DIR/entities/notesubfolder.h \
     $$APP_SRC_DIR/entities/note.h \
     $$APP_SRC_DIR/entities/trashitem.h \
@@ -30,12 +32,14 @@ HEADERS  += \
     $$APP_SRC_DIR/entities/script.h \
     $$APP_SRC_DIR/helpers/htmlentities.h \
     $$APP_SRC_DIR/helpers/clientproxy.h \
+    $$APP_SRC_DIR/helpers/codetohtmlconverter.h \
     $$APP_SRC_DIR/libraries/diff_match_patch/diff_match_patch.h \
     $$APP_SRC_DIR/libraries/hoedown/*.h \
     $$APP_SRC_DIR/libraries/simplecrypt/simplecrypt.h \
     $$APP_SRC_DIR/libraries/botan/botanwrapper.h \
     $$APP_SRC_DIR/libraries/versionnumber/versionnumber.h \
-    $$APP_SRC_DIR/libraries/qmarkdowntextedit/markdownhighlighter.h
+    $$APP_SRC_DIR/libraries/qmarkdowntextedit/markdownhighlighter.h \
+    $$APP_SRC_DIR/libraries/qmarkdowntextedit/qownlanguagedata.h
 
 SOURCES += \
     $$PWD/test_*.cpp \
@@ -46,6 +50,7 @@ SOURCES += \
     $$APP_SRC_DIR/services/scriptingservice.cpp \
     $$APP_SRC_DIR/utils/misc.cpp \
     $$APP_SRC_DIR/utils/gui.cpp \
+    $$APP_SRC_DIR/utils/schema.cpp \
     $$APP_SRC_DIR/libraries/piwiktracker/piwiktracker.cpp \
     $$APP_SRC_DIR/services/metricsservice.cpp \
     $$APP_SRC_DIR/services/cryptoservice.cpp \
@@ -53,6 +58,7 @@ SOURCES += \
     $$APP_SRC_DIR/dialogs/masterdialog.cpp \
     $$APP_SRC_DIR/widgets/logwidget.cpp \
     $$APP_SRC_DIR/entities/notefolder.cpp \
+    $$APP_SRC_DIR/entities/cloudconnection.cpp \
     $$APP_SRC_DIR/entities/notesubfolder.cpp \
     $$APP_SRC_DIR/entities/note.cpp \
     $$APP_SRC_DIR/entities/trashitem.cpp \
@@ -62,12 +68,14 @@ SOURCES += \
     $$APP_SRC_DIR/entities/script.cpp \
     $$APP_SRC_DIR/helpers/htmlentities.cpp \
     $$APP_SRC_DIR/helpers/clientproxy.cpp \
+    $$APP_SRC_DIR/helpers/codetohtmlconverter.cpp \
     $$APP_SRC_DIR/libraries/diff_match_patch/diff_match_patch.cpp \
     $$APP_SRC_DIR/libraries/hoedown/*.c \
     $$APP_SRC_DIR/libraries/simplecrypt/simplecrypt.cpp \
     $$APP_SRC_DIR/libraries/botan/botanwrapper.cpp \
     $$APP_SRC_DIR/libraries/versionnumber/versionnumber.cpp \
-    $$APP_SRC_DIR/libraries/qmarkdowntextedit/markdownhighlighter.cpp
+    $$APP_SRC_DIR/libraries/qmarkdowntextedit/markdownhighlighter.cpp \
+    $$APP_SRC_DIR/libraries/qmarkdowntextedit/qownlanguagedata.cpp
 
 include($$APP_SRC_DIR/libraries/botan/botan.pri)
 

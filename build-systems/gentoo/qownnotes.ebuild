@@ -1,4 +1,4 @@
-# Copyright 2014-2019 Patrizio Bekerle
+# Copyright 2014-2020 Patrizio Bekerle
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -6,7 +6,7 @@
 # QOwnNotes VERSION-STRING
 #
 
-EAPI=5
+EAPI=7
 
 inherit qmake-utils eutils
 
@@ -36,6 +36,7 @@ RDEPEND="${DEPEND}"
 
 src_prepare() {
 	echo "#define RELEASE \"Gentoo\"" > release.h
+	default
 }
 
 src_compile() {

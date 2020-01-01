@@ -4,7 +4,6 @@
 #include <QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
-#include <entities/script.h>
 #include <QtCore/QFile>
 #include <utils/misc.h>
 #include <QtWidgets/QMessageBox>
@@ -35,6 +34,7 @@ ScriptRepositoryDialog::ScriptRepositoryDialog(QWidget *parent,
     _searchString.clear();
     _page = 1;
     _totalCount = 0;
+    _lastInstalledScript = Script();
 
     ui->downloadProgressBar->hide();
     ui->loadMoreScriptsButton->hide();
@@ -288,7 +288,7 @@ void ScriptRepositoryDialog::parseInfoQMLReply(const QByteArray &arr) const {
     item->setData(0, Qt::UserRole, jsonData);
 
     if (!infoJson.platformSupported || !infoJson.appVersionSupported) {
-        item->setTextColor(0, QColor("#aaaaaa"));
+        item->setForeground(0, QColor("#aaaaaa"));
     }
 
     ui->scriptTreeWidget->addTopLevelItem(item);
@@ -424,7 +424,7 @@ QString ScriptRepositoryDialog::getCurrentInfoJsonString() {
     QTreeWidgetItem *item = ui->scriptTreeWidget->currentItem();
 
     if (item == Q_NULLPTR) {
-        return "";
+        return QString();
     }
 
     QString data = item->data(0, Qt::UserRole).toString();
@@ -456,7 +456,7 @@ void ScriptRepositoryDialog::on_installButton_clicked() {
             this, tr("Platform not supported!"),
             tr("Your platform is not supported by this script!\n"
                        "Do you want to install it anyway?"),
-            tr("Install"), tr("Cancel"), QString::null,
+            tr("Install"), tr("Cancel"), QString(),
             0, 1) != 0) {
         return;
     }
@@ -509,7 +509,7 @@ void ScriptRepositoryDialog::on_installButton_clicked() {
                 QUrl resourceUrl = script.remoteFileUrl(resourceFileName);
                 qDebug() << "Downloading: " << resourceUrl;
 
-                QFile *file = new QFile(scriptRepositoryPath + "/" +
+                auto *file = new QFile(scriptRepositoryPath + "/" +
                                                 resourceFileName);
 
                 if (!Utils::Misc::downloadUrlToFile(resourceUrl, file)) {
@@ -531,6 +531,7 @@ void ScriptRepositoryDialog::on_installButton_clicked() {
         MetricsService::instance()->sendVisitIfEnabled(
                 "script-repository/install/" + identifier);
         reloadCurrentScriptInfo();
+        _lastInstalledScript = script;
 
         Utils::Gui::information(this, tr("Install successful"),
                                 tr("The script was successfully installed!"),
@@ -555,4 +556,8 @@ void ScriptRepositoryDialog::on_searchScriptEdit_textChanged(
 
 void ScriptRepositoryDialog::on_loadMoreScriptsButton_clicked() {
     loadMoreItems();
+}
+
+Script ScriptRepositoryDialog::getLastInstalledScript() {
+    return _lastInstalledScript;
 }

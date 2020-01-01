@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 Patrizio Bekerle -- http://www.bekerle.com
+ * Copyright (c) 2014-2020 Patrizio Bekerle -- <patrizio@bekerle.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ void FontColorWidget::initSchemaSelector() {
     QSettings settings;
     QString currentSchemaKey = settings.value("Editor/CurrentSchemaKey",
                                        _defaultSchemaKeys.length() > 0 ?
-                                       _defaultSchemaKeys[0] : "").toString();
+                                       _defaultSchemaKeys[0] : QString()).toString();
     int index = 0;
     int currentIndex = 0;
 
@@ -200,7 +200,18 @@ void FontColorWidget::initTextTreeWidgetItems() {
     addTextTreeWidgetItem(tr("Code (block)"), MarkdownHighlighter::CodeBlock);
     addTextTreeWidgetItem(tr("Code (inline)"),
                           MarkdownHighlighter::InlineCodeBlock);
+
+    addTextTreeWidgetItem(tr("Code (keyword)"), MarkdownHighlighter::CodeKeyWord);
+    addTextTreeWidgetItem(tr("Code (type)"), MarkdownHighlighter::CodeType);
+    addTextTreeWidgetItem(tr("Code (comment)"), MarkdownHighlighter::CodeComment);
+    addTextTreeWidgetItem(tr("Code (string)"), MarkdownHighlighter::CodeString);
+    addTextTreeWidgetItem(tr("Code (built in)"), MarkdownHighlighter::CodeBuiltIn);
+    addTextTreeWidgetItem(tr("Code (num literal)"), MarkdownHighlighter::CodeNumLiteral);
+    addTextTreeWidgetItem(tr("Code (other)"), MarkdownHighlighter::CodeOther);
+
     addTextTreeWidgetItem(tr("List item"), MarkdownHighlighter::List);
+    addTextTreeWidgetItem(tr("Checkbox unchecked"), MarkdownHighlighter::CheckBoxUnChecked);
+    addTextTreeWidgetItem(tr("Checkbox checked"), MarkdownHighlighter::CheckBoxChecked);
     addTextTreeWidgetItem(tr("Header, level 1"), MarkdownHighlighter::H1);
     addTextTreeWidgetItem(tr("Header, level 2"), MarkdownHighlighter::H2);
     addTextTreeWidgetItem(tr("Header, level 3"), MarkdownHighlighter::H3);
@@ -218,6 +229,7 @@ void FontColorWidget::initTextTreeWidgetItems() {
     addTextTreeWidgetItem(tr("Current line background color"),
                           MarkdownHighlighter::CurrentLineBackgroundColor);
     addTextTreeWidgetItem(tr("Broken link"), MarkdownHighlighter::BrokenLink);
+    addTextTreeWidgetItem(tr("Trailing space"), MarkdownHighlighter::TrailingSpace);
 }
 
 void FontColorWidget::addTextTreeWidgetItem(const QString& text, int index) {
@@ -391,6 +403,24 @@ void FontColorWidget::updateAllTextItems() {
     }
 }
 
+bool FontColorWidget::selectFirstLightSchema() {
+    if (ui->colorSchemeComboBox->count() >= 1) {
+        ui->colorSchemeComboBox->setCurrentIndex(0);
+        return true;
+    }
+
+    return false;
+}
+
+bool FontColorWidget::selectFirstDarkSchema() {
+    if (ui->colorSchemeComboBox->count() >= 2) {
+        ui->colorSchemeComboBox->setCurrentIndex(1);
+        return true;
+    }
+
+    return false;
+}
+
 /**
  * Updates the styling of certain items when the current text tree widget
  * item changes
@@ -400,8 +430,8 @@ void FontColorWidget::updateAllTextItems() {
  */
 void FontColorWidget::on_textTreeWidget_currentItemChanged(
         QTreeWidgetItem *current, QTreeWidgetItem *previous) {
-    Q_UNUSED(current);
-    Q_UNUSED(previous);
+    Q_UNUSED(current)
+    Q_UNUSED(previous)
 
     // update the schema edit frame for the current item
     updateSchemeEditFrame();
@@ -467,8 +497,7 @@ void FontColorWidget::on_copySchemeButton_clicked() {
     }
 
     const QStringList& keys = Utils::Schema::schemaSettings->getSchemaKeys(_currentSchemaKey);
-    QString uuid = QUuid::createUuid().toString();
-    uuid.replace("{", "").replace("}", "");
+    QString uuid = Utils::Misc::createUuidString();
     _currentSchemaKey = "EditorColorSchema-" + uuid;
 
     // store the new color schema data
@@ -573,7 +602,7 @@ void FontColorWidget::updateBackgroundColorCheckBox(bool checked, bool store) {
  * Removes the current schema
  */
 void FontColorWidget::on_deleteSchemeButton_clicked() {
-    if (_currentSchemaKey == "") {
+    if (_currentSchemaKey.isEmpty()) {
         return;
     }
 
@@ -681,8 +710,7 @@ void FontColorWidget::on_importSchemeButton_clicked() {
                             "Export/SchemaKey").toString();
 
                     // create a new schema key for the import
-                    QString uuid = QUuid::createUuid().toString();
-                    uuid.replace("{", "").replace("}", "");
+                    QString uuid = Utils::Misc::createUuidString();
                     _currentSchemaKey = "EditorColorSchema-" + uuid;
 
                     QStringList schemes = settings->value(
@@ -719,7 +747,7 @@ void FontColorWidget::initFontSelectors() {
     QString fontString = settings.value(
             "MainWindow/noteTextEdit.font").toString();
 
-    if (fontString != "") {
+    if (!fontString.isEmpty()) {
         // set the note text edit font
         font.fromString(fontString);
     } else {

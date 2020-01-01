@@ -66,7 +66,7 @@ Important Shortcuts
     - <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Down</kbd> does the same
 - <kbd>Alt</kbd> + <kbd>Backspace</kbd> deletes the current line
 - <kbd>Ctrl</kbd> + <kbd>Backspace</kbd> deletes the current word
-- <kbd>Ctrl</kbd> + <kbd>L</kbd> opens a dialog to add a link to an other note or an URL (also works on selected text)
+- <kbd>Ctrl</kbd> + <kbd>L</kbd> opens a dialog to add a link to another note or an URL (also works on selected text)
 - <kbd>Ctrl</kbd> + <kbd>T</kbd> inserts the current date in ISO 8601 format
 - <kbd>Ctrl</kbd> + <kbd>⇧</kbd> + <kbd>I</kbd> inserts an image (the image will be copied to the `media` folder in the current notes folder)
 - <kbd>Ctrl</kbd> + <kbd>⇧</kbd> + <kbd>E</kbd> inserts an attachment (the file will be copied to the `attachments` folder in the current notes folder)
@@ -96,6 +96,8 @@ Important Shortcuts
 - <kbd>Alt</kbd> + <kbd>⇧</kbd> + <kbd>W</kbd> searches for the selected text on the web
 - <kbd>Ctrl</kbd> + <kbd>Up</kbd> scrolls the content up
 - <kbd>Ctrl</kbd> + <kbd>Down</kbd> scrolls the content down
+- <kbd>Ctrl</kbd> + <kbd>⇧</kbd> + <kbd>Down</kbd> moves the current line down
+- <kbd>Ctrl</kbd> + <kbd>⇧</kbd> + <kbd>Up</kbd> moves the current line up
 
 ### In the note preview panel
 
@@ -176,7 +178,7 @@ Important Shortcuts
     - <kbd>⌘</kbd> + <kbd>Ctrl</kbd> + <kbd>Down</kbd> does the same
 - <kbd>⌘</kbd> + <kbd>Backspace</kbd> deletes the current line
 - <kbd>Ctrl</kbd> + <kbd>Backspace</kbd> deletes the current word
-- <kbd>⌘</kbd> + <kbd>L</kbd> opens a dialog to add a link to an other note or an URL (also works on selected text)
+- <kbd>⌘</kbd> + <kbd>L</kbd> opens a dialog to add a link to another note or an URL (also works on selected text)
 - <kbd>⌘</kbd> + <kbd>T</kbd> inserts the current date in ISO 8601 format
 - <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>I</kbd> inserts an image (the image will be copied to the `media` folder in the current notes folder)
 - <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>E</kbd> inserts an attachment (the file will be copied to the `attachments` folder in the current notes folder)

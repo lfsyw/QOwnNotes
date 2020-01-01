@@ -1,4 +1,5 @@
 *.pro.user
+build
 build-QOwnNotes*
 build-tools
 .directory
@@ -13,3 +14,5 @@ src/Rel_od/
 src/release/
 src/Release_od/
 src/x64/
+src/.vs/
+src/debug/

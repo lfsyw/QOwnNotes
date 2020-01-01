@@ -9,6 +9,7 @@ QOwnNotes documentation
    :maxdepth: 3
 
    scripting/README
+   spellchecking
    cli-parameters
    time-formats
    license

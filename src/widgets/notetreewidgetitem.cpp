@@ -16,7 +16,7 @@ void NoteTreeWidgetItem::updateUserInterface(const Note &note) const {
 
     QString noteText = note.getNotePreviewText();
     ui->textLabel->setText(noteText);
-    ui->textLabel->setStyleSheet("* {color: gray}");
+    ui->textLabel->setStyleSheet(QStringLiteral("* {color: gray}"));
 }
 
 NoteTreeWidgetItem::~NoteTreeWidgetItem() {

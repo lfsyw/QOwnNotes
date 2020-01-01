@@ -13,10 +13,10 @@
 
 
 Bookmark::Bookmark() {
-    url = "";
-    name = "";
+    url = QString();
+    name = QString();
     tags = QStringList();
-    description = "";
+    description = QString();
 }
 
 Bookmark::Bookmark(const QString &url, const QString &name, const QStringList &tagList,
@@ -117,7 +117,7 @@ QList<Bookmark> Bookmark::parseBookmarks(const QString& text, bool withBasicUrls
             QRegularExpressionMatch match = i.next();
             QString url = match.captured(1);
 
-            auto bookmark = Bookmark(url, "", QStringList() << "current");
+            auto bookmark = Bookmark(url, QString(), QStringList{"current"});
             bookmark.mergeInList(bookmarks);
         }
     }
@@ -192,7 +192,7 @@ void Bookmark::mergeInList(QList<Bookmark> &bookmarks, Bookmark &bookmark) {
 }
 
 /**
- * Merges the current bookmark with an other
+ * Merges the current bookmark with another
  */
 void Bookmark::merge(Bookmark &bookmark) {
     tags.append(bookmark.tags);

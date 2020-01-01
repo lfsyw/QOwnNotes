@@ -35,7 +35,7 @@ NoteSubFolder TrashItem::getNoteSubFolder() const {
     return NoteSubFolder::fetch(this->noteSubFolderId);
 }
 
-void TrashItem::setNoteSubFolder(NoteSubFolder noteSubFolder) {
+void TrashItem::setNoteSubFolder(const NoteSubFolder &noteSubFolder) {
     this->noteSubFolderPathData = noteSubFolder.pathData();
 }
 
@@ -101,7 +101,7 @@ QString TrashItem::loadFileFromDisk() {
     if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << __func__ << " - 'file': " << file.fileName();
         qDebug() << __func__ << " - " << file.errorString();
-        return "";
+        return QString();
     }
 
     QTextStream in(&file);
@@ -229,7 +229,7 @@ QString TrashItem::restorationFilePath() const {
     file.setFileName(filePath);
     // if the file still exists quit
     if ( file.exists() ) {
-        return "";
+        return QString();
     }
 
     return filePath;

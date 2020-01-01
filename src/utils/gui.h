@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 Patrizio Bekerle -- http://www.bekerle.com
+ * Copyright (c) 2014-2020 Patrizio Bekerle -- <patrizio@bekerle.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
 #include <QFontDialog>
 #include <QPlainTextEdit>
 #include <QTextBlock>
+#include <QComboBox>
+#include <QListWidget>
 
 /*  Gui functions that can be useful */
 
@@ -50,6 +52,8 @@ namespace Utils {
         void searchForTextInTreeWidget(
                 QTreeWidget *treeWidget, const QString& text,
                 TreeWidgetSearchFlags searchFlags = None);
+        void searchForTextInListWidget(QListWidget *listWidget,
+                                       const QString& text);
 
         QMessageBox::StandardButton showMessageBox(
                 QWidget *parent, QMessageBox::Icon icon,
@@ -86,6 +90,9 @@ namespace Utils {
                 QTreeWidget *treeWidget, const QVariant &userData,
                 int column = 0);
 
+        QListWidgetItem *getListWidgetItemWithUserData(
+                QListWidget *listWidget, const QVariant &userData);
+
         void resetBoldStateOfAllTreeWidgetItems(
                 QTreeWidget *treeWidget, int column = 0);
 
@@ -102,5 +109,7 @@ namespace Utils {
         bool autoFormatTableAtCursor(QPlainTextEdit *textEdit);
 
         void updateInterfaceFontSize(int fontSize = -1);
+
+        void setComboBoxIndexByUserData(QComboBox *comboBox, const QVariant &userData);
     }
 }

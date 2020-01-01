@@ -1,9 +1,9 @@
+#include <utility>
 #include <QFileDialog>
 #include <QDebug>
 #include <QXmlQuery>
 #include <QXmlResultItems>
 #include <QTemporaryFile>
-#include <helpers/htmlentities.h>
 #include <utils/misc.h>
 #include <entities/tag.h>
 #include <QCryptographicHash>
@@ -13,7 +13,7 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionMatchIterator>
-#include <QtCore/QSettings>
+#include <QSettings>
 
 EvernoteImportDialog::EvernoteImportDialog(QWidget *parent) :
         MasterDialog(parent),
@@ -27,16 +27,16 @@ EvernoteImportDialog::EvernoteImportDialog(QWidget *parent) :
 
     QSettings settings;
     ui->imageImportCheckBox->setChecked(settings.value(
-            "EvernoteImport/ImageImportCheckBoxChecked", true).toBool());
+            QStringLiteral("EvernoteImport/ImageImportCheckBoxChecked"), true).toBool());
     ui->attachmentImportCheckBox->setChecked(settings.value(
-            "EvernoteImport/AttachmentImportCheckBoxChecked", true).toBool());
+            QStringLiteral("EvernoteImport/AttachmentImportCheckBoxChecked"), true).toBool());
 }
 
 EvernoteImportDialog::~EvernoteImportDialog() {
     QSettings settings;
-    settings.setValue("EvernoteImport/ImageImportCheckBoxChecked",
+    settings.setValue(QStringLiteral("EvernoteImport/ImageImportCheckBoxChecked"),
             ui->imageImportCheckBox->isChecked());
-    settings.setValue("EvernoteImport/AttachmentImportCheckBoxChecked",
+    settings.setValue(QStringLiteral("EvernoteImport/AttachmentImportCheckBoxChecked"),
             ui->attachmentImportCheckBox->isChecked());
 
     storeMetaDataTreeWidgetItemsCheckedState();
@@ -52,7 +52,7 @@ int EvernoteImportDialog::getImportCount() {
  * Imports the notes from a selected file
  */
 void EvernoteImportDialog::on_fileButton_clicked() {
-    FileDialog dialog("EvernoteImport");
+    FileDialog dialog(QStringLiteral("Evernote Import"));
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setNameFilter(tr("Enex files") + " (*.enex)");
@@ -76,7 +76,7 @@ void EvernoteImportDialog::on_fileButton_clicked() {
 int EvernoteImportDialog::countNotes(const QString& data) {
     QXmlQuery query;
     query.setFocus(data);
-    query.setQuery("en-export/note");
+    query.setQuery(QStringLiteral("en-export/note"));
     int count = 0;
 
     QXmlResultItems result;
@@ -108,16 +108,17 @@ void EvernoteImportDialog::initNoteCount(const QString &data) {
  *
  * @param content
  */
-QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery query) {
-    query.setQuery("resource");
+QString EvernoteImportDialog::importImages(const Note &note,
+                                           QString content,
+                                           QXmlQuery query) {
+    query.setQuery(QStringLiteral("resource"));
 
-    if (!query.isValid()) {
-        return content_;
-    }
-
-    QString content = content_;
     QXmlResultItems result;
     QHash<QString, MediaFileData> mediaFileDataHash;
+
+    if (!query.isValid()) {
+        return content;
+    }
 
     query.evaluateTo(&result);
     QRegularExpressionMatch match;
@@ -129,11 +130,11 @@ QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery qu
 
         // parse the mime data of the object
         QString mime;
-        query.setQuery("mime/text()");
+        query.setQuery(QStringLiteral("mime/text()"));
         query.evaluateTo(&mime);
 
         QRegularExpression mimeExpression(
-                "(.+)?\\/(.+)?", QRegularExpression::CaseInsensitiveOption);
+                QStringLiteral("(.+)?\\/(.+)?"), QRegularExpression::CaseInsensitiveOption);
         QRegularExpressionMatch mimeMatch = mimeExpression.match(mime);
 
         if (mimeMatch.hasMatch()) {
@@ -142,19 +143,19 @@ QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery qu
         }
 
         // we only want to import images
-        if (objectType != "image") {
+        if (objectType != QStringLiteral("image")) {
             continue;
         }
 
         // check the recognition attribute for an object type
         QString recognition;
-        query.setQuery("recognition/text()");
+        query.setQuery(QStringLiteral("recognition/text()"));
         query.evaluateTo(&recognition);
 
-        recognition.replace("\\\"", "\"");
+        recognition.replace(QStringLiteral("\\\""), QStringLiteral("\""));
 
         match = QRegularExpression(
-                "objID=\"(.+?)\"",
+                QStringLiteral("objID=\"(.+?)\""),
                 QRegularExpression::CaseInsensitiveOption)
                 .match(recognition);
 
@@ -167,7 +168,7 @@ QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery qu
         }
 
         QString data;
-        query.setQuery("data/text()");
+        query.setQuery(QStringLiteral("data/text()"));
         query.evaluateTo(&data);
 
         // if there is no object id set we generate the hash ourselves
@@ -187,7 +188,7 @@ QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery qu
     }
 
     // match image tags
-    QRegularExpression re("<en-media.+?type=\"image/.+?\".*?>",
+    QRegularExpression re(QStringLiteral("<en-media.+?type=\"image/.+?\".*?>"),
                           QRegularExpression::CaseInsensitiveOption);
     QRegularExpressionMatchIterator i = re.globalMatch(content);
     QStringList importedObjectIds;
@@ -198,7 +199,7 @@ QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery qu
         QString imageTag = imageMatch.captured(0);
 
         // check for the hash
-        QRegularExpression re2("hash=\"(.+?)\"",
+        QRegularExpression re2(QStringLiteral("hash=\"(.+?)\""),
                               QRegularExpression::CaseInsensitiveOption);
         QRegularExpressionMatch hashMatch = re2.match(imageTag);
 
@@ -218,7 +219,7 @@ QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery qu
         MediaFileData mediaFileData = mediaFileDataHash[objectId];
 
         // get the markdown code for the image file data entry
-        QString markdownCode = getMarkdownForMediaFileData(mediaFileData);
+        QString markdownCode = getMarkdownForMediaFileData(note, mediaFileData);
 
         if (!markdownCode.isEmpty()) {
             // replace image tag with markdown code
@@ -238,9 +239,9 @@ QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery qu
         MediaFileData mediaFileData = hashIterator.value();
 
         // get the markdown code for the image file data entry
-        QString markdownCode = getMarkdownForMediaFileData(mediaFileData);
+        QString markdownCode = getMarkdownForMediaFileData(note, mediaFileData);
 
-        content += "\n" + markdownCode;
+        content += QStringLiteral("\n") + markdownCode;
     }
 
     return content;
@@ -251,17 +252,17 @@ QString EvernoteImportDialog::importImages(const QString &content_, QXmlQuery qu
  *
  * @param content
  */
-QString EvernoteImportDialog::importAttachments(const QString &content_,
+QString EvernoteImportDialog::importAttachments(const Note &note,
+                                                QString content,
                                                 QXmlQuery query) {
-    query.setQuery("resource");
+    query.setQuery(QStringLiteral("resource"));
 
-    if (!query.isValid()) {
-        return content_;
-    }
-
-    auto content = content_;
     QXmlResultItems result;
     QHash<QString, MediaFileData> mediaFileDataHash;
+
+    if (!query.isValid()) {
+        return content;
+    }
 
     query.evaluateTo(&result);
     QRegularExpressionMatch match;
@@ -272,11 +273,11 @@ QString EvernoteImportDialog::importAttachments(const QString &content_,
 
         // parse the mime data of the object
         QString mime;
-        query.setQuery("mime/text()");
+        query.setQuery(QStringLiteral("mime/text()"));
         query.evaluateTo(&mime);
 
         QRegularExpression mimeExpression(
-                "(.+)?\\/(.+)?", QRegularExpression::CaseInsensitiveOption);
+               QStringLiteral( "(.+)?\\/(.+)?"), QRegularExpression::CaseInsensitiveOption);
         QRegularExpressionMatch mimeMatch = mimeExpression.match(mime);
 
         if (mimeMatch.hasMatch()) {
@@ -284,19 +285,19 @@ QString EvernoteImportDialog::importAttachments(const QString &content_,
         }
 
         // we don't want to import images
-        if (objectType == "image") {
+        if (objectType == QStringLiteral("image")) {
             continue;
         }
 
         // check the recognition attribute for an object type
         QString recognition;
-        query.setQuery("recognition/text()");
+        query.setQuery(QStringLiteral("recognition/text()"));
         query.evaluateTo(&recognition);
 
-        recognition.replace("\\\"", "\"");
+        recognition.replace(QStringLiteral("\\\""), QStringLiteral("\""));
 
         match = QRegularExpression(
-                "objID=\"(.+?)\"",
+                QStringLiteral("objID=\"(.+?)\""),
                 QRegularExpression::CaseInsensitiveOption)
                 .match(recognition);
 
@@ -309,7 +310,7 @@ QString EvernoteImportDialog::importAttachments(const QString &content_,
         }
 
         QString data;
-        query.setQuery("data/text()");
+        query.setQuery(QStringLiteral("data/text()"));
         query.evaluateTo(&data);
 
         // if there is no object id set we generate the hash ourselves
@@ -321,7 +322,7 @@ QString EvernoteImportDialog::importAttachments(const QString &content_,
 
         // find the filename
         QString fileName;
-        query.setQuery("resource-attributes/file-name/text()");
+        query.setQuery(QStringLiteral("resource-attributes/file-name/text()"));
         query.evaluateTo(&fileName);
         fileName = fileName.trimmed();
 
@@ -340,7 +341,7 @@ QString EvernoteImportDialog::importAttachments(const QString &content_,
     }
 
     // match media tags
-    QRegularExpression re("<en-media.+?type=\".+?\".*?>",
+    QRegularExpression re(QStringLiteral("<en-media.+?type=\".+?\".*?>"),
                           QRegularExpression::CaseInsensitiveOption);
     QRegularExpressionMatchIterator i = re.globalMatch(content);
     QStringList importedObjectIds;
@@ -351,7 +352,7 @@ QString EvernoteImportDialog::importAttachments(const QString &content_,
         QString mediaTag = imageMatch.captured(0);
 
         // check for the hash
-        QRegularExpression re2("hash=\"(.+?)\"",
+        QRegularExpression re2(QStringLiteral("hash=\"(.+?)\""),
                               QRegularExpression::CaseInsensitiveOption);
         QRegularExpressionMatch hashMatch = re2.match(mediaTag);
 
@@ -371,7 +372,7 @@ QString EvernoteImportDialog::importAttachments(const QString &content_,
         MediaFileData mediaFileData = mediaFileDataHash[objectId];
 
         // get the markdown code for the file data entry
-        QString markdownCode = getMarkdownForAttachmentFileData(mediaFileData);
+        QString markdownCode = getMarkdownForAttachmentFileData(note, mediaFileData);
 
         if (!markdownCode.isEmpty()) {
             // replace media tag with markdown code
@@ -391,7 +392,7 @@ QString EvernoteImportDialog::importAttachments(const QString &content_,
         MediaFileData mediaFileData = hashIterator.value();
 
         // get the markdown code for the file data entry
-        QString markdownCode = getMarkdownForAttachmentFileData(mediaFileData);
+        QString markdownCode = getMarkdownForAttachmentFileData(note, mediaFileData);
 
         content += "\n" + markdownCode;
     }
@@ -406,11 +407,12 @@ QString EvernoteImportDialog::importAttachments(const QString &content_,
  * @return
  */
 QString EvernoteImportDialog::getMarkdownForMediaFileData(
-        EvernoteImportDialog::MediaFileData &mediaFileData) {
+        Note note,
+        const EvernoteImportDialog::MediaFileData &mediaFileData) {
     QString data = mediaFileData.data;
     QString imageSuffix = mediaFileData.suffix;
 
-    return Utils::Misc::importMediaFromBase64(data, imageSuffix);
+    return note.importMediaFromBase64(data, imageSuffix);
 }
 
 /**
@@ -420,25 +422,27 @@ QString EvernoteImportDialog::getMarkdownForMediaFileData(
  * @return
  */
 QString EvernoteImportDialog::getMarkdownForAttachmentFileData(
-        EvernoteImportDialog::MediaFileData &mediaFileData) {
+        Note note,
+        const EvernoteImportDialog::MediaFileData &mediaFileData) {
     QString data = mediaFileData.data;
     QString suffix = mediaFileData.suffix;
     QString fileName = mediaFileData.fileName;
 
     // create a temporary file for the attachment
-    QTemporaryFile tempFile(QDir::tempPath() + QDir::separator() + "media-XXXXXX." + suffix);
+    auto *tempFile = new QTemporaryFile(
+            QDir::tempPath() + QDir::separator() + QStringLiteral("media-XXXXXX.") + suffix);
 
-    if (!tempFile.open()) {
-        return "";
+    if (!tempFile->open()) {
+        return QString();
     }
 
     // write file data to the temporary file
-    tempFile.write(QByteArray::fromBase64(data.toLatin1()));
+    tempFile->write(QByteArray::fromBase64(data.toLatin1()));
 
     // store the temporary file in the media folder and return the
     // markdown code
-    QString markdownCode = Note::getInsertAttachmentMarkdown(&tempFile,
-                                                             fileName);
+    QString markdownCode = note.getInsertAttachmentMarkdown(tempFile, fileName);
+
     return markdownCode;
 }
 
@@ -450,7 +454,7 @@ QString EvernoteImportDialog::getMarkdownForAttachmentFileData(
 void EvernoteImportDialog::importNotes(const QString& data) {
     QXmlQuery query;
     query.setFocus(data);
-    query.setQuery("en-export/note");
+    query.setQuery(QStringLiteral("en-export/note"));
 
     bool importMetaData = isMetaDataChecked();
 
@@ -458,26 +462,28 @@ void EvernoteImportDialog::importNotes(const QString& data) {
     if (query.isValid()) {
         query.evaluateTo(&result);
         NoteSubFolder noteSubFolder = NoteSubFolder::activeNoteSubFolder();
-        HTMLEntities htmlEntities;
 
         while (!result.next().isNull()) {
+            Note note = Note();
+            note.setNoteSubFolderId(noteSubFolder.getId());
+
             query.setFocus(result.current());
 
             QString title;
-            query.setQuery("title/text()");
+            query.setQuery(QStringLiteral("title/text()"));
             query.evaluateTo(&title);
             title = title.trimmed();
 
             QString content;
-            query.setQuery("content/text()");
+            query.setQuery(QStringLiteral("content/text()"));
 
             // content seems to be html encoded
             query.evaluateTo(&content);
 
-            content.replace("\\\"", "\"");
+            content.replace(QStringLiteral("\\\""), QStringLiteral("\""));
 
             // decode HTML entities
-            content = htmlEntities.decodeHtmlEntities(content);
+            content = Utils::Misc::unescapeHtml(std::move(content));
 
             // add a newline in front of lists
 //            content.replace(QRegularExpression("<ul.*?>"), "\n<ul>");
@@ -487,29 +493,32 @@ void EvernoteImportDialog::importNotes(const QString& data) {
 //            content.remove("<div style=\"-evernote-webclip:true;\">");
 
             // replace code blocks
-            content.replace(QRegularExpression(
-                    R"(<div style="box-sizing.+?-en-codeblock:\s*true;"><div>(.+?)<\/div><\/div>)",
+            content.replace(QRegularExpression(QStringLiteral(
+                    R"(<div style="box-sizing.+?-en-codeblock:\s*true;"><div>(.+?)<\/div><\/div>)"),
                     QRegularExpression::MultilineOption),
-                            "\n```\n\\1\n```\n");
-            content.replace(QRegularExpression(
-                    R"(<div style="-en-codeblock:\s*true;.+?"><div>(.+?)<\/div><\/div>)",
+                            QStringLiteral("\n```\n\\1\n```\n"));
+            content.replace(QRegularExpression(QStringLiteral(
+                    R"(<div style="-en-codeblock:\s*true;.+?"><div>(.+?)<\/div><\/div>)"),
                     QRegularExpression::MultilineOption),
-                            "\n```\n\\1\n```\n");
+                            QStringLiteral("\n```\n\\1\n```\n"));
 
             // add a linebreak instead of div-containers
-            content.replace(QRegularExpression("<\\/div>"), "\n");
+            content.replace(QRegularExpression("<\\/div>"), QStringLiteral("\n"));
+
+            // convert remaining special characters
+            content = Utils::Misc::unescapeHtml(std::move(content));
 
             // convert html tags to markdown
-            content = Utils::Misc::htmlToMarkdown(content);
+            content = Utils::Misc::htmlToMarkdown(std::move(content));
 
             if (ui->imageImportCheckBox->isChecked()) {
                 // import images
-                content = importImages(content, query);
+                content = importImages(note, std::move(content), query);
             }
 
             if (ui->attachmentImportCheckBox->isChecked()) {
                 // import attachments
-                content = importAttachments(content, query);
+                content = importAttachments(note, std::move(content), query);
             }
 
             // remove all html tags
@@ -538,12 +547,10 @@ void EvernoteImportDialog::importNotes(const QString& data) {
                 noteText += generateMetaDataMarkdown(query);
             }
 
-            noteText += content;
+            noteText += content.trimmed();
 
-            Note note = Note();
 //            note.setName(title);
             note.setNoteText(noteText);
-            note.setNoteSubFolderId(noteSubFolder.getId());
 
             // in case the user enabled that the filename can be different
             // from the note name
@@ -574,7 +581,7 @@ void EvernoteImportDialog::importNotes(const QString& data) {
  * @param note
  */
 void EvernoteImportDialog::tagNote(QXmlQuery &query, Note &note) {
-    query.setQuery("tag");
+    query.setQuery(QStringLiteral("tag"));
     QXmlResultItems result;
     query.evaluateTo(&result);
 
@@ -582,7 +589,7 @@ void EvernoteImportDialog::tagNote(QXmlQuery &query, Note &note) {
         query.setFocus(result.current());
 
         QString tagName;
-        query.setQuery("text()");
+        query.setQuery(QStringLiteral("text()"));
         query.evaluateTo(&tagName);
         tagName = tagName.trimmed();
 
@@ -625,7 +632,7 @@ QTreeWidgetItem *EvernoteImportDialog::addMetaDataTreeWidgetItem(
 
         QSettings settings;
         auto metaDataUnCheckedList = settings.value(
-                "EvernoteImport/MetaDataUnCheckedList").toStringList();
+                QStringLiteral("EvernoteImport/MetaDataUnCheckedList")).toStringList();
         item->setCheckState(0,
                 metaDataUnCheckedList.contains(attributeName) ?
                 Qt::Unchecked : Qt::Checked);
@@ -683,7 +690,7 @@ void EvernoteImportDialog::setupMetaDataTreeWidgetItems() {
  */
 void EvernoteImportDialog::storeMetaDataTreeWidgetItemsCheckedState() {
     QList<QTreeWidgetItem *> items = ui->metaDataTreeWidget->findItems(
-            QString("*"), Qt::MatchWrap | Qt::MatchWildcard |
+            QStringLiteral("*"), Qt::MatchWrap | Qt::MatchWildcard |
                           Qt::MatchRecursive);
     QSettings settings;
     QStringList metaDataUnCheckedList;
@@ -696,7 +703,7 @@ void EvernoteImportDialog::storeMetaDataTreeWidgetItemsCheckedState() {
             }
         }
 
-    settings.setValue("EvernoteImport/MetaDataUnCheckedList",
+    settings.setValue(QStringLiteral("EvernoteImport/MetaDataUnCheckedList"),
             metaDataUnCheckedList);
 }
 
@@ -705,7 +712,7 @@ void EvernoteImportDialog::storeMetaDataTreeWidgetItemsCheckedState() {
  */
 bool EvernoteImportDialog::isMetaDataChecked() {
     QList<QTreeWidgetItem *> items = ui->metaDataTreeWidget->findItems(
-            QString("*"), Qt::MatchWrap | Qt::MatchWildcard |
+            QStringLiteral("*"), Qt::MatchWrap | Qt::MatchWildcard |
                           Qt::MatchRecursive);
 
     Q_FOREACH(QTreeWidgetItem *item, items) {
@@ -724,7 +731,7 @@ QString EvernoteImportDialog::generateMetaDataMarkdown(QXmlQuery query) {
     QString resultText;
     QString tableText;
     QList<QTreeWidgetItem *> items = ui->metaDataTreeWidget->findItems(
-            QString("*"), Qt::MatchWrap | Qt::MatchWildcard |
+            QStringLiteral("*"), Qt::MatchWrap | Qt::MatchWildcard |
                           Qt::MatchRecursive);
 
     Q_FOREACH(QTreeWidgetItem *item, items) {
@@ -736,7 +743,7 @@ QString EvernoteImportDialog::generateMetaDataMarkdown(QXmlQuery query) {
             QString attributeName = item->data(0, Qt::UserRole).toString();
 
             QString attribute;
-            query.setQuery(attributeName + "/text()");
+            query.setQuery(attributeName + QStringLiteral("/text()"));
             query.evaluateTo(&attribute);
             attribute = attribute.trimmed();
 
@@ -744,7 +751,7 @@ QString EvernoteImportDialog::generateMetaDataMarkdown(QXmlQuery query) {
                 continue;
             }
 
-            tableText += "| " + name + " | " + attribute + " |\n";
+            tableText += QStringLiteral("| ") + name + (" | ") + attribute + QStringLiteral(" |\n");
         }
 
     if (!tableText.isEmpty()) {
@@ -753,7 +760,7 @@ QString EvernoteImportDialog::generateMetaDataMarkdown(QXmlQuery query) {
                      tableText;
     }
 
-    return resultText;
+    return resultText + QStringLiteral("\n");
 }
 
 /**

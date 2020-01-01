@@ -9,7 +9,7 @@
 class NoteHistoryItem
 {
 public:
-    explicit NoteHistoryItem(const Note *note = NULL, QPlainTextEdit *textEdit = NULL);
+    explicit NoteHistoryItem(const Note *note = nullptr, QPlainTextEdit *textEdit = nullptr);
     explicit NoteHistoryItem(const QString &noteName, const QString &noteSubFolderPathData,
                              int cursorPosition,
                              float relativeScrollBarPosition);
@@ -42,21 +42,31 @@ private:
     QList<NoteHistoryItem> noteHistory;
     int currentIndex;
     NoteHistoryItem currentHistoryItem;
-    bool loopable;
-    int lastIndex();
+    bool loopable = false;
 
 public:
-    explicit NoteHistory();
     void setLoopable(bool loop) { loopable = loop; }
-    void add(const Note &note, QPlainTextEdit *textEdit);
+    int lastIndex() const;
+
+public:
+    NoteHistory();
+    //copy
+    NoteHistory(const NoteHistory&);
+    NoteHistory &operator=(const NoteHistory& rhs);
+    //move
+    NoteHistory(NoteHistory&&) noexcept;
+    NoteHistory &operator=(NoteHistory&& rhs) noexcept;
+    ~NoteHistory();
+
+    void add(Note note, QPlainTextEdit *textEdit);
     friend QDebug operator<<(QDebug dbg, const NoteHistory &history);
     bool back();
     bool forward();
-    bool isEmpty();
-    NoteHistoryItem getCurrentHistoryItem();
+    bool isEmpty() const;
+    NoteHistoryItem getCurrentHistoryItem() const;
     void updateCursorPositionOfNote(const Note &note, QPlainTextEdit *textEdit);
     void clear();
-    NoteHistoryItem getLastItemOfNote(const Note &note);
+    NoteHistoryItem getLastItemOfNote(const Note &note) const;
     QList<NoteHistoryItem> getNoteHistoryItems() const;
     void addNoteHistoryItem(NoteHistoryItem item);
     void storeForCurrentNoteFolder();

@@ -1,3 +1,4 @@
+#include <QClipboard>
 #include <utility>
 #include "services/owncloudservice.h"
 #include "services/databaseservice.h"
@@ -24,6 +25,7 @@
 #include <utils/gui.h>
 #include <entities/notefolder.h>
 #include <QTextBrowser>
+#include <entities/cloudconnection.h>
 #include <entities/script.h>
 #include <services/scriptingservice.h>
 #include <QInputDialog>
@@ -110,8 +112,8 @@ SettingsDialog::SettingsDialog(int page, QWidget *parent) :
     _noteNotificationNoneCheckBox->setHidden(true);
     _noteNotificationButtonGroup->addButton(_noteNotificationNoneCheckBox);
     connect(_noteNotificationButtonGroup,
-            SIGNAL(buttonPressed(QAbstractButton *)),
-            this, SLOT(noteNotificationButtonGroupPressed(QAbstractButton *)));
+            SIGNAL(buttonPressed(QAbstractButton*)),
+            this, SLOT(noteNotificationButtonGroupPressed(QAbstractButton*)));
 
     for (int i = 0; i <= 8; i++) {
         setOKLabelData(i, "unknown", SettingsDialog::Unknown);
@@ -243,6 +245,16 @@ SettingsDialog::SettingsDialog(int page, QWidget *parent) :
     connect(ui->tagsPanelSortAlphabeticalRadioButton, SIGNAL(toggled(bool)),
             ui->tagsPanelOrderGroupBox, SLOT(setEnabled(bool)));
 
+    // handle cloud connection storing
+    connect(ui->cloudServerConnectionNameLineEdit, SIGNAL(textChanged(QString)),
+            this, SLOT(storeSelectedCloudConnection()));
+    connect(ui->serverUrlEdit, SIGNAL(textChanged(QString)),
+            this, SLOT(storeSelectedCloudConnection()));
+    connect(ui->userNameEdit, SIGNAL(textChanged(QString)),
+            this, SLOT(storeSelectedCloudConnection()));
+    connect(ui->passwordEdit, SIGNAL(textChanged(QString)),
+            this, SLOT(storeSelectedCloudConnection()));
+
     // setup the search engine combo-box
     initSearchEngineComboBox();
 
@@ -260,6 +272,11 @@ SettingsDialog::SettingsDialog(int page, QWidget *parent) :
     if (!ui->noteListPreviewCheckBox->text().contains("(experimental)")) {
         ui->noteListPreviewCheckBox->setText(
                 ui->noteListPreviewCheckBox->text() + " (experimental)");
+    }
+
+    if (!ui->enableNoteTreeCheckBox->text().contains("work in progress")) {
+        ui->enableNoteTreeCheckBox->setText(
+                    ui->enableNoteTreeCheckBox->text() + " (work in progress)");
     }
 
     ui->webCompannionLabel->setText(ui->webCompannionLabel->text().arg(
@@ -309,12 +326,18 @@ void SettingsDialog::replaceOwnCloudText() const {
             ui->check2Label->text()));
     ui->ownCloudServerAppPageButton->setText(Utils::Misc::replaceOwnCloudText(
             ui->ownCloudServerAppPageButton->text(), true));
+    ui->ownCloudServerAppPageButton->setToolTip(Utils::Misc::replaceOwnCloudText(
+            ui->ownCloudServerAppPageButton->toolTip()));
     ui->connectButton->setText(Utils::Misc::replaceOwnCloudText(
             ui->connectButton->text(), true));
+    ui->connectButton->setToolTip(Utils::Misc::replaceOwnCloudText(
+            ui->connectButton->toolTip()));
     ui->installInfoTextLabel1->setText(Utils::Misc::replaceOwnCloudText(
             ui->installInfoTextLabel1->text()));
     ui->installInfoTextLabel2->setText(Utils::Misc::replaceOwnCloudText(
             ui->installInfoTextLabel2->text()));
+    ui->installInfoTextLabel3->setText(Utils::Misc::replaceOwnCloudText(
+            ui->installInfoTextLabel3->text()));
 
     QTreeWidgetItem *item = ui->settingsTreeWidget->topLevelItem(
             OwnCloudPage);
@@ -545,7 +568,7 @@ void SettingsDialog::storeProxySettings() {
  */
 void SettingsDialog::startConnectionTest() {
     ui->connectionTestLabel->hide();
-    OwnCloudService *ownCloud = OwnCloudService::instance();
+    OwnCloudService *ownCloud = OwnCloudService::instance(true, _selectedCloudConnection.getId());
     ownCloud->settingsConnectionTest(this);
 }
 
@@ -559,23 +582,43 @@ void SettingsDialog::on_connectButton_clicked() {
     startConnectionTest();
 }
 
-void SettingsDialog::storeSettings() {
-    QSettings settings;
-    QString url = QString(ui->serverUrlEdit->text());
+void SettingsDialog::storeSelectedCloudConnection() {
+    QString url = ui->serverUrlEdit->text();
+    bool updateComboBox = false;
 
     // remove trailing "/" of the server url
     if (url.endsWith("/")) {
         url.chop(1);
-        ui->serverUrlEdit->setText(url);
     }
+
+    // store previously selected cloud connection
+    if (_selectedCloudConnection.isFetched()) {
+        // TODO: update combobox if name changed
+        if (_selectedCloudConnection.getName() !=
+            ui->cloudServerConnectionNameLineEdit->text()) {
+            updateComboBox = true;
+        }
+    }
+
+    _selectedCloudConnection.setName(ui->cloudServerConnectionNameLineEdit->text());
+    _selectedCloudConnection.setServerUrl(url);
+    _selectedCloudConnection.setUsername(ui->userNameEdit->text());
+    _selectedCloudConnection.setPassword(ui->passwordEdit->text());
+    _selectedCloudConnection.store();
+
+    if (updateComboBox) {
+        initCloudConnectionComboBox(_selectedCloudConnection.getId());
+    }
+}
+
+void SettingsDialog::storeSettings() {
+    QSettings settings;
+    storeSelectedCloudConnection();
 
     settings.setValue("ownCloud/supportEnabled",
                       ui->ownCloudSupportCheckBox->isChecked());
-    settings.setValue("ownCloud/serverUrl", url);
-    settings.setValue("ownCloud/userName", ui->userNameEdit->text());
-    settings.setValue("ownCloud/password",
-                      CryptoService::instance()->encryptToString(
-                              ui->passwordEdit->text()));
+    settings.setValue("todoCalendarSupport",
+                      ui->todoCalendarSupportCheckBox->isChecked());
     settings.setValue("insertTimeFormat", ui->timeFormatLineEdit->text());
     settings.setValue("disableAutomaticUpdateDialog",
                       ui->disableAutomaticUpdateDialogCheckBox->isChecked());
@@ -640,6 +683,10 @@ void SettingsDialog::storeSettings() {
                       ui->noteTextViewIgnoreCodeFontSizeCheckBox->isChecked());
     settings.setValue("MainWindow/noteTextView.underline",
                       ui->noteTextViewUnderlineCheckBox->isChecked());
+    settings.setValue("MainWindow/noteTextView.useEditorStyles",
+                      ui->noteTextViewUseEditorStylesCheckBox->isChecked());
+    settings.setValue("MainWindow/noteTextView.useInternalExportStyling",
+                      ui->useInternalExportStylingCheckBox->isChecked());
     settings.setValue("Debug/fakeOldVersionNumber",
                       ui->oldVersionNumberCheckBox->isChecked());
     settings.setValue("Debug/fileLogging",
@@ -656,6 +703,10 @@ void SettingsDialog::storeSettings() {
                       ui->vimModeCheckBox->isChecked());
     settings.setValue("Editor/disableCursorBlinking",
                       ui->disableCursorBlinkingCheckBox->isChecked());
+    settings.setValue("Editor/useTabIndent",
+                      ui->useTabIndentCheckBox->isChecked());
+    settings.setValue("Editor/indentSize",
+                      ui->indentSizeSpinBox->value());
 
     if (!settings.value("appMetrics/disableTracking").toBool() &&
             ui->appMetricsCheckBox->isChecked()) {
@@ -729,7 +780,8 @@ void SettingsDialog::storeSettings() {
     }
 
     settings.setValue("ownCloud/todoCalendarBackend", todoCalendarBackend);
-
+    settings.setValue("ownCloud/todoCalendarCloudConnectionId",
+                      ui->calendarCloudConnectionComboBox->currentData().toInt());
     settings.setValue("ownCloud/todoCalendarCalDAVServerUrl",
                       ui->calDavServerUrlEdit->text());
     settings.setValue("ownCloud/todoCalendarCalDAVUsername",
@@ -809,6 +861,7 @@ void SettingsDialog::storeSettings() {
     settings.setValue("automaticNoteFolderDatabaseClosing",
                       ui->automaticNoteFolderDatabaseClosingCheckBox->
                               isChecked());
+    settings.setValue("legacyLinking", ui->legacyLinkingCheckBox->isChecked());
 
     settings.setValue("webSocketServerService/port",
                       ui->webSocketServerServicePortSpinBox->value());
@@ -851,6 +904,8 @@ void SettingsDialog::storePanelSettings() {
                       ui->disableSavedSearchesAutoCompletionCheckBox
                       ->isChecked());
 
+    settings.setValue("showMatches", ui->showMatchesCheckBox->isChecked());
+
     settings.setValue("noteSubfoldersPanelShowFullPath",
                       ui->noteSubfoldersPanelShowFullPathCheckBox->isChecked());
 
@@ -886,6 +941,8 @@ void SettingsDialog::storePanelSettings() {
     // Navigation Panel Options
     settings.setValue("navigationPanelHideSearch",
             ui->navigationPanelHideSearchCheckBox->isChecked());
+
+    settings.setValue("enableNoteTree", ui->enableNoteTreeCheckBox->isChecked());
 }
 
 /**
@@ -908,10 +965,12 @@ void SettingsDialog::readSettings() {
     ui->ownCloudSupportCheckBox->setChecked(
             OwnCloudService::isOwnCloudSupportEnabled());
     on_ownCloudSupportCheckBox_toggled();
-    ui->serverUrlEdit->setText(settings.value("ownCloud/serverUrl").toString());
-    ui->userNameEdit->setText(settings.value("ownCloud/userName").toString());
-    ui->passwordEdit->setText(CryptoService::instance()->decryptToString(
-            settings.value("ownCloud/password").toString()));
+    ui->todoCalendarSupportCheckBox->setChecked(
+                OwnCloudService::isTodoCalendarSupportEnabled());
+    on_todoCalendarSupportCheckBox_toggled();
+    ui->serverUrlEdit->setText(_selectedCloudConnection.getServerUrl());
+    ui->userNameEdit->setText(_selectedCloudConnection.getUsername());
+    ui->passwordEdit->setText(_selectedCloudConnection.getPassword());
     ui->timeFormatLineEdit->setText(
             settings.value("insertTimeFormat").toString());
 
@@ -963,6 +1022,10 @@ void SettingsDialog::readSettings() {
             settings.value("MainWindow/noteTextView.ignoreCodeFontSize", true).toBool());
     ui->noteTextViewUnderlineCheckBox->setChecked(
             settings.value("MainWindow/noteTextView.underline", true).toBool());
+    ui->noteTextViewUseEditorStylesCheckBox->setChecked(
+                settings.value("MainWindow/noteTextView.useEditorStyles", true).toBool());
+    ui->useInternalExportStylingCheckBox->setChecked(
+                Utils::Misc::useInternalExportStylingForPreview());
     ui->oldVersionNumberCheckBox->setChecked(
             settings.value("Debug/fakeOldVersionNumber").toBool());
     ui->fileLoggingCheckBox->setChecked(
@@ -979,6 +1042,8 @@ void SettingsDialog::readSettings() {
     ui->vimModeCheckBox->setChecked(settings.value("Editor/vimMode").toBool());
     ui->disableCursorBlinkingCheckBox->setChecked(settings.value(
             "Editor/disableCursorBlinking").toBool());
+    ui->useTabIndentCheckBox->setChecked(settings.value("Editor/useTabIndent").toBool());
+    ui->indentSizeSpinBox->setValue(Utils::Misc::indentSize());
     ui->markdownHighlightingCheckBox->setChecked(
             settings.value("markdownHighlightingEnabled", true).toBool());
     ui->fullyHighlightedBlockquotesCheckBox->setChecked(
@@ -994,10 +1059,10 @@ void SettingsDialog::readSettings() {
 
     const QSignalBlocker overrideInterfaceFontSizeGroupBoxBlocker(
             ui->overrideInterfaceFontSizeGroupBox);
-    Q_UNUSED(overrideInterfaceFontSizeGroupBoxBlocker);
+    Q_UNUSED(overrideInterfaceFontSizeGroupBoxBlocker)
     const QSignalBlocker interfaceFontSizeSpinBoxBlocker(
             ui->interfaceFontSizeSpinBox);
-    Q_UNUSED(interfaceFontSizeSpinBoxBlocker);
+    Q_UNUSED(interfaceFontSizeSpinBoxBlocker)
     ui->overrideInterfaceFontSizeGroupBox->setChecked(
             settings.value("overrideInterfaceFontSize", false).toBool());
     ui->interfaceFontSizeSpinBox->setValue(
@@ -1025,6 +1090,8 @@ void SettingsDialog::readSettings() {
     ui->darkModeColorsCheckBox->setChecked(settings.value(
             "darkModeColors").toBool());
 
+    const QSignalBlocker darkModeCheckBoxBlocker(ui->darkModeCheckBox);
+    Q_UNUSED(darkModeCheckBoxBlocker)
     ui->darkModeCheckBox->setChecked(settings.value(
             "darkMode").toBool());
 
@@ -1040,7 +1107,7 @@ void SettingsDialog::readSettings() {
             "systemIconTheme").toBool());
 
     // toggle the dark mode colors check box with the dark mode checkbox
-    on_darkModeCheckBox_toggled();
+    handleDarkModeCheckBoxToggled();
 
     noteTextEditFont.fromString(
             settings.value("MainWindow/noteTextEdit.font").toString());
@@ -1055,7 +1122,7 @@ void SettingsDialog::readSettings() {
             .toString();
 
     // store the current font if there isn't any set yet
-    if (fontString == "") {
+    if (fontString.isEmpty()) {
         auto *textEdit = new QTextEdit();
         fontString = textEdit->font().toString();
         settings.setValue("MainWindow/noteTextView.font", fontString);
@@ -1071,7 +1138,7 @@ void SettingsDialog::readSettings() {
             .toString();
 
     // set a default note text view code font
-    if (fontString == "") {
+    if (fontString.isEmpty()) {
         // reset the note text view code font
         on_noteTextViewCodeResetButton_clicked();
 
@@ -1196,6 +1263,8 @@ void SettingsDialog::readSettings() {
     // load the settings for the interface style combo box
     loadInterfaceStyleComboBox();
 
+    initCloudConnectionComboBox();
+
     // set the cursor width spinbox value
     ui->cursorWidthSpinBox->setValue(
             settings.value("cursorWidth", 1).toInt());
@@ -1212,6 +1281,7 @@ void SettingsDialog::readSettings() {
 
     ui->automaticNoteFolderDatabaseClosingCheckBox->setChecked(
             Utils::Misc::doAutomaticNoteFolderDatabaseClosing());
+    ui->legacyLinkingCheckBox->setChecked(settings.value("legacyLinking").toBool());
 
     ui->webSocketServerServicePortSpinBox->setValue(
             WebSocketServerService::getSettingsPort());
@@ -1308,6 +1378,9 @@ void SettingsDialog::readPanelSettings() {
     ui->disableSavedSearchesAutoCompletionCheckBox->setChecked(
             settings.value("disableSavedSearchesAutoCompletion").toBool());
 
+    ui->showMatchesCheckBox->setChecked(
+            settings.value("showMatches", true).toBool());
+
     if (settings.value(
             "noteSubfoldersPanelShowRootFolderName", true).toBool()) {
         ui->noteSubfoldersPanelShowRootFolderNameCheckBox->setChecked(true);
@@ -1359,6 +1432,8 @@ void SettingsDialog::readPanelSettings() {
     // Navigation Panel Options
     ui->navigationPanelHideSearchCheckBox->setChecked(settings.value(
             "navigationPanelHideSearch").toBool());
+
+    ui->enableNoteTreeCheckBox->setChecked(Utils::Misc::isEnableNoteTree());
 }
 
 /**
@@ -1382,7 +1457,6 @@ void SettingsDialog::loadShortcutSettings() {
                                          Qt::darkGray :
                                          palette.color(QPalette::Mid);
 
-    _keyWidgetSignalMapper = new QSignalMapper(this);
     QList<QMenu*> menus = mainWindow->menuList();
     ui->shortcutSearchLineEdit->clear();
     ui->shortcutTreeWidget->clear();
@@ -1431,13 +1505,9 @@ void SettingsDialog::loadShortcutSettings() {
                     keyWidget->setDefaultKeySequence(action->data().toString());
                     keyWidget->setKeySequence(action->shortcut());
 
-                    QObject::connect(keyWidget,
-                                     SIGNAL(keySequenceAccepted(QKeySequence)),
-                                     _keyWidgetSignalMapper, SLOT(map()));
-
-                    // add a parameter to the signal mapper
-                    _keyWidgetSignalMapper->setMapping(
-                            keyWidget, action->objectName());
+                    connect(keyWidget, &QKeySequenceWidget::keySequenceAccepted, this, [this, action](){
+                        keySequenceEvent(action->objectName());
+                    });
 
                     ui->shortcutTreeWidget->setItemWidget(
                             actionItem, 1, keyWidget);
@@ -1452,11 +1522,6 @@ void SettingsDialog::loadShortcutSettings() {
                 menuItem->setExpanded(true);
             }
     }
-
-    QObject::connect(_keyWidgetSignalMapper,
-                     SIGNAL(mapped(QString)),
-                     this,
-                     SLOT(keySequenceEvent(QString)));
 
     ui->shortcutTreeWidget->resizeColumnToContents(0);
 }
@@ -1603,7 +1668,7 @@ void SettingsDialog::selectListWidgetValue(QListWidget* listWidget,
                 const QSignalBlocker blocker(listWidget);
                 Q_UNUSED(blocker)
 
-                listWidget->setItemSelected(item, true);
+                item->setSelected(true);
                 break;
             }
         }
@@ -1639,7 +1704,7 @@ QString SettingsDialog::getSelectedListWidgetValue(QListWidget* listWidget) {
         return items.first()->whatsThis();
     }
 
-    return "";
+    return QString();
 }
 
 void SettingsDialog::setFontLabel(QLineEdit *label, QFont font) {
@@ -1685,7 +1750,7 @@ void SettingsDialog::connectTestCallback(bool appIsValid,
         ui->connectionTestLabel->setText(
                 tr("The connection was made successfully!\n"
                    "Server version: %1\nQOwnNotesAPI version: %2")
-                    .arg(serverVersion).arg(appVersion));
+                    .arg(serverVersion, appVersion));
     } else {
         auto connectionErrorMessage = connectionErrorMessage_;
         // hide password
@@ -1695,9 +1760,10 @@ void SettingsDialog::connectTestCallback(bool appIsValid,
 
         ui->connectionTestLabel->setStyleSheet("color: red;");
         ui->connectionTestLabel->setText(
-                tr("There was an error connecting to the ownCloud Server!\n"
+                Utils::Misc::replaceOwnCloudText(
+                        tr("There was an error connecting to the ownCloud Server!\n"
                         "You also need to have the QOwnNotesAPI app installed "
-                        "and enabled!\n\nConnection error message: ") +
+                        "and enabled!\n\nConnection error message: ")) +
                 connectionErrorMessage);
     }
 
@@ -1773,6 +1839,10 @@ void SettingsDialog::refreshTodoCalendarList(QList<CalDAVCalendarData> items,
     // clear the tasks calendar list
     ui->todoCalendarListWidget->clear();
 
+    if (!OwnCloudService::isTodoCalendarSupportEnabled()) {
+        return;
+    }
+
     QSettings settings;
     QStringList todoCalendarEnabledList = settings.value(
             "ownCloud/todoCalendarEnabledList").toStringList();
@@ -1788,7 +1858,7 @@ void SettingsDialog::refreshTodoCalendarList(QList<CalDAVCalendarData> items,
 
     QString serverUrlText(serverUrl.toString());
     QString serverUrlPath = serverUrl.path();
-    if (serverUrlPath != "") {
+    if (!serverUrlPath.isEmpty()) {
         // remove the path from the end because we already got it in the url
         serverUrlText.replace(QRegularExpression(
                 QRegularExpression::escape(serverUrlPath) + "$"), "");
@@ -1886,7 +1956,7 @@ void SettingsDialog::on_noteTextEditCodeButton_clicked()
     bool ok;
     QFont font = Utils::Gui::fontDialogGetFont(
             &ok, noteTextEditCodeFont, this,
-            "", QFontDialog::MonospacedFonts);
+            QString(), QFontDialog::MonospacedFonts);
     if (ok) {
         noteTextEditCodeFont = font;
         setFontLabel(ui->noteTextEditCodeFontLabel, noteTextEditCodeFont);
@@ -1913,7 +1983,7 @@ void SettingsDialog::on_noteTextViewCodeButton_clicked()
     bool ok;
     QFont font = Utils::Gui::fontDialogGetFont(
             &ok, noteTextViewCodeFont, this,
-            "", QFontDialog::MonospacedFonts);
+            QString(), QFontDialog::MonospacedFonts);
     if (ok) {
         noteTextViewCodeFont = font;
         setFontLabel(ui->noteTextViewCodeFontLabel, noteTextViewCodeFont);
@@ -1932,7 +2002,11 @@ void SettingsDialog::on_reloadCalendarListButton_clicked() {
  * Reloads the calendar list
  */
 void SettingsDialog::reloadCalendarList() {
-    OwnCloudService *ownCloud = OwnCloudService::instance();
+    if (!OwnCloudService::isTodoCalendarSupportEnabled()) {
+        return;
+    }
+
+    OwnCloudService *ownCloud = OwnCloudService::instance(true);
     ownCloud->settingsGetCalendarList(this);
 }
 
@@ -1956,7 +2030,7 @@ void SettingsDialog::on_reinitializeDatabaseButton_clicked() {
             tr("Do you really want to clear the local database? "
                        "This will also remove your configured note "
                        "folders and your cached todo items!"),
-            tr("Clear &database"), tr("&Cancel"), QString::null,
+            tr("Clear &database"), tr("&Cancel"), QString(),
             1) == 0) {
         DatabaseService::reinitializeDiskDatabase();
         NoteFolder::migrateToNoteFolders();
@@ -1971,6 +2045,11 @@ void SettingsDialog::on_reinitializeDatabaseButton_clicked() {
  * @brief Stores the debug information to a markdown file
  */
 void SettingsDialog::on_saveDebugInfoButton_clicked() {
+    Utils::Gui::information(this, tr("Debug information"),
+                             tr("Please don't use this in the issue tracker, "
+                                "copy the debug information text directly into the issue."),
+                            "debug-save");
+
     FileDialog dialog("SaveDebugInfo");
     dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -2025,7 +2104,7 @@ void SettingsDialog::on_clearAppDataAndExitButton_clicked() {
             tr("Do you really want to clear all settings, remove the "
                        "database and exit QOwnNotes?\n\n"
                        "Your notes will stay intact!"),
-            tr("Clear and &exit"), tr("&Cancel"), QString::null,
+            tr("Clear and &exit"), tr("&Cancel"), QString(),
             1) == 0) {
         QSettings settings;
         settings.clear();
@@ -2159,8 +2238,6 @@ void SettingsDialog::on_ignoreSSLErrorsCheckBox_toggled(bool checked) {
  */
 void SettingsDialog::setupNoteFolderPage() {
     // hide the owncloud server settings
-    ui->noteFolderOwnCloudServerLabel->setVisible(false);
-    ui->noteFolderOwnCloudServerComboBox->setVisible(false);
     ui->noteFolderEditFrame->setEnabled(NoteFolder::countAll() > 0);
     setNoteFolderRemotePathTreeWidgetFrameVisibility(false);
 
@@ -2194,9 +2271,8 @@ void SettingsDialog::setupNoteFolderPage() {
 }
 
 void SettingsDialog::on_noteFolderListWidget_currentItemChanged(
-        QListWidgetItem *current, QListWidgetItem *previous)
-{
-    Q_UNUSED(previous);
+        QListWidgetItem *current, QListWidgetItem *previous) {
+    Q_UNUSED(previous)
 
     setNoteFolderRemotePathTreeWidgetFrameVisibility(false);
 
@@ -2212,6 +2288,8 @@ void SettingsDialog::on_noteFolderListWidget_currentItemChanged(
                 _selectedNoteFolder.isShowSubfolders());
         ui->noteFolderGitCommitCheckBox->setChecked(
                 _selectedNoteFolder.isUseGit());
+        Utils::Gui::setComboBoxIndexByUserData(ui->noteFolderCloudConnectionComboBox,
+                                               _selectedNoteFolder.getCloudConnectionId());
 
         const QSignalBlocker blocker(ui->noteFolderActiveCheckBox);
         Q_UNUSED(blocker)
@@ -2220,20 +2298,20 @@ void SettingsDialog::on_noteFolderListWidget_currentItemChanged(
     }
 }
 
-void SettingsDialog::on_noteFolderAddButton_clicked()
-{
+void SettingsDialog::on_noteFolderAddButton_clicked() {
+    const int cloudConnectionId = _selectedNoteFolder.getCloudConnectionId();
+    const QString currentPath = _selectedNoteFolder.getLocalPath();
+
     _selectedNoteFolder = NoteFolder();
     _selectedNoteFolder.setName(tr("new folder"));
-    _selectedNoteFolder.setLocalPath(
-            Utils::Misc::defaultNotesPath());
+    _selectedNoteFolder.setLocalPath(currentPath);
     _selectedNoteFolder.setPriority(ui->noteFolderListWidget->count());
-    _selectedNoteFolder.setOwnCloudServerId(1);
+    _selectedNoteFolder.setCloudConnectionId(cloudConnectionId);
     _selectedNoteFolder.suggestRemotePath();
     _selectedNoteFolder.store();
 
     if (_selectedNoteFolder.isFetched()) {
-        QListWidgetItem *item =
-                new QListWidgetItem(_selectedNoteFolder.getName());
+        auto *item = new QListWidgetItem(_selectedNoteFolder.getName());
         item->setData(Qt::UserRole, _selectedNoteFolder.getId());
         ui->noteFolderListWidget->addItem(item);
 
@@ -2343,7 +2421,7 @@ void SettingsDialog::on_noteFolderLocalPathButton_clicked()
 
     QDir d = QDir(dir);
 
-    if (d.exists() && (dir != "")) {
+    if (d.exists() && (!dir.isEmpty())) {
         ui->noteFolderLocalPathLineEdit->setText(dir);
         _selectedNoteFolder.setLocalPath(dir);
         _selectedNoteFolder.store();
@@ -2355,7 +2433,7 @@ void SettingsDialog::on_noteFolderLocalPathButton_clicked()
  */
 void SettingsDialog::on_noteFolderActiveCheckBox_stateChanged(int arg1)
 {
-    Q_UNUSED(arg1);
+    Q_UNUSED(arg1)
 
     if (!ui->noteFolderActiveCheckBox->isChecked()) {
         const QSignalBlocker blocker(ui->noteFolderActiveCheckBox);
@@ -2363,6 +2441,7 @@ void SettingsDialog::on_noteFolderActiveCheckBox_stateChanged(int arg1)
         ui->noteFolderActiveCheckBox->setChecked(true);
     } else {
         _selectedNoteFolder.setAsCurrent();
+        MainWindow::instance()->resetBrokenTagNotesLinkFlag();
     }
 }
 
@@ -2376,7 +2455,7 @@ void SettingsDialog::on_noteFolderRemotePathButton_clicked()
     noteFolderRemotePathTreeStatusBar->showMessage(
             tr("Loading folders from server"));
 
-    OwnCloudService *ownCloud = OwnCloudService::instance();
+    OwnCloudService *ownCloud = OwnCloudService::instance(true, _selectedNoteFolder.getCloudConnectionId());
     ownCloud->settingsGetFileList(this, "");
 }
 
@@ -2456,15 +2535,21 @@ QTreeWidgetItem *SettingsDialog::findNoteFolderRemotePathTreeWidgetItem(
 
 void SettingsDialog::on_noteFolderRemotePathTreeWidget_currentItemChanged(
         QTreeWidgetItem *current, QTreeWidgetItem *previous) {
-    Q_UNUSED(previous);
+    Q_UNUSED(previous)
 
     QString folderName =
             generatePathFromCurrentNoteFolderRemotePathItem(current);
     noteFolderRemotePathTreeStatusBar->showMessage(
             tr("Loading folders in '%1' from server").arg(current->text(0)));
 
-    OwnCloudService *ownCloud = OwnCloudService::instance();
+    OwnCloudService *ownCloud = OwnCloudService::instance(true);
     ownCloud->settingsGetFileList(this, folderName);
+}
+
+void SettingsDialog::on_noteFolderCloudConnectionComboBox_currentIndexChanged(int index) {
+    Q_UNUSED(index)
+    _selectedNoteFolder.setCloudConnectionId(ui->noteFolderCloudConnectionComboBox->currentData().toInt());
+    _selectedNoteFolder.store();
 }
 
 void SettingsDialog::on_useOwnCloudPathButton_clicked() {
@@ -2486,13 +2571,13 @@ void SettingsDialog::on_useOwnCloudPathButton_clicked() {
 QString SettingsDialog::generatePathFromCurrentNoteFolderRemotePathItem(
         QTreeWidgetItem *item) {
     if (item == nullptr) {
-        return "";
+        return QString();
     }
 
     QTreeWidgetItem *parent = item->parent();
     if (parent != nullptr) {
         return generatePathFromCurrentNoteFolderRemotePathItem(parent)
-               + "/" + item->text(0);
+               + QStringLiteral("/") + item->text(0);
     }
 
     return item->text(0);
@@ -2502,12 +2587,10 @@ void SettingsDialog::setNoteFolderRemotePathTreeWidgetFrameVisibility(
         bool visible) {
     ui->noteFolderRemotePathTreeWidgetFrame->setVisible(visible);
     ui->noteFolderVerticalSpacerFrame->setVisible(!visible);
-    if (!visible) {
-        const QSignalBlocker blocker(ui->noteFolderRemotePathTreeWidget);
-        Q_UNUSED(blocker)
 
-        ui->noteFolderRemotePathTreeWidget->clear();
-    }
+    const QSignalBlocker blocker(ui->noteFolderRemotePathTreeWidget);
+    Q_UNUSED(blocker)
+    ui->noteFolderRemotePathTreeWidget->clear();
 }
 
 /**
@@ -2572,8 +2655,7 @@ void SettingsDialog::reloadScriptList() const {
     // populate the script list
     if (scriptsCount > 0) {
         Q_FOREACH(Script script, scripts) {
-                QListWidgetItem *item =
-                        new QListWidgetItem(script.getName());
+                auto *item = new QListWidgetItem(script.getName());
                 item->setData(Qt::UserRole,
                               script.getId());
                 item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
@@ -2603,8 +2685,7 @@ void SettingsDialog::addLocalScript() {
     _selectedScript.store();
 
     if (_selectedScript.isFetched()) {
-        QListWidgetItem *item =
-                new QListWidgetItem(_selectedScript.getName());
+        auto *item = new QListWidgetItem(_selectedScript.getName());
         item->setData(Qt::UserRole, _selectedScript.getId());
         item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
         item->setCheckState(Qt::Checked);
@@ -2697,7 +2778,7 @@ void SettingsDialog::on_scriptPathButton_clicked() {
 
         QFile file(path);
 
-        if (file.exists() && (path != "")) {
+        if (file.exists() && (!path.isEmpty())) {
             QString scriptName = _selectedScript.getName();
 
             // set the script name from the file name if none was set yet
@@ -2734,8 +2815,8 @@ void SettingsDialog::on_scriptPathButton_clicked() {
  */
 void SettingsDialog::on_scriptListWidget_currentItemChanged(
         QListWidgetItem *current, QListWidgetItem *previous) {
-    Q_UNUSED(current);
-    Q_UNUSED(previous);
+    Q_UNUSED(current)
+    Q_UNUSED(previous)
 
     reloadCurrentScriptPage();
 }
@@ -2807,7 +2888,7 @@ void SettingsDialog::reloadCurrentScriptPage() {
                             new ScriptSettingWidget(this, _selectedScript,
                                                     varMap);
 
-                    QString name = varMap["name"].toString();
+//                    QString name = varMap["name"].toString();
 
                     ui->scriptSettingsFrame->layout()->addWidget(
                             scriptSettingWidget);
@@ -2974,18 +3055,30 @@ void SettingsDialog::on_defaultNoteFileExtensionListWidget_currentRowChanged(
     ui->removeCustomNoteFileExtensionButton->setEnabled(currentRow > 1);
 }
 
+void SettingsDialog::on_darkModeCheckBox_toggled() {
+    handleDarkModeCheckBoxToggled(true, true);
+}
+
 /**
  * Toggles the dark mode colors check box with the dark mode checkbox
  */
-void SettingsDialog::on_darkModeCheckBox_toggled() {
+void SettingsDialog::handleDarkModeCheckBoxToggled(bool updateCheckBoxes, bool updateSchema) {
     bool checked = ui->darkModeCheckBox->isChecked();
 
     ui->darkModeColorsCheckBox->setEnabled(!checked);
     ui->darkModeInfoLabel->setVisible(checked);
 
-    if (checked) {
+    if (updateCheckBoxes && checked) {
         ui->darkModeColorsCheckBox->setChecked(true);
         ui->darkModeIconThemeCheckBox->setChecked(true);
+    }
+
+    if (updateSchema) {
+        if (checked) {
+            ui->editorFontColorWidget->selectFirstDarkSchema();
+        } else {
+            ui->editorFontColorWidget->selectFirstLightSchema();
+        }
     }
 }
 
@@ -3004,7 +3097,7 @@ void SettingsDialog::on_noteFolderShowSubfoldersCheckBox_toggled(bool checked) {
  * Toggles the line breaks in the debug output
  */
 void SettingsDialog::on_gitHubLineBreaksCheckBox_toggled(bool checked) {
-    Q_UNUSED(checked);
+    Q_UNUSED(checked)
     outputSettings();
 }
 
@@ -3017,7 +3110,7 @@ void SettingsDialog::on_shortcutSearchLineEdit_textChanged(
         const QString &arg1) {
     // get all items
     QList<QTreeWidgetItem*> allItems = ui->shortcutTreeWidget->
-            findItems("", Qt::MatchContains | Qt::MatchRecursive);
+            findItems(QString(), Qt::MatchContains | Qt::MatchRecursive);
 
     // search text if at least one character was entered
     if (arg1.count() >= 1) {
@@ -3061,7 +3154,7 @@ void SettingsDialog::on_shortcutSearchLineEdit_textChanged(
 
 void SettingsDialog::on_settingsTreeWidget_currentItemChanged(
         QTreeWidgetItem *current, QTreeWidgetItem *previous) {
-    Q_UNUSED(previous);
+    Q_UNUSED(previous)
     const int currentIndex = current->whatsThis(0).toInt();
 
     ui->settingsStackedWidget->setCurrentIndex(currentIndex);
@@ -3147,7 +3240,7 @@ void SettingsDialog::initMainSplitter() {
 }
 
 void SettingsDialog::closeEvent(QCloseEvent *event) {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     // make sure no settings get written after after we got the
     // clearAppDataAndExit call
@@ -3186,6 +3279,7 @@ void SettingsDialog::on_calDavCalendarRadioButton_toggled(bool checked) {
     }
 
     ui->calDavCalendarGroupBox->setVisible(checked);
+    ui->calendarCloudConnectionGroupBox->setHidden(checked);
 }
 
 void SettingsDialog::on_calendarPlusRadioButton_toggled(bool checked) {
@@ -3284,7 +3378,7 @@ void SettingsDialog::on_resetToolbarPushButton_clicked() {
                        "The application will be closed in the process, the "
                        "default toolbars will be restored when you start it "
                        "again."),
-            tr("Reset and &exit"), tr("&Cancel"), QString::null,
+            tr("Reset and &exit"), tr("&Cancel"), "",
             1) == 0) {
         QSettings settings;
 
@@ -3314,7 +3408,7 @@ void SettingsDialog::on_imageScaleDownCheckBox_toggled(bool checked) {
  */
 void SettingsDialog::on_searchLineEdit_textChanged(const QString &arg1) {
     QList<QTreeWidgetItem*> allItems = ui->settingsTreeWidget->
-            findItems("", Qt::MatchContains | Qt::MatchRecursive);
+            findItems(QString(), Qt::MatchContains | Qt::MatchRecursive);
 
     // search text if at least one character was entered
     if (arg1.count() >= 1) {
@@ -3512,13 +3606,24 @@ void SettingsDialog::on_setGitPathToolButton_clicked() {
 void SettingsDialog::searchScriptInRepository(bool checkForUpdates) {
     auto *dialog = new ScriptRepositoryDialog(this, checkForUpdates);
     dialog->exec();
+    Script lastInstalledScript = dialog->getLastInstalledScript();
     delete(dialog);
 
     // reload the script list
     reloadScriptList();
 
+    // select the last installed script
+    if (lastInstalledScript.isFetched()) {
+        auto item = Utils::Gui::getListWidgetItemWithUserData(
+                ui->scriptListWidget, lastInstalledScript.getId());
+        ui->scriptListWidget->setCurrentItem(item);
+    }
+
     // reload the scripting engine
     ScriptingService::instance()->reloadEngine();
+
+    // reload page so the script settings will be viewed
+    reloadCurrentScriptPage();
 }
 
 /**
@@ -3535,7 +3640,7 @@ void SettingsDialog::checkForScriptUpdates() {
  * @param item
  */
 void SettingsDialog::on_scriptListWidget_itemChanged(QListWidgetItem *item) {
-    Q_UNUSED(item);
+    Q_UNUSED(item)
 
     storeScriptListEnabledState();
     reloadCurrentScriptPage();
@@ -3744,6 +3849,7 @@ void SettingsDialog::on_enableSocketServerCheckBox_toggled() {
 void SettingsDialog::on_internalIconThemeCheckBox_toggled(bool checked) {
     if (checked) {
         const QSignalBlocker blocker(ui->systemIconThemeCheckBox);
+        Q_UNUSED(blocker)
         ui->systemIconThemeCheckBox->setChecked(false);
     }
 
@@ -3764,4 +3870,116 @@ void SettingsDialog::on_webSocketTokenButton_clicked() {
     auto webSocketTokenDialog = new WebSocketTokenDialog();
     webSocketTokenDialog->exec();
     delete(webSocketTokenDialog);
+}
+
+void SettingsDialog::initCloudConnectionComboBox(int selectedId) {
+    const QSignalBlocker blocker(ui->cloudConnectionComboBox);
+    Q_UNUSED(blocker)
+    const QSignalBlocker blocker2(ui->noteFolderCloudConnectionComboBox);
+    Q_UNUSED(blocker2)
+    const QSignalBlocker blocker3(ui->calendarCloudConnectionComboBox);
+    Q_UNUSED(blocker3)
+
+    ui->cloudConnectionComboBox->clear();
+    ui->noteFolderCloudConnectionComboBox->clear();
+    ui->calendarCloudConnectionComboBox->clear();
+    int index = 0;
+    int currentIndex = 0;
+    if (selectedId == -1) {
+        selectedId = NoteFolder::currentNoteFolder().getCloudConnectionId();
+    }
+
+    Q_FOREACH(CloudConnection cloudConnection, CloudConnection::fetchAll()) {
+        ui->cloudConnectionComboBox->addItem(cloudConnection.getName(), cloudConnection.getId());
+        ui->noteFolderCloudConnectionComboBox->addItem(cloudConnection.getName(), cloudConnection.getId());
+        ui->calendarCloudConnectionComboBox->addItem(cloudConnection.getName(), cloudConnection.getId());
+
+        if (cloudConnection.getId() == selectedId) {
+            currentIndex = index;
+        }
+
+        index++;
+    }
+
+    ui->cloudConnectionComboBox->setCurrentIndex(currentIndex);
+    on_cloudConnectionComboBox_currentIndexChanged(currentIndex);
+
+    Utils::Gui::setComboBoxIndexByUserData(ui->noteFolderCloudConnectionComboBox,
+                                           _selectedNoteFolder.getCloudConnectionId());
+    Utils::Gui::setComboBoxIndexByUserData(ui->calendarCloudConnectionComboBox,
+                                           CloudConnection::currentTodoCalendarCloudConnection().getId());
+}
+
+void SettingsDialog::on_cloudConnectionComboBox_currentIndexChanged(int index) {
+    Q_UNUSED(index)
+    const int id = ui->cloudConnectionComboBox->currentData().toInt();
+    _selectedCloudConnection = CloudConnection::fetch(id);
+
+    const QSignalBlocker blocker(ui->cloudServerConnectionNameLineEdit);
+    Q_UNUSED(blocker)
+    const QSignalBlocker blocker2(ui->serverUrlEdit);
+    Q_UNUSED(blocker2)
+    const QSignalBlocker blocker3(ui->userNameEdit);
+    Q_UNUSED(blocker3)
+    const QSignalBlocker blocker4(ui->passwordEdit);
+    Q_UNUSED(blocker4)
+
+    ui->cloudServerConnectionNameLineEdit->setText(_selectedCloudConnection.getName());
+    ui->serverUrlEdit->setText(_selectedCloudConnection.getServerUrl());
+    ui->userNameEdit->setText(_selectedCloudConnection.getUsername());
+    ui->passwordEdit->setText(_selectedCloudConnection.getPassword());
+    ui->cloudConnectionRemoveButton->setDisabled(CloudConnection::fetchUsedCloudConnectionsIds().contains(id));
+}
+
+void SettingsDialog::on_cloudConnectionAddButton_clicked() {
+    // create a new cloud connection
+    CloudConnection cloudConnection;
+    cloudConnection.setName(QObject::tr("New connection"));
+    cloudConnection.setServerUrl(_selectedCloudConnection.getServerUrl());
+    cloudConnection.setUsername(_selectedCloudConnection.getUsername());
+    cloudConnection.setPassword(_selectedCloudConnection.getPassword());
+    cloudConnection.store();
+
+    initCloudConnectionComboBox(cloudConnection.getId());
+}
+
+void SettingsDialog::on_cloudConnectionRemoveButton_clicked() {
+    if (CloudConnection::countAll() <= 1) {
+        return;
+    }
+
+    // check if cloud connection is in use
+    if (CloudConnection::fetchUsedCloudConnectionsIds().contains(_selectedCloudConnection.getId())) {
+        ui->cloudConnectionRemoveButton->setDisabled(true);
+        return;
+    }
+
+    _selectedCloudConnection.remove();
+    initCloudConnectionComboBox();
+}
+
+void SettingsDialog::on_calendarCloudConnectionComboBox_currentIndexChanged(int index) {
+    Q_UNUSED(index)
+    QSettings settings;
+    settings.setValue("ownCloud/todoCalendarCloudConnectionId",
+                      ui->calendarCloudConnectionComboBox->currentData().toInt());
+    on_reloadCalendarListButton_clicked();
+}
+
+void SettingsDialog::on_todoCalendarSupportCheckBox_toggled() {
+    bool checked = ui->todoCalendarSupportCheckBox->isChecked();
+    ui->calendarBackendGroupBox->setEnabled(checked);
+    ui->calDavCalendarGroupBox->setEnabled(checked);
+    ui->calendarCloudConnectionGroupBox->setEnabled(checked);
+    ui->todoCalendarGroupBox->setEnabled(checked);
+    ui->todoListSettingsGroupBox->setEnabled(checked);
+}
+
+void SettingsDialog::on_copyDebugInfoButton_clicked() {
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(ui->debugInfoTextEdit->toPlainText());
+
+    Utils::Gui::information(this, tr("Debug information"),
+                             tr("The debug information was copied to the clipboard."),
+                            "debug-clipboard");
 }

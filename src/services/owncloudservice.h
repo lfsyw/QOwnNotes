@@ -1,5 +1,4 @@
-#ifndef OWNCLOUDSERVICE_H
-#define OWNCLOUDSERVICE_H
+#pragma once
 
 #include <QNetworkAccessManager>
 #include <QAuthenticator>
@@ -39,7 +38,7 @@ public:
     };
     Q_ENUMS(CalendarBackend)
 
-    explicit OwnCloudService(QObject *parent = 0);
+    explicit OwnCloudService(int cloudConnectionId = -1, QObject *parent = nullptr);
 
     void settingsConnectionTest(SettingsDialog *dialog);
 
@@ -52,7 +51,7 @@ public:
 
     void settingsGetCalendarList(SettingsDialog *dialog);
 
-    void todoGetTodoList(const QString& calendarName, TodoDialog *dialog);
+    void todoGetTodoList(const QString &calendarName, TodoDialog *dialog);
 
     void postCalendarItemToServer(CalendarItem calendarItem,
                                   TodoDialog *dialog);
@@ -61,21 +60,25 @@ public:
 
     void removeCalendarItem(CalendarItem calItem, TodoDialog *dialog);
 
-    void settingsGetFileList(SettingsDialog *dialog, const QString &path);
+    void settingsGetFileList(SettingsDialog *dialog, QString path);
 
-    static bool hasOwnCloudSettings(bool withEnabledCheck = true);
+    static bool hasOwnCloudSettings(bool withEnabledCheck = true, bool ignoreTableWarning = false);
 
-    void shareNote(Note note, ShareDialog *dialog);
+    void shareNote(const Note &note, ShareDialog *dialog);
 
-    void fetchShares(const QString& path = "");
+    void setPermissionsOnSharedNote(const Note &note, ShareDialog *dialog);
+
+    void fetchShares(const QString& path = QString());
 
     void fetchBookmarks();
 
-    void removeNoteShare(Note note, ShareDialog *dialog);
+    void removeNoteShare(const Note &note, ShareDialog *dialog);
 
-    static OwnCloudService *instance();
+    static OwnCloudService *instance(bool reset = false, int cloudConnectionId = -1);
 
     static bool isOwnCloudSupportEnabled();
+
+    static bool isTodoCalendarSupportEnabled();
 
     static bool isTodoSupportEnabled();
 
@@ -115,15 +118,15 @@ private:
 
     void checkAppInfo(QNetworkReply *reply);
 
-    void readSettings();
+    void readSettings(int cloudConnectionId = -1);
 
     void addAuthHeader(QNetworkRequest *r);
 
     void addCalendarAuthHeader(QNetworkRequest *r);
 
-    void handleVersionsLoading(const QString &data);
+    void handleVersionsLoading(QString data);
 
-    void handleTrashedLoading(const QString &data);
+    void handleTrashedLoading(QString data);
 
     QList<CalDAVCalendarData> parseCalendarData(QString &data);
 
@@ -134,10 +137,10 @@ private:
     void loadDirectory(QString &data);
 
     void showOwnCloudServerErrorMessage(
-            const QString& message = QString(""), bool withSettingsButton = true);
+            const QString& message = QString(), bool withSettingsButton = true);
 
     void showOwnCloudMessage(
-            const QString &headline = QString(""), const QString &message = QString(""),
+            QString headline = QString(), QString message = QString(),
             bool withSettingsButton = true);
 
     void updateNoteShareStatusFromShare(QString &data);
@@ -149,7 +152,7 @@ private:
     void updateNoteShareStatus(QXmlQuery &query,
                                bool updateShareDialog = false);
 
-    void handleDeleteNoteShareReply(const QString &urlPart, QString &data);
+    void handleUpdateNoteShareReply(const QString &urlPart, const QString &data);
 
     static void checkAppVersion(QNetworkReply *reply);
 
@@ -169,5 +172,3 @@ private slots:
 
     void slotReplyFinished(QNetworkReply *);
 };
-
-#endif // OWNCLOUDSERVICE_H

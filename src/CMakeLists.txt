@@ -7,6 +7,14 @@ set(CMAKE_AUTOUIC ON)
 #set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# include some Botan settings
+include(libraries/botan/CMakeLists.txt)
+#include sonnet core directory, required for building plugins
+include_directories(libraries/sonnet/src/core)
+#some hunspell settings for windows
+include(libraries/sonnet/src/plugins/hunspell/hunspell/CMakeLists.txt)
+
+
 find_package( Qt5LinguistTools )
 find_package( Qt5Core 5.3 REQUIRED )
 find_package( Qt5Widgets REQUIRED )
@@ -51,6 +59,7 @@ qt5_wrap_ui(dialogs/ui_actiondialog.h actiondialog.ui)
 qt5_wrap_ui(dialogs/ui_tabledialog.h tabledialog.ui)
 qt5_wrap_ui(dialogs/ui_notedialog.h notedialog.ui)
 qt5_wrap_ui(dialogs/ui_websockettokendialog.h websockettokendialog.ui)
+qt5_wrap_ui(dialogs/ui_imagedialog.h imagedialog.ui)
 qt5_wrap_ui(libraries/qmarkdowntextedit/ui_qplaintexteditsearchwidget.h
         libraries/qmarkdowntextedit/qplaintexteditsearchwidget.ui)
 qt5_wrap_ui(libraries/qttoolbareditor/src/toolbar_editor.hpp
@@ -131,6 +140,9 @@ set(SOURCE_FILES
     dialogs/scriptrepositorydialog.cpp
     dialogs/scriptrepositorydialog.h
     dialogs/scriptrepositorydialog.ui
+    dialogs/dictionarymanagerdialog.cpp
+    dialogs/dictionarymanagerdialog.h
+    dialogs/dictionarymanagerdialog.ui
     dialogs/actiondialog.cpp
     dialogs/actiondialog.h
     dialogs/actiondialog.ui
@@ -143,6 +155,12 @@ set(SOURCE_FILES
     dialogs/websockettokendialog.cpp
     dialogs/websockettokendialog.h
     dialogs/websockettokendialog.ui
+    dialogs/imagedialog.cpp
+    dialogs/imagedialog.h
+    dialogs/imagedialog.ui
+    dialogs/attachmentdialog.cpp
+    dialogs/attachmentdialog.h
+    dialogs/attachmentdialog.ui
     dialogs/filedialog.cpp
     dialogs/filedialog.h
     entities/calendaritem.cpp
@@ -157,6 +175,8 @@ set(SOURCE_FILES
     entities/notehistory.h
     entities/notefolder.cpp
     entities/notefolder.h
+    entities/cloudconnection.cpp
+    entities/cloudconnection.h
     entities/tag.cpp
     entities/tag.h
     entities/script.cpp
@@ -169,6 +189,11 @@ set(SOURCE_FILES
     helpers/toolbarcontainer.h
     helpers/qownnotesmarkdownhighlighter.cpp
     helpers/qownnotesmarkdownhighlighter.h
+    helpers/LanguageCache.h
+    helpers/qownspellchecker.cpp
+    helpers/qownspellchecker.h
+    helpers/codetohtmlconverter.cpp
+    helpers/codetohtmlconverter.h
     api/noteapi.cpp
     api/noteapi.h
     api/tagapi.cpp
@@ -193,6 +218,8 @@ set(SOURCE_FILES
     libraries/hoedown/stack.h
     libraries/hoedown/version.c
     libraries/hoedown/version.h
+    libraries/qmarkdowntextedit/qownlanguagedata.cpp
+    libraries/qmarkdowntextedit/qownlanguagedata.h
     libraries/qmarkdowntextedit/markdownhighlighter.cpp
     libraries/qmarkdowntextedit/markdownhighlighter.h
     libraries/qmarkdowntextedit/qmarkdowntextedit.cpp
@@ -238,12 +265,38 @@ set(SOURCE_FILES
     libraries/piwiktracker/piwiktracker.h
     libraries/piwiktracker/piwiktracker.cpp
     libraries/botan/botan.h
+    libraries/botan/botan_internal.h    
     libraries/botan/botan.cpp
     libraries/botan/botanwrapper.h
     libraries/botan/botanwrapper.cpp
     libraries/qkeysequencewidget/qkeysequencewidget/src/qkeysequencewidget_p.h
     libraries/qkeysequencewidget/qkeysequencewidget/src/qkeysequencewidget.h
     libraries/qkeysequencewidget/qkeysequencewidget/src/qkeysequencewidget.cpp
+    libraries/sonnet/src/core/backgroundchecker.cpp
+    libraries/sonnet/src/core/backgroundchecker.h
+    libraries/sonnet/src/core/backgroundchecker_p.h
+    libraries/sonnet/src/core/client.cpp
+    libraries/sonnet/src/core/client_p.h
+    libraries/sonnet/src/core/core_debug.cpp
+    libraries/sonnet/src/core/core_debug.h
+    libraries/sonnet/src/core/guesslanguage.cpp
+    libraries/sonnet/src/core/guesslanguage.h
+    libraries/sonnet/src/core/languagefilter.cpp
+    libraries/sonnet/src/core/languagefilter_p.h
+    libraries/sonnet/src/core/loader.cpp
+    libraries/sonnet/src/core/loader_p.h
+    libraries/sonnet/src/core/settings.cpp
+    libraries/sonnet/src/core/settings_p.h
+    libraries/sonnet/src/core/sonnetcore_export.h
+    libraries/sonnet/src/core/speller.cpp
+    libraries/sonnet/src/core/speller.h
+    libraries/sonnet/src/core/spellerplugin.cpp
+    libraries/sonnet/src/core/spellerplugin_p.h
+    libraries/sonnet/src/core/textbreaks.cpp
+    libraries/sonnet/src/core/textbreaks_p.h
+    libraries/sonnet/src/core/tokenizer.cpp
+    libraries/sonnet/src/core/tokenizer_p.h
+
     widgets/qownnotesmarkdowntextedit.cpp
     widgets/qownnotesmarkdowntextedit.h
     widgets/navigationwidget.cpp
@@ -252,6 +305,8 @@ set(SOURCE_FILES
     widgets/notepreviewwidget.h
     widgets/combobox.cpp
     widgets/combobox.h
+    widgets/graphicsview.cpp
+    widgets/graphicsview.h
     widgets/scriptlistwidget.cpp
     widgets/scriptlistwidget.h
     widgets/notefolderlistwidget.cpp
@@ -299,6 +354,70 @@ set(SOURCE_FILES
     services/websocketserverservice.h
     entities/bookmark.h entities/bookmark.cpp)
 
+if(NOT APPLE)
+list(APPEND SOURCE_FILES
+    libraries/sonnet/src/plugins/hunspell/hunspellclient.cpp
+    libraries/sonnet/src/plugins/hunspell/hunspellclient.h
+    libraries/sonnet/src/plugins/hunspell/hunspelldebug.cpp
+    libraries/sonnet/src/plugins/hunspell/hunspelldebug.h
+    libraries/sonnet/src/plugins/hunspell/hunspelldict.cpp
+    libraries/sonnet/src/plugins/hunspell/hunspelldict.h
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/affentry.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/affentry.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/affixmgr.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/affixmgr.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/atypes.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/baseaffix.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/csutil.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/csutil.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/filemgr.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/filemgr.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/hashmgr.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/hashmgr.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/htypes.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/hunspell.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/hunspell.h
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/hunspell.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/hunvisapi.h
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/hunvisapi.h.in
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/hunzip.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/hunzip.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/langnum.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/phonet.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/phonet.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/replist.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/replist.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/suggestmgr.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/suggestmgr.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/utf_info.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/hunspell/w_char.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/firstparser.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/firstparser.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/htmlparser.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/htmlparser.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/latexparser.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/latexparser.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/manparser.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/manparser.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/odfparser.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/odfparser.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/textparser.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/textparser.hxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/xmlparser.cxx
+    libraries/sonnet/src/plugins/hunspell/hunspell/src/parsers/xmlparser.hxx
+)
+endif()
+
+if (APPLE)
+   list(APPEND SOURCE_FILES
+    libraries/sonnet/src/plugins/nsspellchecker/nsspellcheckerclient.h
+    libraries/sonnet/src/plugins/nsspellchecker/nsspellcheckerclient.mm
+    libraries/sonnet/src/plugins/nsspellchecker/nsspellcheckerdebug.cpp
+    libraries/sonnet/src/plugins/nsspellchecker/nsspellcheckerdebug.h
+    libraries/sonnet/src/plugins/nsspellchecker/nsspellcheckerdict.h
+    libraries/sonnet/src/plugins/nsspellchecker/nsspellcheckerdict.mm)
+endif()
+
 # Translation files
 SET(QON_TS_FILES
     languages/QOwnNotes_en.ts
@@ -341,6 +460,22 @@ SET(QON_TS_FILES
     languages/QOwnNotes_eu.ts
     languages/QOwnNotes_sr.ts
     languages/QOwnNotes_fa.ts
+    languages/QOwnNotes_ha.ts
+    languages/QOwnNotes_bg.ts
+    languages/QOwnNotes_is.ts
+    languages/QOwnNotes_pa.ts
+    languages/QOwnNotes_sq.ts
+    languages/QOwnNotes_he.ts
+    languages/QOwnNotes_ga.ts
+    languages/QOwnNotes_uz.ts
+    languages/QOwnNotes_vi.ts
+    languages/QOwnNotes_lv.ts
+    languages/QOwnNotes_ku.ts
+    languages/QOwnNotes_lt.ts
+    languages/QOwnNotes_bs.ts
+    languages/QOwnNotes_mk.ts
+    languages/QOwnNotes_ko.ts
+    languages/QOwnNotes_et.ts
 )
 
 qt5_add_translation(QON_QM_FILES ${QON_TS_FILES})

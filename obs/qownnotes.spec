@@ -22,12 +22,21 @@ BuildRequires:  qt5-qtdeclarative-devel
 BuildRequires:  qt5-qtxmlpatterns-devel
 BuildRequires:  qt5-qtwebsockets-devel
 BuildRequires:  desktop-file-utils
+BuildRequires:  aspell-devel
 Requires:       qt5-qtsvg qt5-qtxmlpatterns qt5-qtwebsockets
 
 %else
 # This is for all SUSE
 
 BuildRequires:  libqt5-qtbase-devel libqt5-qtdeclarative-devel libQt5Svg-devel libQt5XmlPatterns-devel libqt5-qtwebsockets-devel
+
+# no aspell for SLE
+%if 0%{?sle_version} == 150000 || 0%{?sle_version} == 150100 && !0%{?is_backports}
+#BuildRequires:  aspell-devel
+%else
+BuildRequires:  libaspell15
+%endif
+
 BuildRequires:  update-desktop-files
 Requires:       libQt5Svg5 libQt5Sql5 libQt5Sql5-sqlite libQt5Gui5 libQt5Network5 libQt5Widgets5 libQt5Xml5 libQt5XmlPatterns5 libQt5PrintSupport5 libQt5WebSockets5
 
@@ -163,6 +172,22 @@ install -D -m 0644 languages/QOwnNotes_sk.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNot
 install -D -m 0644 languages/QOwnNotes_eu.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_eu.qm
 install -D -m 0644 languages/QOwnNotes_sr.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_sr.qm
 install -D -m 0644 languages/QOwnNotes_fa.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_fa.qm
+install -D -m 0644 languages/QOwnNotes_ha.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_ha.qm
+install -D -m 0644 languages/QOwnNotes_bg.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_bg.qm
+install -D -m 0644 languages/QOwnNotes_is.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_is.qm
+install -D -m 0644 languages/QOwnNotes_pa.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_pa.qm
+install -D -m 0644 languages/QOwnNotes_sq.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_sq.qm
+install -D -m 0644 languages/QOwnNotes_he.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_he.qm
+install -D -m 0644 languages/QOwnNotes_ga.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_ga.qm
+install -D -m 0644 languages/QOwnNotes_uz.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_uz.qm
+install -D -m 0644 languages/QOwnNotes_vi.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_vi.qm
+install -D -m 0644 languages/QOwnNotes_lv.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_lv.qm
+install -D -m 0644 languages/QOwnNotes_ku.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_ku.qm
+install -D -m 0644 languages/QOwnNotes_lt.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_lt.qm
+install -D -m 0644 languages/QOwnNotes_bs.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_bs.qm
+install -D -m 0644 languages/QOwnNotes_mk.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_mk.qm
+install -D -m 0644 languages/QOwnNotes_ko.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_ko.qm
+install -D -m 0644 languages/QOwnNotes_et.qm $RPM_BUILD_ROOT/%{_datadir}/QOwnNotes/languages/QOwnNotes_et.qm
 
 %if 0%{?suse_version}
 # see: https://de.opensuse.org/openSUSE:Paketbauvereinbarungen_zu_RPM-Makros
@@ -229,6 +254,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/QOwnNotes/languages/QOwnNotes_eu.qm
 %{_datadir}/QOwnNotes/languages/QOwnNotes_sr.qm
 %{_datadir}/QOwnNotes/languages/QOwnNotes_fa.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_ha.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_bg.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_is.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_pa.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_sq.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_he.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_ga.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_uz.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_vi.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_lv.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_ku.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_lt.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_bs.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_mk.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_ko.qm
+%{_datadir}/QOwnNotes/languages/QOwnNotes_et.qm
 %{_datadir}/applications/PBE.QOwnNotes.desktop
 
 %dir %{_datadir}/icons/hicolor/512x512/apps

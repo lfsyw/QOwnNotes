@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 Patrizio Bekerle -- http://www.bekerle.com
+ * Copyright (c) 2014-2020 Patrizio Bekerle -- <patrizio@bekerle.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,8 @@ namespace Utils {
             QStringList getSchemaKeys(const QString& schema) const;
 
             QVariant getSchemaValue(const QString& key,
-                                    const QVariant& defaultValue = QVariant()) const;
+                                    const QVariant& defaultValue = QVariant(),
+                                    QString schemaKey = QString()) const;
             QColor getForegroundColor(int index) const;
             QColor getBackgroundColor(int index) const;
 
@@ -69,5 +70,14 @@ namespace Utils {
         const int TextPresetIndex = -1;
 
         QString textSettingsKey(const QString& key, int index);
+
+        QString encodeCssTextCharFormat(const QTextCharFormat &format);
+
+        QString encodeCssStyleForState(MarkdownHighlighter::HighlighterState index,
+                                           const QString &htmlTag);
+
+        QString encodeCssFont(const QFont &refFont);
+
+        QString getSchemaStyles();
     }
 }

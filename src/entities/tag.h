@@ -14,93 +14,107 @@ public:
 
     explicit Tag();
 
-    int getId();
+    bool operator ==(const Tag &tag) const;
 
-    static Tag fetch(int id);
-
-    static Tag tagFromQuery(const QSqlQuery& query);
-
-    bool store();
+    bool operator <(const Tag &tag) const;
 
     friend QDebug operator<<(QDebug dbg, const Tag &tag);
 
-    bool exists();
+    int getId() const;
+
+    bool store();
+
+    bool exists() const;
 
     bool fillFromQuery(const QSqlQuery& query);
 
-    bool remove();
+    bool remove() const;
 
-    bool isFetched();
+    bool isFetched() const;
 
-    static QList<Tag> fetchAll();
-
-    QString getName();
-
-    int getPriority();
+    QString getName() const;
 
     void setName(const QString &text);
 
-    void setPriority(int value);
+    int getPriority() const;
 
-    static int countAll();
+    void setPriority(const int value);
 
     void setAsActive();
 
-    bool isActive();
+    bool isActive() const;
+
+    bool linkToNote(const Note &note) const;
+
+    bool removeLinkToNote(const Note &note) const;
+
+    QStringList fetchAllLinkedNoteFileNames(const bool fromAllSubfolders) const;
+
+    QStringList fetchAllLinkedNoteFileNamesForFolder(const NoteSubFolder &noteSubFolder,
+                                                     bool fromAllSubfolders) const;
+
+    QList<Note> fetchAllLinkedNotes() const;
+
+    bool isLinkedToNote(const Note &note) const;
+
+    int countLinkedNoteFileNames(const bool fromAllSubfolder, const bool recursive) const;
+
+    int countLinkedNoteFileNamesForNoteFolder(const NoteSubFolder &noteSubFolder, const bool recursive) const;
+
+    int getParentId() const;
+
+    void setParentId(const int id);
+
+    bool hasChild(const int tagId) const;
+
+    QColor getColor() const;
+
+    void setColor(const QColor &color);
+
+/*
+ * Tag
+ * Public static functions
+*/
+
+    static QList<Tag> fetchAll();
+
+    static int countAll();
 
     static int activeTagId();
 
     static Tag activeTag();
 
-    static Tag fetchByName(const QString &name, bool startsWith = false);
+    static Tag fetchByName(const QString &name, const bool startsWith = false);
 
-    static Tag fetchByName(const QString &name, int parentId);
-
-    bool linkToNote(const Note &note);
+    static Tag fetchByName(const QString &name, const int parentId);
 
     static QList<Tag> fetchAllOfNote(const Note &note);
 
-    bool removeLinkToNote(const Note &note);
-
-    QStringList fetchAllLinkedNoteFileNames(bool fromAllSubfolders);
-
-    QList<Note> fetchAllLinkedNotes();
-
     static QStringList fetchAllNames();
-
-    bool isLinkedToNote(const Note &note);
 
     static bool removeAllLinksToNote(const Note &note);
 
-    static bool renameNoteFileNamesOfLinks(
-            const QString& oldFileName, const QString& newFileName);
+    static bool renameNoteFileNamesOfLinks(const QString& oldFileName,
+                                           const QString& newFileName);
 
-    static bool renameNoteSubFolderPathsOfLinks(
-            const QString &oldPath, const QString& newPath);
+    static bool renameNoteSubFolderPathsOfLinks(const QString &oldPath,
+                                                const QString &newPath);
 
-    int countLinkedNoteFileNames(bool fromAllSubfolder, bool recursive);
+    static Tag fetch(const int id);
+
+    static Tag tagFromQuery(const QSqlQuery& query);
 
     static QList<Tag> fetchAllWithLinkToNoteNames(const QStringList& noteNameList);
 
-    int getParentId();
+    static QList<Tag> fetchAllByParentId(const int parentId, const QString& sortBy = "created DESC");
 
-    void setParentId(int id);
-
-    static QList<Tag> fetchAllByParentId(int parentId, const QString& sortBy = "created DESC");
-
-    static int countAllParentId(int parentId);
-
-    bool hasChild(int tagId);
+    static int countAllParentId(const int parentId);
 
     static int countAllOfNote(const Note &note);
 
-    static void setAsActive(int tagId);
+    static void setAsActive(const int tagId);
 
     static void convertDirSeparator();
-
-    QColor getColor();
-
-    void setColor(QColor color);
 
     static Tag fetchOneOfNoteWithColor(const Note& note);
 
@@ -112,24 +126,20 @@ public:
 
     static QStringList searchAllNamesByName(const QString& name);
 
-    static QList<Tag> fetchRecursivelyByParentId(int parentId);
+    static QList<Tag> fetchRecursivelyByParentId(const int parentId);
 
     static bool isTaggingShowNotesRecursively();
 
-    static QList<Tag> fetchAllOfNotes(QList<Note> notes);
-
-    bool operator ==(const Tag &tag) const;
-
-    bool operator <(const Tag &tag) const;
+    static QList<Tag> fetchAllOfNotes(const QList<Note>& notes);
 
 protected:
     int id;
-    QString name;
     int priority;
     int parentId;
     QColor _color;
+    QString name;
 
     QString colorFieldName();
 
-    static bool removeNoteLinkById(int id);
+    static bool removeNoteLinkById(const int id);
 };

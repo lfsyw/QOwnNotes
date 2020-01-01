@@ -35,25 +35,25 @@ private:
     Ui::EvernoteImportDialog *ui;
     int _importCount;
 
-    void importNotes(const QString &data);
+    void importNotes(const QString& data);
 
-    int countNotes(const QString &data);
+    int countNotes(const QString& data);
 
     void initNoteCount(const QString &data);
 
-    QString importImages(const QString &content, QXmlQuery query);
+    QString importImages(const Note &note, QString content, QXmlQuery query);
 
-    QString getMarkdownForMediaFileData(MediaFileData &mediaFileData);
+    QString getMarkdownForMediaFileData(Note note, const MediaFileData &mediaFileData);
 
-    QString getMarkdownForAttachmentFileData(MediaFileData &mediaFileData);
+    QString getMarkdownForAttachmentFileData(Note note, const MediaFileData &mediaFileData);
 
     void tagNote(QXmlQuery &query, Note &note);
 
-    QString importAttachments(const QString &content, QXmlQuery query);
+    QString importAttachments(const Note &note, QString content, QXmlQuery query);
 
     QTreeWidgetItem *addMetaDataTreeWidgetItem(
-            const QString &name,
-            const QString &attributeName = "",
+            const QString& name,
+            const QString& attributeName = QString(),
             QTreeWidgetItem *parentItem = nullptr);
 
     void setupMetaDataTreeWidgetItems();

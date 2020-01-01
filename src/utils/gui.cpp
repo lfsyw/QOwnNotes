@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 Patrizio Bekerle -- http://www.bekerle.com
+ * Copyright (c) 2014-2020 Patrizio Bekerle -- <patrizio@bekerle.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ void Utils::Gui::searchForTextInTreeWidget(QTreeWidget *treeWidget,
     QStringList searchList;
 
     if (searchFlags & TreeWidgetSearchFlag::EveryWordSearch) {
-        searchList = text.split(QRegularExpression("\\s+"));
+        searchList = text.split(QRegularExpression(QStringLiteral("\\s+")));
     } else {
         searchList << text;
     }
@@ -116,6 +116,31 @@ void Utils::Gui::searchForTextInTreeWidget(QTreeWidget *treeWidget,
 }
 
 /**
+ * Searches for text in items of a list widget
+ */
+void Utils::Gui::searchForTextInListWidget(QListWidget *listWidget,
+                                           const QString& text) {
+    QList<QListWidgetItem*> allItems = listWidget->
+            findItems("", Qt::MatchContains | Qt::MatchRecursive);
+
+    // search text if at least one character was entered
+    if (text.count() >= 1) {
+        QList<QListWidgetItem*> items = listWidget->
+                findItems(text, Qt::MatchContains | Qt::MatchRecursive);
+
+        // hide all not found items
+        Q_FOREACH(QListWidgetItem *item, allItems) {
+            item->setHidden(!items.contains(item));
+        }
+    } else {
+        // show all items otherwise
+        Q_FOREACH(QListWidgetItem *item, allItems) {
+            item->setHidden(false);
+        }
+    }
+}
+
+/**
  * Checks if a variant exists as user data in a tree widget
  */
 bool Utils::Gui::userDataInTreeWidgetExists(QTreeWidget *treeWidget,
@@ -139,6 +164,21 @@ QTreeWidgetItem *Utils::Gui::getTreeWidgetItemWithUserData(
 
     Q_FOREACH(QTreeWidgetItem *item, allItems) {
             if (userData == item->data(column, Qt::UserRole)) {
+                return item;
+            }
+        }
+
+    return Q_NULLPTR;
+}
+
+QListWidgetItem *Utils::Gui::getListWidgetItemWithUserData(
+        QListWidget *listWidget, const QVariant &userData) {
+    // get all items
+    QList<QListWidgetItem*> allItems = listWidget->
+            findItems("", Qt::MatchContains);
+
+    Q_FOREACH(QListWidgetItem *item, allItems) {
+            if (userData == item->data(Qt::UserRole)) {
                 return item;
             }
         }
@@ -262,7 +302,7 @@ Utils::Gui::showMessageBox(QWidget *parent, QMessageBox::Icon icon,
     QMessageBox msgBox(icon, title, text, QMessageBox::NoButton, parent);
     auto *buttonBox = msgBox.findChild<QDialogButtonBox*>();
     Q_ASSERT(buttonBox != nullptr);
-    QCheckBox *checkBox = new QCheckBox(
+    auto *checkBox = new QCheckBox(
             icon == QMessageBox::Icon::Question ?
             QObject::tr("Don't ask again!") : QObject::tr("Don't show again!"),
             parent);
@@ -309,7 +349,7 @@ bool Utils::Gui::isMessageBoxPresent() {
     QWidgetList topWidgets = QApplication::topLevelWidgets();
     foreach (QWidget *w, topWidgets) {
             if (auto *mb = dynamic_cast<QMessageBox *>(w)) {
-                Q_UNUSED(mb);
+                Q_UNUSED(mb)
                 return true;
             }
         }
@@ -394,7 +434,7 @@ void Utils::Gui::copyCodeBlockText(const QTextBlock& initialBlock) {
     codeBlockTextList.removeLast();
 
     QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(codeBlockTextList.join("\n") + "\n");
+    clipboard->setText(codeBlockTextList.join(QStringLiteral("\n") + QStringLiteral("\n")));
 }
 
 /**
@@ -411,13 +451,13 @@ bool Utils::Gui::autoFormatTableAtCursor(QPlainTextEdit *textEdit) {
     QTextBlock block = initialBlock;
 
     // return if text doesn't seem to be part of a table
-    if (!block.text().startsWith("|")) {
+    if (!block.text().startsWith(QLatin1String("|"))) {
         return false;
     }
 
     QString tableText = block.text();
     QList <QStringList> tableTextList;
-    tableTextList << tableText.split("|");
+    tableTextList << tableText.split(QStringLiteral("|"));
     int startPosition = block.position();
     int maxColumns = 0;
     bool tableWasModified = false;
@@ -431,11 +471,11 @@ bool Utils::Gui::autoFormatTableAtCursor(QPlainTextEdit *textEdit) {
         }
 
         QString prevBlockText = block.text();
-        if (!prevBlockText.startsWith("|")) {
+        if (!prevBlockText.startsWith(QLatin1String("|"))) {
             break;
         }
 
-        const QStringList &stringList = prevBlockText.split("|");
+        const QStringList &stringList = prevBlockText.split(QStringLiteral("|"));
         tableTextList.prepend(stringList);
         startPosition = block.position();
         maxColumns = std::max(maxColumns, stringList.count());
@@ -451,17 +491,17 @@ bool Utils::Gui::autoFormatTableAtCursor(QPlainTextEdit *textEdit) {
         }
 
         QString nextBlockText = block.text();
-        if (!nextBlockText.startsWith("|")) {
+        if (!nextBlockText.startsWith(QLatin1String("|"))) {
             break;
         }
 
-        const QStringList &stringList = nextBlockText.split("|");
+        const QStringList &stringList = nextBlockText.split(QStringLiteral("|"));
         tableTextList.append(stringList);
         endPosition = block.position() + nextBlockText.count();
         maxColumns = std::max(maxColumns, stringList.count());
     }
 
-    QRegularExpression headlineSeparatorRegExp(R"(^-+$)");
+    QRegularExpression headlineSeparatorRegExp(QStringLiteral(R"(^-+$)"));
     QString justifiedText;
 
     // justify text in tableTextList
@@ -502,8 +542,8 @@ bool Utils::Gui::autoFormatTableAtCursor(QPlainTextEdit *textEdit) {
             if (maxTextLength > 2 &&
                 headlineSeparatorRegExp.match(text.trimmed()).hasMatch()) {
                 // justify the headline separator text
-                justifiedText = " " + text.trimmed().leftJustified(
-                        maxTextLength - 2, '-') + " ";
+                justifiedText = QStringLiteral(" ") + text.trimmed().leftJustified(
+                        maxTextLength - 2, '-') + QStringLiteral(" ");
             } else {
                 // justify the text
                 justifiedText = text.leftJustified(maxTextLength);
@@ -527,10 +567,10 @@ bool Utils::Gui::autoFormatTableAtCursor(QPlainTextEdit *textEdit) {
     // generate the new table text
     QString newTableText;
     for (int line = 0; line < lineCount; line++) {
-        newTableText += tableTextList.at(line).join("|");
+        newTableText += tableTextList.at(line).join(QStringLiteral("|"));
 
         if (line < (lineCount - 1)) {
-            newTableText += "\n";
+            newTableText += QStringLiteral("\n");
         }
     }
 
@@ -551,21 +591,29 @@ bool Utils::Gui::autoFormatTableAtCursor(QPlainTextEdit *textEdit) {
 void Utils::Gui::updateInterfaceFontSize(int fontSize) {
     QSettings settings;
     bool overrideInterfaceFontSize = settings.value(
-            "overrideInterfaceFontSize", false).toBool();
+            QStringLiteral("overrideInterfaceFontSize"), false).toBool();
 
     // remove old style
     QString stylesheet = qApp->styleSheet().remove(QRegularExpression(
             QRegularExpression::escape(INTERFACE_OVERRIDE_STYLESHEET_PRE_STRING) +
-            ".*" + QRegularExpression::escape(INTERFACE_OVERRIDE_STYLESHEET_POST_STRING)));
+            QStringLiteral(".*") + QRegularExpression::escape(INTERFACE_OVERRIDE_STYLESHEET_POST_STRING)));
 
     if (overrideInterfaceFontSize) {
         int interfaceFontSize = fontSize != -1 ?
-                fontSize : settings.value("interfaceFontSize", 11).toInt();
+                fontSize : settings.value(QStringLiteral("interfaceFontSize"), 11).toInt();
 
-        stylesheet += "\n" + QString(INTERFACE_OVERRIDE_STYLESHEET_PRE_STRING) +
-                "QWidget {font-size: " + QString::number(interfaceFontSize) +
-                "px;}" + QString(INTERFACE_OVERRIDE_STYLESHEET_POST_STRING);
+        stylesheet += QStringLiteral("\n") + QString(INTERFACE_OVERRIDE_STYLESHEET_PRE_STRING) +
+                QStringLiteral("QWidget {font-size: ") + QString::number(interfaceFontSize) +
+                QStringLiteral("px;}") + QString(INTERFACE_OVERRIDE_STYLESHEET_POST_STRING);
     }
 
     qApp->setStyleSheet(stylesheet);
+}
+
+/**
+ * Sets the current index of a combo box by user data
+ */
+void Utils::Gui::setComboBoxIndexByUserData(QComboBox *comboBox, const QVariant &userData) {
+    const int index = comboBox->findData(userData);
+    comboBox->setCurrentIndex(index);
 }

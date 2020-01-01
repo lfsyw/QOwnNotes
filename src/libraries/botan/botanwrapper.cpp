@@ -21,7 +21,7 @@ QString BotanWrapper::Hash(const QString &Data) {
         QString Value = QString::fromStdString(pipe.read_all_as_string(0));
         return Value;
     } catch (...) {
-        return "";
+        return QString();
     }
 }
 
@@ -32,7 +32,7 @@ QString BotanWrapper::HexHash(const QString &Data) {
         QString Value = QString::fromStdString(pipe.read_all_as_string(0));
         return Value;
     } catch (...) {
-        return "";
+        return QString();
     }
 }
 
@@ -43,7 +43,7 @@ QString BotanWrapper::Encode(const QString &Data) {
         QString Value = QString::fromStdString(pipe.read_all_as_string(0));
         return Value;
     } catch (...) {
-        return "";
+        return QString();
     }
 }
 
@@ -54,7 +54,7 @@ QString BotanWrapper::Decode(const QString &Data) {
         QString Value = QString::fromStdString(pipe.read_all_as_string(0));
         return Value;
     } catch (...) {
-        return "";
+        return QString();
     }
 }
 
@@ -82,7 +82,7 @@ QString BotanWrapper::Encrypt(const QString &Data) {
         QString Value = QString::fromStdString(pipe.read_all_as_string(0));
         return Value;
     } catch (...) {
-        return "";
+        return QString();
     }
 }
 
@@ -111,7 +111,7 @@ QString BotanWrapper::Decrypt(const QString &Data) {
         return Value;
     }
     catch (...) {
-        return "";
+        return QString();
     }
 }
 
@@ -119,7 +119,7 @@ bool BotanWrapper::EncryptFile(const QString &Source, const QString &Destination
     try {
         // Setup the key derive functions
         PKCS5_PBKDF2 pbkdf2(new HMAC(new SHA_160));
-        const u32bit PBKDF2_ITERATIONS = 8192;
+        const std::uint32_t PBKDF2_ITERATIONS = 8192;
 
         // Create the KEY and IV
         KDF *kdf = get_kdf("KDF2(SHA-1)");
@@ -133,8 +133,8 @@ bool BotanWrapper::EncryptFile(const QString &Source, const QString &Destination
         SymmetricKey mKey = kdf->derive_key(32, mMaster, "salt1");
         InitializationVector mIV = kdf->derive_key(16, mMaster, "salt2");
 
-        string inFilename = Source.toStdString();
-        string outFilename = Destination.toStdString();
+        std::string inFilename = Source.toStdString();
+        std::string outFilename = Destination.toStdString();
         std::ifstream in(inFilename.c_str(), std::ios::binary);
         std::ofstream out(outFilename.c_str(), std::ios::binary);
 
@@ -158,7 +158,7 @@ bool BotanWrapper::DecryptFile(const QString &Source, const QString &Destination
     try {
         // Setup the key derive functions
         PKCS5_PBKDF2 pbkdf2(new HMAC(new SHA_160));
-        const u32bit PBKDF2_ITERATIONS = 8192;
+        const std::uint32_t PBKDF2_ITERATIONS = 8192;
 
         // Create the KEY and IV
         KDF *kdf = get_kdf("KDF2(SHA-1)");
@@ -172,8 +172,8 @@ bool BotanWrapper::DecryptFile(const QString &Source, const QString &Destination
         SymmetricKey mKey = kdf->derive_key(32, mMaster, "salt1");
         InitializationVector mIV = kdf->derive_key(16, mMaster, "salt2");
 
-        string inFilename = Source.toStdString();
-        string outFilename = Destination.toStdString();
+        std::string inFilename = Source.toStdString();
+        std::string outFilename = Destination.toStdString();
         std::ifstream in(inFilename.c_str(), std::ios::binary);
         std::ofstream out(outFilename.c_str(), std::ios::binary);
 

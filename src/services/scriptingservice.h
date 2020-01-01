@@ -32,33 +32,33 @@ public:
     explicit ScriptingService(QObject *parent = 0);
     static ScriptingService *instance();
     static ScriptingService *createInstance(QObject *parent);
-    QQmlEngine* engine();
+    QQmlEngine* engine() const;
     void initComponents();
     QString callInsertMediaHook(QFile *file, const QString &markdownText);
-    QVariant callNoteTaggingHook(const Note &note, const QString &action,
-                                 const QString& tagName = "", const QString& newTagName = "");
-    bool noteTaggingHookExists();
-    bool handleNoteNameHookExists();
-    bool methodExists(const QString& methodName);
+    QVariant callNoteTaggingHook(const Note &note, const QString& action,
+                                 const QString& tagName = QString(), const QString& newTagName = QString());
+    bool noteTaggingHookExists() const;
+    bool handleNoteNameHookExists() const;
+    bool methodExists(const QString& methodName) const;
     static bool validateScript(Script script, QString &errorMessage);
     Q_INVOKABLE bool startDetachedProcess(const QString& executablePath,
                                           const QStringList& parameters);
     Q_INVOKABLE QByteArray startSynchronousProcess(
-            const QString& executablePath, const QStringList& parameters,
-            QByteArray data = QByteArray());
+            const QString& executablePath, QStringList parameters,
+            QByteArray data = QByteArray()) const;
     Q_INVOKABLE bool renameFile(const QString &oldName,
                                 const QString &newName);
     Q_INVOKABLE QString currentNoteFolderPath();
-    Q_INVOKABLE NoteApi *currentNote();
-    Q_INVOKABLE void log(const QString& text);
+    Q_INVOKABLE NoteApi *currentNote() const;
+    Q_INVOKABLE void log(const QString &text);
     Q_INVOKABLE QString downloadUrlToString(const QUrl& url);
-    Q_INVOKABLE QString downloadUrlToMedia(QUrl url,
+    Q_INVOKABLE QString downloadUrlToMedia(const QUrl &url,
                                            bool returnUrlOnly = false);
     Q_INVOKABLE QString insertMediaFile(const QString& mediaFilePath,
                                         bool returnUrlOnly = false);
     Q_INVOKABLE void registerCustomAction(
-            const QString& identifier, const QString& menuText, const QString& buttonText = "",
-            const QString& icon = "", bool useInNoteEditContextMenu = false,
+            const QString& identifier, const QString& menuText, const QString& buttonText = QString(),
+            const QString& icon = QString(), bool useInNoteEditContextMenu = false,
             bool hideButtonInToolbar = false,
             bool useInNoteListContextMenu = false);
     Q_INVOKABLE void createNote(const QString &text);
@@ -89,21 +89,21 @@ public:
     Q_INVOKABLE void setClipboardText(const QString& text, bool asHtml = false);
     Q_INVOKABLE void setCurrentNote(NoteApi *note);
 
-    Q_INVOKABLE void informationMessageBox(const QString& text, const QString& title = "");
+    Q_INVOKABLE void informationMessageBox(const QString& text, const QString& title = QString());
 
     Q_INVOKABLE int questionMessageBox(
-            const QString& text, const QString& title = "",
+            const QString& text, const QString& title = QString(),
             int buttons =
             QMessageBox::StandardButtons(QMessageBox::Yes | QMessageBox::No),
             int defaultButton = QMessageBox::NoButton);
 
-    Q_INVOKABLE QString getOpenFileName(const QString& caption = "", const QString& dir = "",
-                                        const QString& filter = "");
+    Q_INVOKABLE QString getOpenFileName(const QString& caption = QString(), const QString& dir = QString(),
+                                        const QString& filter = QString());
 
-    Q_INVOKABLE QString getSaveFileName(const QString& caption = "", const QString& dir = "",
-                                        const QString& filter = "");
+    Q_INVOKABLE QString getSaveFileName(const QString& caption = QString(), const QString& dir = QString(),
+                                        const QString& filter = QString());
 
-    Q_INVOKABLE void registerLabel(const QString& identifier, const QString& text = "");
+    Q_INVOKABLE void registerLabel(const QString& identifier, const QString& text = QString());
 
     Q_INVOKABLE void setLabelText(const QString& identifier, const QString& text);
 
@@ -114,6 +114,7 @@ public:
                                                     Note *note);
     QString callHandleNoteTextFileNameHook(Note *note);
     QString callNoteToMarkdownHtmlHook(Note *note, const QString& html);
+    QString callPreNoteToMarkdownHtmlHook(Note *note, const QString& markdown);
 
     QString callHandleNewNoteHeadlineHookForObject(QObject *object,
                                                    const QString& headline);
@@ -136,7 +137,7 @@ public:
             const QStringList &items, int current = 0, bool editable = false);
 
     Q_INVOKABLE QString inputDialogGetText(
-            const QString &title, const QString &label, const QString &text = "");
+            const QString &title, const QString &label, const QString &text = QString());
 
     Q_INVOKABLE void setPersistentVariable(const QString &key,
                                            const QVariant &value);
@@ -148,27 +149,28 @@ public:
             const QString &key, const QVariant &defaultValue = QVariant());
 
     Q_INVOKABLE bool jumpToNoteSubFolder(const QString &noteSubFolderPath,
-                                         const QString &separator = "/");
-    QStringList callAutocompletionHook();
+                                         const QString &separator = QStringLiteral("/"));
+    QStringList callAutocompletionHook() const;
 
-    Q_INVOKABLE QStringList searchTagsByName(const QString &name);
+    Q_INVOKABLE QStringList searchTagsByName(const QString &name) const;
 
-    Q_INVOKABLE void regenerateNotePreview();
+    Q_INVOKABLE void regenerateNotePreview() const;
 
-    Q_INVOKABLE QList<int> selectedNotesIds();
+    Q_INVOKABLE QList<int> selectedNotesIds() const;
 
-    Q_INVOKABLE bool writeToFile(const QString &filePath, const QString &data);
+    Q_INVOKABLE bool writeToFile(const QString &filePath, const QString &data) const;
 
-    Q_INVOKABLE QList<int> fetchNoteIdsByNoteTextPart(const QString &text);
+    Q_INVOKABLE QList<int> fetchNoteIdsByNoteTextPart(const QString &text) const;
 
-    Q_INVOKABLE void triggerMenuAction(const QString& objectName, const QString& checked = "");
+    Q_INVOKABLE void triggerMenuAction(const QString& objectName, const QString& checked = QString()) const;
 
 private:
     QQmlEngine *_engine;
     NoteApi *_currentNoteApi;
+    Note *_currentNote;
     QMap<int, ScriptComponent> _scriptComponents;
     QHash<int, QList<QVariant>> _settingsVariables;
-    bool methodExistsForObject(QObject *object, const QString& method);
+    bool methodExistsForObject(QObject *object, const QString& method) const;
     QString callInsertMediaHookForObject(QObject *object,
                                          QFile *file,
                                          const QString& markdownText);

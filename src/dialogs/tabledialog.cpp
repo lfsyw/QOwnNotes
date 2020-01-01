@@ -11,6 +11,9 @@ TableDialog::TableDialog(QWidget *parent) :
     ui(new Ui::TableDialog) {
     ui->setupUi(this);
 
+    // ignore the return key so we can better edit text in the table
+    setIgnoreReturnKey(true);
+
     ui->tabWidget->setCurrentIndex(Tab::CreateTab);
     ui->createTableWidget->setColumnCount(50);
     ui->createTableWidget->setRowCount(100);
@@ -25,17 +28,35 @@ TableDialog::~TableDialog() {
  * Updates the row and column spin boxes with the selection
  */
 void TableDialog::on_createTableWidget_itemSelectionChanged() {
+    /*
     // clear the spin boxes and return if nothing was selected
     if (ui->createTableWidget->selectedRanges().count() == 0) {
         ui->rowSpinBox->clear();
         ui->columnSpinBox->clear();
         return;
     }
+    */
 
+    updateMaxItems();
     QTableWidgetSelectionRange range = ui->createTableWidget->
             selectedRanges().first();
-    ui->rowSpinBox->setValue(range.rowCount());
-    ui->columnSpinBox->setValue(range.columnCount());
+
+    ui->rowSpinBox->setValue(std::max(_maxRows, range.rowCount()));
+    ui->columnSpinBox->setValue(std::max(_maxColumns, range.columnCount()));
+}
+
+void TableDialog::updateMaxItems() {
+    for (int row = 0; row < ui->createTableWidget->rowCount(); row++) {
+        for (int col = 0; col < ui->createTableWidget->columnCount(); col++) {
+            auto item = ui->createTableWidget->item(row, col);
+            bool hasText = item != nullptr ? !item->text().isEmpty() : false;
+
+            if (hasText) {
+                _maxRows = std::max(_maxRows, row + 1);
+                _maxColumns = std::max(_maxColumns, col + 1);
+            }
+        }
+    }
 }
 
 /**
@@ -104,27 +125,29 @@ void TableDialog::createMarkdownTable() {
     }
 
     // start with two newlines to make sure that a proper table is inserted
-    QString text = "\n\n";
-    QString space = QString(" ").repeated(
-            ui->columnWidthSpinBox->value());
+    QString text = QStringLiteral("\n\n");
+    int colWidth = ui->columnWidthSpinBox->value();
+    QString space = QString(" ").repeated(colWidth);
     QString headline = QString("-").repeated(
             ui->separatorColumnWidthSpinBox->value());
 
     for (int row = 0; row < ui->rowSpinBox->value(); row++) {
         // add all columns of the row
         for (int col = 0; col < ui->columnSpinBox->value(); col++) {
-            text += "|" + space;
+            auto item = ui->createTableWidget->item(row, col);
+            QString itemText = item != nullptr ? item->text() : QString();
+            text += QStringLiteral("|") + (itemText.isEmpty() ? space : itemText.leftJustified(colWidth, ' '));
         }
 
-        text += "|\n";
+        text += QStringLiteral("|\n");
 
         // add the headline separator row
         if ((row == 0) && ui->headlineCheckBox->isChecked()) {
             for (int col = 0; col < ui->columnSpinBox->value(); col++) {
-                text += "|" + headline;
+                text += QStringLiteral("|") + headline;
             }
 
-            text += "|\n";
+            text += QStringLiteral("|\n");
         }
     }
 
@@ -173,5 +196,27 @@ void TableDialog::on_fileButton_clicked() {
             ui->csvFileTextEdit->show();
             ui->csvFileTextEdit->setPlainText(file.readAll());
         }
+    }
+}
+
+void TableDialog::on_createTableWidget_itemChanged(QTableWidgetItem *item) {
+    if (item == nullptr) {
+        return;
+    }
+
+    int columns = item->column() + 1;
+    if (columns > ui->columnSpinBox->value()) {
+        ui->columnSpinBox->setValue(columns);
+    }
+
+    int rows = item->row() + 1;
+    if (rows > ui->rowSpinBox->value()) {
+        ui->rowSpinBox->setValue(rows);
+    }
+
+    int length = item->text().length();
+    if (length > ui->columnWidthSpinBox->value()) {
+        ui->columnWidthSpinBox->setValue(length);
+        ui->separatorColumnWidthSpinBox->setValue(length);
     }
 }

@@ -1,7 +1,7 @@
 #include "tagapi.h"
 
-TagApi* TagApi::fetch(int id) {
-    Tag tag = Tag::fetch(id);
+TagApi* TagApi::fetch(int Id) {
+    Tag tag = Tag::fetch(Id);
 
     if (tag.isFetched()) {
         this->id = tag.getId();

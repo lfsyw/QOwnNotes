@@ -31,21 +31,21 @@ public:
 
     static bool deleteAll();
 
-    bool exists();
+    bool exists() const;
 
     bool fillFromQuery(const QSqlQuery& query);
 
     bool remove();
 
-    bool isFetched();
+    bool isFetched() const;
 
-    QDateTime getFileLastModified();
+    QDateTime getFileLastModified() const;
 
-    QDateTime getModified();
+    QDateTime getModified() const;
 
     static int countAll();
 
-    int getParentId();
+    int getParentId() const;
 
     void setParentId(int parentId);
 
@@ -56,7 +56,7 @@ public:
     NoteSubFolder getParent() const;
 
     static QList<NoteSubFolder> fetchAllByParentId(int parentId,
-            const QString& sortBy = "file_last_modified DESC");
+            const QString& sortBy = QStringLiteral("file_last_modified DESC"));
 
     static QList<int> fetchIdsRecursivelyByParentId(int parentId);
 
@@ -70,20 +70,20 @@ public:
 
     void setAsActive();
 
-    QString pathData();
+    QString pathData() const;
 
     static NoteSubFolder fetchByPathData(const QString &pathData,
-                                         const QString& separator = "\n");
+                                         const QString& separator = QStringLiteral("\n"));
 
     static NoteSubFolder fetchByNameAndParentId(const QString& name, int parentId);
 
-    void saveTreeWidgetExpandState(bool expanded);
+    void saveTreeWidgetExpandState(bool expanded) const;
 
-    bool treeWidgetExpandState();
+    bool treeWidgetExpandState() const;
 
     static QString treeWidgetExpandStateSettingsKey(int noteFolderId = 0);
 
-    bool removeFromFileSystem();
+    bool removeFromFileSystem() const;
 
     QDir dir() const;
 
@@ -94,6 +94,8 @@ public:
     static QList<int> fetchAllIds();
 
     static bool isNoteSubfoldersPanelShowNotesRecursively();
+
+    int depth() const;
 
 protected:
     int id;

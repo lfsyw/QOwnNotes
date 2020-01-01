@@ -20,8 +20,8 @@ class TodoDialog : public MasterDialog
     Q_OBJECT
 
 public:
-    explicit TodoDialog(MainWindow *mainWindow, const QString &taskUid = "",
-                            QWidget *parent = 0);
+    explicit TodoDialog(MainWindow *mainWindow, const QString &taskUid = QString(),
+                        QWidget *parent = nullptr);
     ~TodoDialog();
 
     void reloadTodoListItems();
@@ -66,7 +66,7 @@ private:
     void setupMainSplitter();
     void storeSettings();
     void loadTodoListData();
-    int findTodoItemRowByUID(const QString &uid);
+    int findTodoItemRowByUID(const QString& uid);
     void resetEditFrameControls();
     void setupUi();
     void updateCurrentCalendarItemWithFormData();

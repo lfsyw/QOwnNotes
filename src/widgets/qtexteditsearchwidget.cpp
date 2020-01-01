@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2019 Patrizio Bekerle -- http://www.bekerle.com
+ * Copyright (c) 2014-2020 Patrizio Bekerle -- <patrizio@bekerle.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,8 @@ QTextEditSearchWidget::QTextEditSearchWidget(QTextEdit *parent) :
 
     QObject::connect(ui->closeButton, SIGNAL(clicked()),
                      this, SLOT(deactivate()));
-    QObject::connect(ui->searchLineEdit, SIGNAL(textChanged(const QString &)),
-                     this, SLOT(searchLineEditTextChanged(const QString &)));
+    QObject::connect(ui->searchLineEdit, SIGNAL(textChanged(QString)),
+                     this, SLOT(searchLineEditTextChanged(QString)));
     QObject::connect(ui->searchDownButton, SIGNAL(clicked()),
                      this, SLOT(doSearchDown()));
     QObject::connect(ui->searchUpButton, SIGNAL(clicked()),
@@ -169,7 +169,7 @@ bool QTextEditSearchWidget::doReplace(bool forAll) {
     int searchMode = ui->modeComboBox->currentIndex();
     if (searchMode == RegularExpressionMode) {
         QString text = c.selectedText();
-        text.replace(QRegExp(ui->searchLineEdit->text()),
+        text.replace(QRegularExpression(ui->searchLineEdit->text()),
                              ui->replaceLineEdit->text());
         c.insertText(text);
     } else {
@@ -208,8 +208,8 @@ void QTextEditSearchWidget::doReplaceAll() {
 bool QTextEditSearchWidget::doSearch(bool searchDown, bool allowRestartAtTop) {
     QString text = ui->searchLineEdit->text();
 
-    if (text == "") {
-        ui->searchLineEdit->setStyleSheet("");
+    if (text.isEmpty()) {
+        ui->searchLineEdit->setStyleSheet(QString());
         return false;
     }
 
@@ -228,7 +228,11 @@ bool QTextEditSearchWidget::doSearch(bool searchDown, bool allowRestartAtTop) {
 
     bool found;
     if (searchMode == RegularExpressionMode) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 13, 0))
+        found = _textEdit->find(QRegularExpression(text), options);
+#else
         found = _textEdit->find(QRegExp(text), options);
+#endif
     } else {
         found = _textEdit->find(text, options);
     }

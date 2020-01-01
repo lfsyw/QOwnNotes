@@ -117,7 +117,7 @@ void OrphanedAttachmentsDialog::on_fileTreeWidget_currentItemChanged(
  */
 QString OrphanedAttachmentsDialog::getFilePath(QTreeWidgetItem *item) {
     if (item == Q_NULLPTR) {
-        return "";
+        return QString();
     }
 
     QString fileName = NoteFolder::currentAttachmentsPath() + QDir::separator() +
@@ -138,7 +138,7 @@ void OrphanedAttachmentsDialog::on_deleteButton_clicked() {
     if (Utils::Gui::question(
             this,
             tr("Delete selected files"),
-            tr("Delete <strong>%n</strong> selected files(s)?",
+            tr("Delete <strong>%n</strong> selected file(s)?",
                "", selectedItemsCount),
             "delete-files") != QMessageBox::Yes) {
         return;
@@ -197,13 +197,13 @@ void OrphanedAttachmentsDialog::on_insertButton_clicked() {
     }
 
     QOwnNotesMarkdownTextEdit *textEdit = mainWindow->activeNoteTextEdit();
+    Note note = mainWindow->getCurrentNote();
 
     // insert all selected attachments
     Q_FOREACH(QTreeWidgetItem *item, ui->fileTreeWidget->selectedItems()) {
             QString filePath = getFilePath(item);
             QFileInfo fileInfo(filePath);
-            QString attachmentsUrlString = "file://attachments/" +
-                    fileInfo.fileName();
+            QString attachmentsUrlString = note.attachmentUrlStringForFileName(fileInfo.fileName());
             QString attachmentLink = "[" + fileInfo.baseName() + "](" +
                              attachmentsUrlString + ")\n";
             textEdit->insertPlainText(attachmentLink);

@@ -9,6 +9,8 @@
 #include <QRegularExpression>
 #include <QUuid>
 #include <QSettings>
+#include <services/owncloudservice.h>
+#include <utils/misc.h>
 
 
 CalendarItem::CalendarItem() {
@@ -17,8 +19,8 @@ CalendarItem::CalendarItem() {
     icsDataKeyList = QStringList();
     priority = 0;
     sortPriority = 0;
-    summary = "";
-    description = "";
+    summary = QString();
+    description = QString();
     completed = false;
 }
 
@@ -42,7 +44,7 @@ QString CalendarItem::getICSData() {
     return this->icsData;
 }
 
-QString CalendarItem::getUid() {
+QString CalendarItem::getUid() const {
     return this->uid;
 }
 
@@ -70,15 +72,15 @@ QDateTime CalendarItem::getAlarmDate() {
     return this->alarmDate;
 }
 
-void CalendarItem::setLastModifiedString(const QString &text) {
+void CalendarItem::setLastModifiedString(QString text) {
     this->lastModifiedString = text;
 }
 
-void CalendarItem::setETag(const QString &text) {
+void CalendarItem::setETag(QString text) {
     this->etag = text;
 }
 
-void CalendarItem::setSummary(const QString &text) {
+void CalendarItem::setSummary(QString text) {
     this->summary = text;
 }
 
@@ -86,19 +88,19 @@ void CalendarItem::setUrl(QUrl url) {
     this->url = url.toString();
 }
 
-void CalendarItem::setCalendar(const QString &text) {
+void CalendarItem::setCalendar(QString text) {
     this->calendar = text;
 }
 
-void CalendarItem::setDescription(const QString &text) {
+void CalendarItem::setDescription(QString text) {
     this->description = text;
 }
 
-void CalendarItem::setICSData(const QString &text) {
+void CalendarItem::setICSData(QString text) {
     this->icsData = text;
 }
 
-void CalendarItem::setUid(const QString &text) {
+void CalendarItem::setUid(QString text) {
     this->uid = text;
 }
 
@@ -135,10 +137,10 @@ void CalendarItem::updateCompleted(bool value) {
  * @param url we are using QUrl because be want special characters in the urls translated
  * @return
  */
-bool CalendarItem::addCalendarItemForRequest(const QString &calendar, QUrl url,
-                                             const QString &etag,
-                                             const QString &lastModifiedString) {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+bool CalendarItem::addCalendarItemForRequest(QString calendar, QUrl url,
+                                             QString etag,
+                                             QString lastModifiedString) {
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     query.prepare(
@@ -152,8 +154,8 @@ bool CalendarItem::addCalendarItemForRequest(const QString &calendar, QUrl url,
     return query.exec();
 }
 
-bool CalendarItem::addCalendarItem(const QString &summary, const QString &url, const QString &text) {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+bool CalendarItem::addCalendarItem(QString summary, QString url, QString text) {
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     query.prepare("INSERT INTO calendarItem ( summary, url, description )"
@@ -165,7 +167,7 @@ bool CalendarItem::addCalendarItem(const QString &summary, const QString &url, c
 }
 
 CalendarItem CalendarItem::fetch(int id) {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     CalendarItem calendarItem;
@@ -182,9 +184,9 @@ CalendarItem CalendarItem::fetch(int id) {
     return calendarItem;
 }
 
-CalendarItem CalendarItem::fetchByUrlAndCalendar(const QString &url, const QString &calendar) {
+CalendarItem CalendarItem::fetchByUrlAndCalendar(QString url, QString calendar) {
     CalendarItem calendarItem;
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     query.prepare("SELECT * FROM calendarItem WHERE url = :url AND "
@@ -201,9 +203,9 @@ CalendarItem CalendarItem::fetchByUrlAndCalendar(const QString &url, const QStri
     return calendarItem;
 }
 
-CalendarItem CalendarItem::fetchByUid(const QString &uid) {
+CalendarItem CalendarItem::fetchByUid(QString uid) {
     CalendarItem calendarItem;
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     query.prepare("SELECT * FROM calendarItem WHERE uid = :uid");
@@ -220,7 +222,7 @@ CalendarItem CalendarItem::fetchByUid(const QString &uid) {
 
 CalendarItem CalendarItem::fetchByUrl(QUrl url) {
     CalendarItem calendarItem;
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     query.prepare("SELECT * FROM calendarItem WHERE url = :url");
@@ -236,7 +238,7 @@ CalendarItem CalendarItem::fetchByUrl(QUrl url) {
 }
 
 bool CalendarItem::remove() {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     query.prepare("DELETE FROM calendarItem WHERE id = :id");
@@ -254,7 +256,7 @@ bool CalendarItem::remove() {
  * Deletes all calendar items
  */
 bool CalendarItem::removeAll() {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     query.prepare("DELETE FROM calendarItem");
@@ -295,8 +297,8 @@ bool CalendarItem::fillFromQuery(QSqlQuery query) {
     return true;
 }
 
-QList<CalendarItem> CalendarItem::fetchAllByCalendar(const QString &calendar) {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+QList<CalendarItem> CalendarItem::fetchAllByCalendar(QString calendar) {
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     QList<CalendarItem> calendarItemList;
@@ -318,7 +320,7 @@ QList<CalendarItem> CalendarItem::fetchAllByCalendar(const QString &calendar) {
 }
 
 QList<CalendarItem> CalendarItem::fetchAll() {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     QList<CalendarItem> calendarItemList;
@@ -340,7 +342,7 @@ QList<CalendarItem> CalendarItem::fetchAll() {
  * Fetches tasks for the system tray menu
  */
 QList<CalendarItem> CalendarItem::fetchAllForSystemTray(int limit) {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     QList<CalendarItem> calendarItemList;
@@ -367,7 +369,7 @@ QList<CalendarItem> CalendarItem::fetchAllForSystemTray(int limit) {
  * @return
  */
 QList<CalendarItem> CalendarItem::fetchAllForReminderAlert() {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     QList<CalendarItem> calendarItemList;
@@ -401,8 +403,8 @@ QList<CalendarItem> CalendarItem::fetchAllForReminderAlert() {
     return calendarItemList;
 }
 
-QList<QUrl> CalendarItem::fetchAllUrlsByCalendar(const QString &calendar) {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+QList<QUrl> CalendarItem::fetchAllUrlsByCalendar(QString calendar) {
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
     QList<QUrl> urlList;
 
@@ -420,8 +422,8 @@ QList<QUrl> CalendarItem::fetchAllUrlsByCalendar(const QString &calendar) {
     return urlList;
 }
 
-QList<CalendarItem> CalendarItem::search(const QString &text) {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+QList<CalendarItem> CalendarItem::search(QString text) {
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     QList<CalendarItem> calendarItemList;
@@ -448,8 +450,8 @@ QList<CalendarItem> CalendarItem::search(const QString &text) {
 /**
  * Returns a list of UIDs for the search in the TodoDialog
  */
-QList<QString> CalendarItem::searchAsUidList(const QString &text, const QString &calendar) {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+QList<QString> CalendarItem::searchAsUidList(QString text, QString calendar) {
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
     QList<QString> resultList;
 
@@ -499,7 +501,7 @@ void CalendarItem::updateAllSortPriorities() {
 // inserts or updates a CalendarItem object in the database
 //
 bool CalendarItem::store() {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     this->updateSortPriority();
@@ -622,7 +624,7 @@ QString CalendarItem::generateNewICSData() {
         QString key = icsDataKeyList.at(i);
         QString realKey = key;
         // cut out the numbers at the end
-        realKey.replace(QRegularExpression("\\d*$"), "");
+        realKey.replace(QRegularExpression("\\d*$"), QString());
 
         QString line = icsDataHash.value(key);
 
@@ -690,8 +692,8 @@ void CalendarItem::updateICSDataKeyListFromHash() {
 //
 // deletes all calendarItems of a calendar in the database
 //
-bool CalendarItem::deleteAllByCalendar(const QString &calendar) {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+bool CalendarItem::deleteAllByCalendar(QString calendar) {
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     query.prepare("DELETE FROM calendarItem WHERE calendar = :calendar");
@@ -720,7 +722,7 @@ bool CalendarItem::isCompleted() {
     return this->completed;
 }
 
-bool CalendarItem::updateWithICSData(const QString &icsData) {
+bool CalendarItem::updateWithICSData(QString icsData) {
     this->icsData = icsData;
 
     // parse and transform the ics data to a hash with the data
@@ -733,7 +735,7 @@ bool CalendarItem::updateWithICSData(const QString &icsData) {
 //    }
 
     summary = icsDataHash.contains("SUMMARY") ?
-              icsDataHash["SUMMARY"].trimmed() : "";
+              icsDataHash["SUMMARY"].trimmed() : QString();
     completed = icsDataHash.contains("PERCENT-COMPLETE") ?
                 icsDataHash["PERCENT-COMPLETE"] == "100" : false;
 
@@ -743,9 +745,9 @@ bool CalendarItem::updateWithICSData(const QString &icsData) {
                 icsDataHash["STATUS"] == "COMPLETED";
     }
 
-    uid = icsDataHash.contains("UID") ? icsDataHash["UID"] : "";
+    uid = icsDataHash.contains("UID") ? icsDataHash["UID"] : QString();
     description = icsDataHash.contains("DESCRIPTION") ?
-                  icsDataHash["DESCRIPTION"] : "";
+                  icsDataHash["DESCRIPTION"] : QString();
     priority = icsDataHash.contains("PRIORITY") ?
                icsDataHash["PRIORITY"].toInt() : 0;
     created = icsDataHash.contains("CREATED") ?
@@ -760,9 +762,9 @@ bool CalendarItem::updateWithICSData(const QString &icsData) {
     // descriptions the alarm description isn't taken
     QString alarmDescription =
             getICSDataAttributeInBlock("VALARM", "DESCRIPTION");
-    if ((description != "") && (alarmDescription != "") &&
+    if ((!description.isEmpty()) && (!alarmDescription.isEmpty()) &&
             (description == alarmDescription)) {
-        description = "";
+        description = QString();
     }
 
     QString alarmDateString =
@@ -773,7 +775,7 @@ bool CalendarItem::updateWithICSData(const QString &icsData) {
                 QDateTime::fromString(icsDataHash["DUE"], ICS_DATETIME_FORMAT)
                                             : QDateTime();
 
-    if (alarmDateString != "") {
+    if (!alarmDateString.isEmpty()) {
         QDateTime dateTime =
                 QDateTime::fromString(alarmDateString, ICS_DATETIME_FORMAT);
         // convert the UTC from the server to local time, because sqlite
@@ -795,7 +797,7 @@ bool CalendarItem::updateWithICSData(const QString &icsData) {
  * @param attributeName
  * @return
  */
-QString CalendarItem::getICSDataAttributeInBlock(const QString &block, const QString &attributeName) {
+QString CalendarItem::getICSDataAttributeInBlock(QString block, QString attributeName) {
     bool blockFound = false;
     for (int i = 0; i < icsDataKeyList.size(); ++i) {
         QString key = icsDataKeyList.at(i);
@@ -812,14 +814,14 @@ QString CalendarItem::getICSDataAttributeInBlock(const QString &block, const QSt
         }
     }
 
-    return "";
+    return QString();
 }
 
 /**
  * Removes a block in the ics data
  * @param block
  */
-bool CalendarItem::removeICSDataBlock(const QString &block) {
+bool CalendarItem::removeICSDataBlock(QString block) {
     bool blockFound = false;
     bool doReturn = false;
 
@@ -936,9 +938,9 @@ void CalendarItem::generateICSDataHash() {
     QListIterator<QString> i(iscDataLines);
     while (i.hasNext()) {
         QString line = i.next();
-        line.replace("\r", "");
+        line.replace("\r", QString());
 
-        if (line == "") {
+        if (line.isEmpty()) {
             continue;
         }
 
@@ -956,7 +958,7 @@ void CalendarItem::generateICSDataHash() {
             // set last key for multi line texts
             lastKey = match.captured(1);
 
-            if (lastKey == "") {
+            if (lastKey.isEmpty()) {
                 continue;
             }
 
@@ -993,7 +995,7 @@ void CalendarItem::generateICSDataHash() {
  * @param number
  * @return
  */
-QString CalendarItem::findFreeHashKey(QHash<QString, QString> *hash, const QString &key, int number) {
+QString CalendarItem::findFreeHashKey(QHash<QString, QString> *hash, QString key, int number) {
     // give up after 1000 tries
     if (number >= 1000) {
         return key;
@@ -1020,10 +1022,9 @@ QString CalendarItem::findFreeHashKey(QHash<QString, QString> *hash, const QStri
  * @param line
  * @return
  */
-QString CalendarItem::decodeICSDataLine(const QString &line_) {
+QString CalendarItem::decodeICSDataLine(QString line) {
 //    qDebug() << __func__ << " - 'before line': " << line;
 
-    QString line = line_;
     // replace \n with newlines
     // we have to replace this twice, because of the first character that
     // gets replaces in multiple \n
@@ -1041,11 +1042,8 @@ QString CalendarItem::decodeICSDataLine(const QString &line_) {
 }
 
 CalendarItem CalendarItem::createNewTodoItem(
-        const QString &summary, const QString &calendar) {
-    QUuid uuid = QUuid::createUuid();
-    QString uuidString = uuid.toString();
-    uuidString.replace("{", "").replace("}", "");
-
+        QString summary, QString calendar) {
+    QString uuidString = Utils::Misc::createUuidString();
     CalendarItem calItem;
     calItem.setSummary(summary);
     calItem.setCalendar(calendar);
@@ -1081,7 +1079,7 @@ int CalendarItem::getCurrentCalendarIndex() {
 
     QString todoListSelectorSelectedItem = settings.value(
             "TodoDialog/todoListSelectorSelectedItem").toString();
-    if (todoListSelectorSelectedItem != "") {
+    if (!todoListSelectorSelectedItem.isEmpty()) {
         QStringList todoCalendarEnabledList = settings.value(
                 "ownCloud/todoCalendarEnabledList").toStringList();
 
@@ -1113,19 +1111,23 @@ QString CalendarItem::getCurrentCalendarUrl() {
         return todoCalendarEnabledUrlList.at(index);
     }
 
-    return "";
+    return QString();
 }
 
 /**
  * Shows alerts for calendar items with an alarm date in the current minute
  */
 void CalendarItem::alertTodoReminders() {
+    if (!OwnCloudService::isTodoCalendarSupportEnabled()) {
+        return;
+    }
+
     QList<CalendarItem> calendarItemList = fetchAllForReminderAlert();
 
     QListIterator<CalendarItem> itr(calendarItemList);
     while (itr.hasNext()) {
         CalendarItem calItem = itr.next();
-        QMessageBox::information(NULL, "Reminder", "Reminder: <strong>" +
+        QMessageBox::information(nullptr, "Reminder", "Reminder: <strong>" +
                 calItem.getSummary() + "</strong>");
     }
 }
@@ -1134,7 +1136,7 @@ void CalendarItem::alertTodoReminders() {
  * Counts all calendar items
  */
 int CalendarItem::countAll() {
-    QSqlDatabase db = QSqlDatabase::database("disk");
+    QSqlDatabase db = QSqlDatabase::database(QStringLiteral("disk"));
     QSqlQuery query(db);
 
     query.prepare("SELECT COUNT(*) AS cnt FROM calendarItem");

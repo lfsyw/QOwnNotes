@@ -14,8 +14,8 @@ class PasswordDialog : public MasterDialog
 
 public:
     explicit PasswordDialog(
-            QWidget *parent = 0,
-            const QString &labelText = "",
+            QWidget *parent = nullptr,
+            const QString &labelText = QString(),
             bool doubleEnterPassword = false);
     ~PasswordDialog();
     QString password();

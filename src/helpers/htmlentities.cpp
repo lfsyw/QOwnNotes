@@ -1,8 +1,8 @@
-#include "htmlentities.h"
+﻿#include "htmlentities.h"
 
 
 /**
- * @brief Sets up the entitry map
+ * @brief Sets up the entity map
  */
 void HTMLEntities::setupEntityMap()
 {
@@ -270,6 +270,7 @@ HTMLEntities::HTMLEntities()
 
 /**
  * @brief Decodes HTML entities to their normal characters
+ * @deprecated Use Utils::Misc::unescapeHtml()
  * @param text
  * @return
  */

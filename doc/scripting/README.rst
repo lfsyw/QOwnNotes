@@ -183,7 +183,7 @@ Parameters
 
     /**
      * QML wrapper to download an url to the media folder and returning the media
-     * url or the markdown image text of the media
+     * url or the markdown image text of the media relative to the current note
      *
      * @param {QString} url
      * @param {bool} returnUrlOnly if true only the media url will be returned (default false)
@@ -212,7 +212,7 @@ Parameters
 
     /**
      * QML wrapper to insert a media file into the media folder and returning
-     * the media url or the markdown image text of the media
+     * the media url or the markdown image text of the media  relative to the current note
      *
      * @param {QString} mediaFilePath
      * @param {bool} returnUrlOnly if true only the media url will be returned (default false)
@@ -1733,6 +1733,29 @@ handleNewNoteHeadlineHook
 You may want to take a look at the example
 `custom-new-note-headline.qml <https://github.com/pbek/QOwnNotes/blob/develop/doc/scripting/custom-new-note-headline.qml>`__.
 
+preNoteToMarkdownHtmlHook
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: javascript
+
+    /**
+     * This function is called before the markdown html of a note is generated
+     *
+     * It allows you to modify what is passed to the markdown to html converter 
+     *
+     * The method can for example be used in multiple scripts to render code (like LaTeX math or mermaid)
+     * to its graphical representation for the preview
+     *
+     * The note will not be changed in this process
+     *
+     * @param {NoteApi} note - the note object
+     * @param {string} markdown - the markdown that is about to being converted to html
+     * @return {string} the modified markdown or an empty string if nothing should be modified
+     */
+    function preNoteToMarkdownHtmlHook(note, markdown);
+
+You may want to take a look at the example `preview-styling.qml <https://github.com/pbek/QOwnNotes/blob/develop/doc/scripting/preview-styling.qml>`__.
+
 noteToMarkdownHtmlHook
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1858,6 +1881,7 @@ Note
         Q_PROPERTY(QString name)
         Q_PROPERTY(QString fileName)
         Q_PROPERTY(QString fullNoteFilePath)
+        Q_PROPERTY(QString fullNoteFileDirPath)
         Q_PROPERTY(int noteSubFolderId)
         Q_PROPERTY(QString noteText)
         Q_PROPERTY(QString decryptedNoteText)
@@ -1869,6 +1893,7 @@ Note
         Q_INVOKABLE bool addTag(QString tagName);
         Q_INVOKABLE bool removeTag(QString tagName);
         Q_INVOKABLE QString toMarkdownHtml(bool forExport = true);
+        Q_INVOKABLE QString getFileURLFromFileName(QString localFileName);
     };
 
 You can use the methods from `Date <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date>`__
